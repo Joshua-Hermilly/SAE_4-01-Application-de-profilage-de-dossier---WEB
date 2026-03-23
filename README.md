@@ -1,92 +1,503 @@
-# Origine
+# Application MVC PHP
 
+Application web développée en PHP selon l'architecture **MVC (Modèle-Vue-Contrôleur)**.
 
+> **Note** : La couche `services/` est **optionnelle**. Pour les projets simples, les contrôleurs peuvent appeler les repositories directement, sans passer par un service intermédiaire.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Architecture du projet
 
 ```
-cd existing_repo
-git remote add origin https://www-apps.univ-lehavre.fr/forge/sae-s401-d-veloppement-application-complexe/origine.git
-git branch -M main
-git push -uf origin main
+projet/
+├── app/
+│   ├── controllers/          # Contrôleurs (logique métier)
+│   │   └── ExampleController.php
+│   ├── core/                 # Classes de base
+│   │   ├── Controller.php
+│   │   └── Repository.php
+│   ├── entities/             # Entités (modèles de données)
+│   │   └── ExampleEntity.php
+│   ├── repositories/         # Accès base de données
+│   │   └── ExampleRepository.php
+│   ├── services/             # Services (optionnel — logique métier découplée)
+│   │   └── ExampleService.php
+│   └── views/                # Vues Twig (affichage)
+│       ├── _template/
+│       │   ├── header.html.twig
+│       │   └── footer.html.twig
+│       └── example.html.twig
+├── config/
+│   └── config.php            # Configuration (base de données, constantes)
+├── public/                   # Dossier public (accessible web)
+│   ├── style.css             # Styles CSS
+│   └── index.php             # Point d'entrée
+├── vendor/                   # Dépendances Composer (non versionné)
+├── composer.json
+├── INSTALL.md
+└── GIT.md
 ```
 
-## Integrate with your tools
+---
 
-- [ ] [Set up project integrations](https://www-apps.univ-lehavre.fr/forge/sae-s401-d-veloppement-application-complexe/origine/-/settings/integrations)
+## Le Pattern MVC
 
-## Collaborate with your team
+### Principe de base
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+L'architecture MVC sépare l'application en 3 couches :
 
-## Test and Deploy
+1. **Modèle** : Gestion des données (entités, repositories, services)
+2. **Vue** : Affichage et présentation
+3. **Contrôleur** : Coordination entre modèle et vue
 
-Use the built-in continuous integration in GitLab.
+```
+Utilisateur → Point d'entrée (public/*.php)
+                    ↓
+              Contrôleur (traite la demande)
+                    ↓
+         ┌──────────┴──────────┐
+         │ Avec service        │ Sans service (simple)
+         ↓                     ↓
+      Service              Repository
+         ↓                     ↓
+      Repository          Entités
+         ↓
+      Entités
+         └──────────┬──────────┘
+                    ↓
+              Vue (affiche les données)
+                    ↓
+              Navigateur (rendu HTML)
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+---
 
-***
+## Détail des composants
 
-# Editing this README
+### 1. Core
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+#### `app/core/Controller.php`
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Classe abstraite dont héritent tous les contrôleurs.
 
-## Name
-Choose a self-explaining name for your project.
+**Méthodes principales** :
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+##### `view(string $viewName, string $title, array $data)`
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Charge une vue Twig et lui transmet des données.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+```php
+$this->view('example', 'Titre de la page', [
+    'items' => $items,
+]);
+```
+
+**Fonctionnement** :
+1. Crée un `FilesystemLoader` pointant sur `app/views/`
+2. Instancie `\Twig\Environment` avec ce loader
+3. Appelle `$twig->render('example.html.twig', $data + ['title' => $title])`
+4. Les clés du tableau deviennent des variables Twig dans le template
+
+```php
+// Dans le contrôleur
+$this->view('example', 'Titre', ['name' => 'Alice']);
+
+// Dans la vue example.html.twig
+<h1>{{ name }}</h1>  {# Affiche "Alice" #}
+```
+
+##### `json($data, int $status)`
+
+Retourne des données au format JSON.
+
+```php
+$this->json(['items' => $items]);
+```
+
+##### `redirectTo(string $url)`
+
+Redirige vers une autre URL.
+
+```php
+$this->redirectTo('index.php');
+```
+
+---
+
+#### `app/core/Repository.php`
+
+Singleton gérant la connexion PDO unique à la base de données. Toutes les classes repository en héritent.
+
+```php
+// Récupération de la connexion dans un repository
+$this->pdo = Repository::getInstance()->getPDO();
+```
+
+---
+
+### 2. Entités (`app/entities/`)
+
+Les entités sont de simples objets PHP représentant les données métier. Elles n'ont aucune logique d'accès à la base de données.
+
+```php
+class ExampleEntity
+{
+    public function __construct(
+        private int $id,
+        private string $name,
+        private ?string $description
+    ) {}
+
+    public function getId(): int { return $this->id; }
+    public function getName(): string { return $this->name; }
+    public function getDescription(): ?string { return $this->description; }
+}
+```
+
+---
+
+### 3. Repositories (`app/repositories/`)
+
+Les repositories encapsulent les requêtes SQL. Ils reçoivent et retournent des entités.
+
+```php
+class ExampleRepository
+{
+    private PDO $pdo;
+
+    public function __construct()
+    {
+        $this->pdo = Repository::getInstance()->getPDO();
+    }
+
+    private function createExampleFromRow(array $row): ExampleEntity
+    {
+        return new ExampleEntity(
+            (int) $row['id'],
+            $row['name'],
+            $row['description']
+        );
+    }
+
+    public function findAll(): array
+    {
+        $stmt = $this->pdo->query('SELECT * FROM example ORDER BY name ASC');
+        $items = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $items[] = $this->createExampleFromRow($row);
+        }
+        return $items;
+    }
+
+    public function findById(int $id): ?ExampleEntity
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM example WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? $this->createExampleFromRow($row) : null;
+    }
+}
+```
+
+---
+
+### 4. Services (`app/services/`) — optionnel
+
+> La couche service est **optionnelle**. Pour les projets simples, le contrôleur peut appeler le repository directement.
+
+Les services sont utiles quand la logique métier dépasse une simple lecture/écriture : règles de validation, agrégation de plusieurs repositories, calculs, etc.
+
+```php
+class ExampleService
+{
+    private ExampleRepository $repository;
+
+    public function __construct()
+    {
+        $this->repository = new ExampleRepository();
+    }
+
+    public function getAllItems(): array
+    {
+        return $this->repository->findAll();
+    }
+}
+```
+
+---
+
+### 5. Contrôleurs (`app/controllers/`)
+
+Les contrôleurs reçoivent la requête HTTP, appellent les services (ou les repositories directement) et retournent une vue ou du JSON.
+
+**Avec service** (logique métier découplée) :
+
+```php
+class ExampleController extends Controller
+{
+    private ExampleService $service;
+
+    public function __construct()
+    {
+        $this->service = new ExampleService();
+    }
+
+    public function index(): void
+    {
+        $items = $this->service->getAllItems();
+
+        $this->view('example', 'Liste des éléments', [
+            'items' => $items
+        ]);
+    }
+}
+```
+
+**Sans service** (projet simple — appel direct du repository) :
+
+```php
+class ExampleController extends Controller
+{
+    private ExampleRepository $repository;
+
+    public function __construct()
+    {
+        $this->repository = new ExampleRepository();
+    }
+
+    public function index(): void
+    {
+        $items = $this->repository->findAll();
+
+        $this->view('example', 'Liste des éléments', [
+            'items' => $items
+        ]);
+    }
+}
+```
+
+**Principe** :
+- Le contrôleur **orchestre**, il ne contient pas de logique métier
+- Aucune requête SQL dans un contrôleur
+- Aucune logique d'affichage dans un contrôleur
+
+---
+
+### 6. Vues (`app/views/`)
+
+Les vues sont des templates **Twig** (`.html.twig`). Elles ne contiennent aucun PHP.
+
+#### Syntaxe Twig essentielle
+
+| PHP natif | Twig |
+|---|---|
+| `<?= $var ?>` | `{{ var }}` |
+| `<?= $var ?? 'défaut' ?>` | `{{ var\|default('défaut') }}` |
+| `<?php foreach ($items as $item): ?>` | `{% for item in items %}` |
+| `<?php endforeach; ?>` | `{% endfor %}` |
+| `<?php if ($condition): ?>` | `{% if condition %}` |
+| `<?php endif; ?>` | `{% endif %}` |
+| `<!-- commentaire -->` | `{# commentaire #}` |
+
+#### Templates : `header.html.twig` et `footer.html.twig`
+
+**Emplacement** : `app/views/_template/`
+
+**Rôle** : Éviter la duplication du squelette HTML.
+
+```twig
+{# header.html.twig #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>{{ title|default('Mon Application') }}</title>
+</head>
+<body>
+```
+
+```twig
+{# footer.html.twig #}
+</body>
+</html>
+```
+
+**Inclusion dans les vues** :
+```twig
+{% include '_template/header.html.twig' %}
+<!-- Contenu de la page -->
+{% include '_template/footer.html.twig' %}
+```
+
+#### Vue de liste : `example.html.twig`
+
+```twig
+{% if items is empty %}
+    <div class="alert alert-info">
+        Aucun élément disponible.
+    </div>
+{% else %}
+    <div class="row">
+        {% for item in items %}
+            <div class="col-md-4">
+                <div class="card">
+                    <h5>{{ item.name }}</h5>
+                    <p>{{ item.description }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+```
+
+> **Accès aux getters** : Twig appelle automatiquement `getName()` via `item.name` (résolution automatique getter/propriété publique).
+
+---
+
+### 7. Points d'entrée (`public/`)
+
+Les fichiers de `public/` sont les seuls accessibles depuis le navigateur. Chacun instancie un contrôleur et appelle une méthode.
+
+```php
+// public/index.php
+<?php
+require_once '../app/controllers/ExampleController.php';
+
+$controller = new ExampleController();
+$controller->index();
+```
+
+> L'autoload Composer (`vendor/autoload.php`) est chargé une seule fois dans `app/core/Controller.php`, ce qui évite de le répéter dans chaque point d'entrée.
+
+---
+
+## Flux de données complet
+
+```
+1. Utilisateur demande : http://localhost:8000/index.php
+
+2. Serveur exécute : public/index.php
+   ↓
+   require_once ExampleController.php
+
+3. Instanciation : $controller = new ExampleController()
+   ↓
+   Le constructeur instancie ExampleService (ou ExampleRepository directement)
+
+4. Appel méthode : $controller->index()
+
+   Avec service :
+   ↓
+   Appel $this->service->getAllItems()
+   ↓
+   Le service appelle $this->repository->findAll()
+   ↓
+   Le repository exécute la requête SQL et retourne des entités
+
+   Sans service (projet simple) :
+   ↓
+   Appel $this->repository->findAll()
+   ↓
+   Le repository exécute la requête SQL et retourne des entités
+
+5. Appel vue : $this->view('example', 'Titre', ['items' => $items])
+   ↓
+   Twig\Environment::render('example.html.twig', $data)
+   Les clés du tableau deviennent des variables Twig
+
+6. Rendu : app/views/example.html.twig
+   ↓
+   {% include '_template/header.html.twig' %}
+   Rendu du HTML avec la syntaxe Twig ({{ }}, {% %})
+   {% include '_template/footer.html.twig' %}
+
+7. Réponse HTML envoyée au navigateur
+```
+
+---
+
+## Concepts clés
+
+### Séparation des responsabilités
+
+| Composant | Responsabilité | Ne doit PAS contenir |
+|---|---|---|
+| **Contrôleur** | Coordination, réception de la requête | HTML, requêtes SQL |
+| **Service** *(optionnel)* | Logique métier complexe, orchestration | HTML, accès direct PDO |
+| **Repository** | Requêtes SQL, hydratation | Logique métier, HTML |
+| **Entité** | Structure des données | Requêtes SQL, logique métier |
+| **Vue** | Affichage, présentation | Logique métier, accès BDD |
+
+### Transmission de données contrôleur → vue
+
+Le contrôleur transmet des données via un tableau associatif. Twig les expose comme des variables dans le template.
+
+```php
+// Dans le contrôleur
+$this->view('example', 'Titre', [
+    'name' => 'Alice',
+    'count' => 42
+]);
+```
+
+```twig
+{# Dans example.html.twig #}
+{{ name }}   {# Alice #}
+{{ count }}  {# 42 #}
+```
+
+`title` est automatiquement ajouté au contexte Twig par la méthode `view()`.
+
+### Boucles dans les vues
+
+```twig
+{% for item in items %}
+    <div>{{ item.name }}</div>
+{% endfor %}
+```
+
+> Twig résout `item.name` en appelant automatiquement `$item->getName()`, `$item->isName()` ou en accédant à la propriété publique `$item->name`, dans cet ordre.
+
+### Gestion des cas vides
+
+```twig
+{% if items is empty %}
+    <p>Aucun élément disponible.</p>
+{% else %}
+    {# Affichage des éléments #}
+{% endif %}
+```
+
+Ou avec le bloc `else` du `for` (syntaxe Twig native) :
+
+```twig
+{% for item in items %}
+    <div>{{ item.name }}</div>
+{% else %}
+    <p>Aucun élément disponible.</p>
+{% endfor %}
+```
+
+---
+
+## Stack technique
+
+- **PHP** >= 8.0
+- **Twig** ^3.0 (moteur de templates)
+- **Bootstrap** 5.3.8
+- **Composer** (gestion des dépendances)
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+Voir [INSTALL.md](INSTALL.md).
+
+## Documentation Git
+
+Voir [GIT.md](GIT.md).
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+> À compléter
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+> À compléter
