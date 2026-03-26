@@ -8,15 +8,22 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/app.css" rel="stylesheet">
 </head>
+
 <body>
 
-{# Barre rouge top — nom du projet + stack #}
-<div class="top-bar" role="banner" aria-label="En-tête du projet">
-  <span class="top-bar-left">{{ project_name | default('MonProjet') }} — v1.0.0</span>
-  <span class="top-bar-right">PHP · Twig · Bootstrap 5.3.8</span>
-</div>
+<div class="app-background">
 
-{# Navbar — logo seul, aucun lien #}
-<nav class="navbar-brutalist" aria-label="Navigation principale">
-  <span class="nav-logo">{{ project_name | default('MonProjet') }}</span>
-</nav>
+  <header class="main-header">
+    <div class="header-left">
+      <div class="avatar"></div>
+      <span class="app-name">{{ project_name | default('Nom de l’application') }}</span>
+    </div>
+
+    <div class="header-right">
+      <button class="menu-btn active">Dossiers</button>
+      <button class="menu-btn">Groupes</button>
+      <button class="menu-btn">Formations</button>
+    </div>
+  </header>
+
+</div>
