@@ -1,7 +1,5 @@
 <?php
 
-namespace entities;
-
 class Compte
 {
 	/*╔════════════════════════╗*/
@@ -45,7 +43,6 @@ class Compte
 		$this->compte_email   = $data['compte_email'  ];
 		$this->compte_isAdmin = $data['compte_isAdmin'];
 	}
-
 
 	/*╔════════════════════════╗*/
 	/*║   Getters/Setters      ║*/
