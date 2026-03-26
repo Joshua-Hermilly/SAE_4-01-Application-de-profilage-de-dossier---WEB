@@ -8,8 +8,8 @@ class Diplome
 	/*          Constructeur           */
 	/*---------------------------------*/
 	function __construct(
-		private ?int $diplome_id,
-		private ?int $diplome_type_code,
+		private ?int    $diplome_id,
+		private ?int    $diplome_type_code,
 		private ?string $diplome_type_libelle,
 		private ?string $diplome_serie_code,
 		private ?string $diplome_serie_libelle
@@ -69,7 +69,7 @@ class Diplome
 		$this->diplome_serie_code = $diplome_serie_code;
 		return $this;
 	}
-	
+
 	public function setDiplomeSerieLibelle($diplome_serie_libelle): self
 	{
 		$this->diplome_serie_libelle = $diplome_serie_libelle;

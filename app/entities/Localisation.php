@@ -8,7 +8,7 @@ class Localisation
 	/*          Constructeur           */
 	/*---------------------------------*/
 	public function __construct(
-		private ?int $localisation_id,
+		private ?int    $localisation_id,
 		private ?string $localisation_pays,
 		private ?string $localisation_code_postal,
 		private ?string $localisation_commune,
@@ -69,7 +69,7 @@ class Localisation
 		$this->localisation_commune = $localisation_commune;
 		return $this;
 	}
-	
+
 	public function setLocalisationDepartement($localisation_departement): self
 	{
 		$this->localisation_departement = $localisation_departement;
