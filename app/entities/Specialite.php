@@ -1,7 +1,5 @@
 <?php
 
-namespace entities;
-
 class Specialite
 {
 	/*---------------------------------*/
