@@ -8,7 +8,7 @@ class Specialite
 	/*          Constructeur           */
 	/*---------------------------------*/
 	function __construct(
-		private ?int $specialite_id,
+		private ?int    $specialite_id,
 		private ?string $specialite_nom
 	) {}
 
