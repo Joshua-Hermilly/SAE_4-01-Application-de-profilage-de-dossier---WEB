@@ -121,4 +121,30 @@ class CandidatRepository extends Repository
 			$groupe
 		);
 	}
+
+	public function findbyId($id): ?Candidat
+	{
+		try
+		{
+			$sql = "SELECT * FROM candidat WHERE candidat_code = :id";
+			$stmt = $this->pdo->prepare($sql);
+			$stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
+			if ($stmt->execute())
+			{
+				$row = $stmt->fetch(PDO::FETCH_ASSOC);
+				if ($row)
+				{
+					return $this->createCandidatFromRow($row);
+				}
+			}
+
+			return null;
+		}
+		catch (PDOException $e)
+		{
+			error_log("Erreur CandidatRepository::findById : " . $e->getMessage());
+			throw $e;
+		}
+	}
 }
