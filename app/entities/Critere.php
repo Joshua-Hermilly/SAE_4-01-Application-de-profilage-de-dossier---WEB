@@ -5,7 +5,8 @@ class Critere
 	/*---------------------------------*/
 	/*          Constructeur           */
 	/*---------------------------------*/
-	function __construct(
+	function __construct
+	(
 		private ?int    $critere_id,
 		private ?string $critere_libelle,
 		private ?string $critere_filtre,
