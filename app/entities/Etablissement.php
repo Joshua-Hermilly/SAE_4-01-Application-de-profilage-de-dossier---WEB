@@ -9,8 +9,8 @@ class Etablissement
 	/*-------------------------------*/
 	public function __construct
 	(
-		private int           $candidat_id,
-		private string        $nom,
+		private int           $etablissemet_id,
+		private string        $etablissement_nom,
 
 		private array         $candidats  = [],
 		private array         $formations = [],
@@ -20,14 +20,14 @@ class Etablissement
 	/*-------------------------------*/
 	/*  Getters                      */
 	/*-------------------------------*/
-	public function getCandidatId(): int
+	public function getEtablissementId(): int
 	{
-		return $this->candidat_id;
+		return $this->etablissemet_id;
 	}
 
-	public function getNom(): string
+	public function getEtablissementNom(): string
 	{
-		return $this->nom;
+		return $this->etablissement_nom;
 	}
 
 	public function getCandidats(): array
@@ -48,14 +48,14 @@ class Etablissement
 	/*-------------------------------*/
 	/*  Setters                      */
 	/*-------------------------------*/
-	public function setCandidatId(int $candidat_id): void
+	public function setEtablissementId(int $etablissemet_id): void
 	{
-		$this->candidat_id = $candidat_id;
+		$this->etablissemet_id = $etablissemet_id;
 	}
 
-	public function setNom(string $nom): void
+	public function setEtablissementNom(string $etablissement_nom): void
 	{
-		$this->nom = $nom;
+		$this->etablissement_nom = $etablissement_nom;
 	}
 
 	public function setCandidats(array $candidats): void
