@@ -68,4 +68,17 @@ class CompteRepository
 		return $row ? $this->createCompteFromRow($row) : null;
 
 	}
+
+	public function findByNom(string $compte_nom): ?Compte
+	{
+		$sql ="SELECT * FROM compte WHERE  compte_nom = :compte_nom";
+		$stmt = $this->pdo->prepare($sql);
+
+		$stmt->execute(['compte_nom' => $compte_nom]);
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $row ? $this->createCompteFromRow($row) : null;
+
+	}
+
 }

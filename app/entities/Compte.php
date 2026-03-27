@@ -5,11 +5,11 @@ class Compte
 	/*╔════════════════════════╗*/
 	/*║       Attributs        ║*/
 	/*╚════════════════════════╝*/
-	private int    $compte_id;
-	private string $compte_nom;
-	private string $compte_email;
-	private string $compte_mdp;
-	private string $compte_isAdmin;
+	private ?int    $compte_id;
+	private  string $compte_nom;
+	private ?string $compte_email;
+	private  string $compte_mdp;
+	private  string $compte_isAdmin;
 
 	/*╔════════════════════════╗*/
 	/*║     Constructeur       ║*/
@@ -96,4 +96,5 @@ class Compte
 	{
 		$this->compte_nom = $compte_nom;
 	}
+
 }
