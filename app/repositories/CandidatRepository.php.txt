@@ -1,7 +1,5 @@
 <?php
 
-use entities\Candidat;
-
 require_once __DIR__ . '/../core/Repository.php';
 require_once __DIR__ . '/../entities/Candidat.php';
 
