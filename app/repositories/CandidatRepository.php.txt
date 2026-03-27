@@ -1,0 +1,117 @@
+<?php
+
+use entities\Candidat;
+
+require_once __DIR__ . '/../core/Repository.php';
+require_once __DIR__ . '/../entities/Candidat.php';
+
+class CandidatRepository extends Repository
+{
+	/*-------------------------------*/
+	/*          Attributs            */
+	/*-------------------------------*/
+	private PDO $pdo;
+
+	/*-------------------------------*/
+	/*         Constructeur          */
+	/*-------------------------------*/
+	public function __construct() { $this->pdo = Repository::getInstance()->getPDO(); }
+
+	/*-------------------------------*/
+	/*            Méthodes           */
+	/*-------------------------------*/
+	public function create(Candidat $candidat): ?Candidat
+	{
+		$sql = "INSERT INTO candidat 
+				(candidat_nom, candidat_prenom, candidat_civilite, candidat_profil, 
+				 candidat_boursier_code, candidat_note_lycee, candidat_note_fiche, 
+				 candidat_note_global, candidat_commentaire, etablissement_code, groupe_code, diplome_code)
+				VALUES 
+				(:nom, :prenom, :civilite, :profil, 
+				 :boursier, :note_lycee, :note_fiche, 
+				 :note_global, :commentaire, :etablissement, :groupe, :diplome)
+				RETURNING candidat_code";
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':nom'        , $candidat->getCandidatNom()         );
+		$stmt->bindValue(':prenom'     , $candidat->getCandidatPrenom()      );
+		$stmt->bindValue(':civilite'   , $candidat->getCandidatCivilite()    );
+		$stmt->bindValue(':profil'     , $candidat->getCandidatProfil()      );
+		$stmt->bindValue(':boursier'   , $candidat->getCandidatBoursierCode());
+		$stmt->bindValue(':note_lycee' , $candidat->getCandidatNoteLycee()   );
+		$stmt->bindValue(':note_fiche' , $candidat->getCandidatNoteFiche()   );
+		$stmt->bindValue(':note_global', $candidat->getCandidatNoteGlobal()  );
+		$stmt->bindValue(':commentaire', $candidat->getCandidatCommentaire() );
+		
+		$etablissement_code = $candidat->getEtablissement() ? $candidat->getEtablissement()->getEtablissementId() : null;
+		$groupe_code        = $candidat->getGroupe() ? $candidat->getGroupe()->getGroupeId() : null;
+		$diplome_code       = $candidat->getDiplome()->getDiplomeId();
+		
+		$stmt->bindValue(':etablissement', $etablissement_code);
+		$stmt->bindValue(':groupe'       , $groupe_code       );
+		$stmt->bindValue(':diplome'      , $diplome_code      );
+
+		if ($stmt->execute())
+		{
+			$result = $stmt->fetch(PDO::FETCH_ASSOC);
+			if ($result)
+			{
+				$candidat->setCandidatCode($result['candidat_code']);
+				return $candidat;
+			}
+		}
+		return null;
+	}
+
+	public function createCandidatFromRow( array $row): Candidat
+	{
+
+		$etablissement = null;
+		if (isset($row['etablissement_code']))
+		{
+			$etablissement = (new EtablissementRepository())->getEtablissementById($row['etablissement_code']);
+		}
+
+		$groupe = null;
+		if (isset($row['groupe_code']))	
+		{
+			$groupe = (new GroupeRepository())->getGroupeById($row['groupe_code']);
+		}
+
+		$diplome = null;
+		if (isset($row['diplome_code']))
+		{
+			$diplome = (new DiplomeRepository())->getDiplomeById($row['diplome_code']);
+		}
+
+		return new Candidat(
+			$row['candidat_code'],
+			$row['candidat_nom'],
+			$row['candidat_prenom'],
+			$row['candidat_civilite'],
+			$row['candidat_profil'],
+			$row['candidat_boursier_code'],
+			$row['candidat_note_lycee'],
+			$row['candidat_note_fiche'],
+			$row['candidat_note_global'],
+			$row['candidat_commentaire'],
+			$etablissement,
+			$diplome,
+			$groupe
+		);
+	}
+
+	public function findbyId($id): ?Candidat
+	{
+		$sql = "SELECT * FROM candidat WHERE candidat_code = :id";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
+		if ($stmt->execute())
+		{
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			if ($row) { return $this->createCandidatFromRow($row); }
+		}
+		return null;
+	}
+}
