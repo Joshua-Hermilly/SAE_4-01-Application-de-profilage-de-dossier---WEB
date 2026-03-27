@@ -23,11 +23,12 @@ class LocalisationRepository
 	/*-------------------------------*/
 	private function createLocalisationFromRow(array $row): Localisation
 	{
-		return new Localisation(
+		return new Localisation
+		(
 			(int) $row['localisation_id'],
-			$row['localisation_pays'],
+			$row['localisation_pays'       ],
 			$row['localisation_code_postal'],
-			$row['localisation_commune'],
+			$row['localisation_commune'    ],
 			$row['localisation_departement']
 		);
 	}
