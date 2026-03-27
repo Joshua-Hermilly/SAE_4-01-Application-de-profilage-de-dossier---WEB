@@ -7,7 +7,19 @@ class IndexController extends Controller
 {
     public function index(): void
     {
-        $months = [
+		if (session_status() === PHP_SESSION_NONE)
+		{
+            session_start();
+        }
+
+        if (!isset($_SESSION['account']))
+		{
+            $this->redirectTo('login.php');
+            return;
+        }
+
+        $months =
+			[
             1 => 'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
             'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
         ];
