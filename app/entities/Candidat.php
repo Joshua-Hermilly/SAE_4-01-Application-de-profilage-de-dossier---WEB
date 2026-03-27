@@ -17,15 +17,22 @@ class Candidat
 		private ?float         $candidat_note_fiche,
 		private ?float         $candidat_note_global,
 		private ?string        $candidat_commentaire,
-		
-		private ?Etablissement $etablissement,
-		private ?Groupe        $groupe,
-		private Diplome        $diplome
+
+		// Relation exterieur
+		private ?int  $etablissement_id,
+		private ?int  $groupe_id,
+		private ?int  $formation_id,
+		private int   $diplome_id
 	) {}
 
 	/*-------------------------------*/
 	/* Getters                       */
 	/*-------------------------------*/
+	public function getCandidatCommentaire(): ?string
+	{
+		return $this->candidat_commentaire;
+	}
+
 	public function getCandidatCode(): int
 	{
 		return $this->candidat_code;
@@ -71,71 +78,32 @@ class Candidat
 		return $this->candidat_note_global;
 	}
 
-	public function getCandidatCommentaire(): ?string
+	public function getEtablissementId(): ?int
 	{
-		return $this->candidat_commentaire;
-	}
-	
-	public function getEtablissement(): ?Etablissement
-	{
-		return $this->etablissement;
+		return $this->etablissement_id;
 	}
 
-	public function getGroupe(): ?Groupe
+	public function getGroupeId(): ?int
 	{
-		return $this->groupe;
+		return $this->groupe_id;
 	}
 
-	public function getDiplome(): Diplome
+	public function getFormationId(): ?int
 	{
-		return $this->diplome;
+		return $this->formation_id;
 	}
-	
+
+	public function getDiplomeId(): int
+	{
+		return $this->diplome_id;
+	}
+
 	/*-------------------------------*/
 	/* Setters                       */
 	/*-------------------------------*/
-	public function setCandidatCommentaire(?string $candidat_commentaire): void
+	public function setCandidatCode(int $candidat_code): void
 	{
-		$this->candidat_commentaire = $candidat_commentaire;
-	}
-
-	public function setCandidatNoteGlobal(?float $candidat_note_global): void
-	{
-		$this->candidat_note_global = $candidat_note_global;
-	}
-
-	public function setCandidatNoteFiche(?float $candidat_note_fiche): void
-	{
-		$this->candidat_note_fiche = $candidat_note_fiche;
-	}
-
-	public function setCandidatNoteLycee(?float $candidat_note_lycee): void
-	{
-		$this->candidat_note_lycee = $candidat_note_lycee;
-	}
-
-	public function setCandidatBoursierCode(int $candidat_boursier_code): void
-	{
-		if ( $candidat_boursier_code < 0 || $candidat_boursier_code > 2 ) { return; }
-
-		$this->candidat_boursier_code = $candidat_boursier_code;
-	}
-
-	public function setCandidatProfil(string $candidat_profil): void
-	{
-		$this->candidat_profil = $candidat_profil;
-	}
-
-	public function setCandidatCivilite(string $candidat_civilite): void
-	{
-		if ( $candidat_civilite !== 'M.' && $candidat_civilite !== 'Mme') { return; }
-
-		$this->candidat_civilite = $candidat_civilite;
-	}
-
-	public function setCandidatPrenom(string $candidat_prenom): void
-	{
-		$this->candidat_prenom = $candidat_prenom;
+		$this->candidat_code = $candidat_code;
 	}
 
 	public function setCandidatNom(string $candidat_nom): void
@@ -143,23 +111,63 @@ class Candidat
 		$this->candidat_nom = $candidat_nom;
 	}
 
-	public function setCandidatCode(int $candidat_code): void
+	public function setCandidatPrenom(string $candidat_prenom): void
 	{
-		$this->candidat_code = $candidat_code;
-	}
-	
-	public function setEtablissement(Etablissement $etablissement): void
-	{
-		$this->etablissement = $etablissement;
+		$this->candidat_prenom = $candidat_prenom;
 	}
 
-	public function setGroupe(?Groupe $groupe): void
+	public function setCandidatCivilite(string $candidat_civilite): void
 	{
-		$this->groupe = $groupe;
+		$this->candidat_civilite = $candidat_civilite;
 	}
 
-	public function setDiplome(Diplome $diplome): void
+	public function setCandidatProfil(string $candidat_profil): void
 	{
-		$this->diplome = $diplome;
+		$this->candidat_profil = $candidat_profil;
+	}
+
+	public function setCandidatBoursierCode(int $candidat_boursier_code): void
+	{
+		$this->candidat_boursier_code = $candidat_boursier_code;
+	}
+
+	public function setCandidatNoteLycee(?float $candidat_note_lycee): void
+	{
+		$this->candidat_note_lycee = $candidat_note_lycee;
+	}
+
+	public function setCandidatNoteFiche(?float $candidat_note_fiche): void
+	{
+		$this->candidat_note_fiche = $candidat_note_fiche;
+	}
+
+	public function setCandidatNoteGlobal(?float $candidat_note_global): void
+	{
+		$this->candidat_note_global = $candidat_note_global;
+	}
+
+	public function setCandidatCommentaire(?string $candidat_commentaire): void
+	{
+		$this->candidat_commentaire = $candidat_commentaire;
+	}
+
+	public function setEtablissementId(?int $etablissement_id): void
+	{
+		$this->etablissement_id = $etablissement_id;
+	}
+
+	public function setGroupeId(?int $groupe_id): void
+	{
+		$this->groupe_id = $groupe_id;
+	}
+
+	public function setFormationId(?int $formation_id): void
+	{
+		$this->formation_id = $formation_id;
+	}
+
+	public function setDiplomeId(int $diplome_id): void
+	{
+		$this->diplome_id = $diplome_id;
 	}
 }

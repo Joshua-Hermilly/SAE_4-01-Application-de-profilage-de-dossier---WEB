@@ -1,6 +1,6 @@
 <?php
 
-class Formation
+class FormationSup
 {
 	/*-------------------------------*/
 	/*  Construct                    */
@@ -10,10 +10,10 @@ class Formation
 		private int    $formation_id,
 		private string $formation_nom,
 
-		private array   $etablissements,
-		private ?array  $specialites,
-		private array   $diplomes,
-	){}
+		private array  $specialites    = [],
+		private array  $etablissements = [],
+		private array  $diplomes       = [],
+	) {}
 
 	/*-------------------------------*/
 	/*  Getters                      */
@@ -28,14 +28,14 @@ class Formation
 		return $this->formation_nom;
 	}
 
+	public function getSpecialites(): array
+	{
+		return $this->specialites;
+	}
+
 	public function getEtablissements(): array
 	{
 		return $this->etablissements;
-	}
-
-	public function getSpecialites(): ?array
-	{
-		return $this->specialites;
 	}
 
 	public function getDiplomes(): array
@@ -56,14 +56,14 @@ class Formation
 		$this->formation_nom = $formation_nom;
 	}
 
+		public function setSpecialites(array $specialites): void
+	{
+		$this->specialites = $specialites;
+	}
+
 	public function setEtablissements(array $etablissements): void
 	{
 		$this->etablissements = $etablissements;
-	}
-
-	public function setSpecialites(?array $specialites): void
-	{
-		$this->specialites = $specialites;
 	}
 
 	public function setDiplomes(array $diplomes): void

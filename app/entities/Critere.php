@@ -7,11 +7,11 @@ class Critere
 	/*---------------------------------*/
 	function __construct
 	(
-		private ?int    $critere_id,
-		private ?string $critere_libelle,
-		private ?string $critere_filtre,
-		private ?float  $critere_min,
-		private ?float  $critere_max,
+		private int    $critere_id,
+		private string $critere_libelle,
+		private string $critere_filtre,
+		private float  $critere_min,
+		private float  $critere_max,
 	) {}
 
 	/*---------------------------------*/
@@ -45,33 +45,28 @@ class Critere
 	/*---------------------------------*/
 	/*             Setters             */
 	/*---------------------------------*/
-	public function setCritereId($critere_id): self
+	public function setCritereId($critere_id): void
 	{
 		$this->critere_id = $critere_id;
-		return $this;
 	}
 
-	public function setCritereLibelle($critere_libelle): self
+	public function setCritereLibelle($critere_libelle): void
 	{
 		$this->critere_libelle = $critere_libelle;
-		return $this;
 	}
 
-	public function setCritereFiltre($critere_filtre): self
+	public function setCritereFiltre($critere_filtre): void
 	{
 		$this->critere_filtre = $critere_filtre;
-		return $this;
 	}
 
-	public function setCritereMin($critere_min): self
+	public function setCritereMin($critere_min): void
 	{
 		$this->critere_min = $critere_min;
-		return $this;
 	}
 
-	public function setCritereMax($critere_max): self
+	public function setCritereMax($critere_max): void
 	{
 		$this->critere_max = $critere_max;
-		return $this;
 	}
 }

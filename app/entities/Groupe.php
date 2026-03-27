@@ -9,7 +9,8 @@ class Groupe
 	(
 		private int     $groupe_id,
 		private ?string $groupe_nom,
-		//private ?string $groupe_couleur,
+		private ?string $groupe_couleur,
+		private ?float  $groupe_note_dossier,
 
 		private array $criteres  = [],
 		private array $candidats = []
@@ -26,6 +27,16 @@ class Groupe
 	public function getGroupeNom(): ?string
 	{
 		return $this->groupe_nom;
+	}
+
+	public function getGroupeCouleur(): ?string
+	{
+		return $this->groupe_couleur;
+	}
+
+	public function getGroupeNoteDossier(): ?float
+	{
+		return $this->groupe_note_dossier;
 	}
 
 	public function getCriteres(): array
@@ -51,7 +62,17 @@ class Groupe
 		$this->groupe_nom = $groupe_nom;
 	}
 
-	public function setFiltre(array $criteres): void
+	public function setGroupeCouleur(?string $groupe_couleur): void
+	{
+		$this->groupe_couleur = $groupe_couleur;
+	}
+
+	public function setGroupeNoteDossier(?float $groupe_note_dossoer): void
+	{
+		$this->groupe_note_dossier = $groupe_note_dossoer;
+	}
+
+	public function setCritere(array $criteres): void
 	{
 		$this->criteres = $criteres;
 	}

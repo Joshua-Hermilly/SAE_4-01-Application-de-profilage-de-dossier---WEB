@@ -7,12 +7,12 @@ class Etablissement
 	/*-------------------------------*/
 	public function __construct
 	(
-		private int             $etablissemet_id,
-		private string          $etablissement_nom,
+		private int           $etablissement_id,
+		private string        $etablissement_nom,
 
-		private array           $candidats  = [],
-		private array           $formations = [],
-		private ?Localisation   $localisation = null,
+		private Localisation  $localisation,
+		private array         $candidats  = [],
+		private array         $formations = []
 	) {}
 
 	/*-------------------------------*/
@@ -20,12 +20,17 @@ class Etablissement
 	/*-------------------------------*/
 	public function getEtablissementId(): int
 	{
-		return $this->etablissemet_id;
+		return $this->etablissement_id;
 	}
 
 	public function getEtablissementNom(): string
 	{
 		return $this->etablissement_nom;
+	}
+
+	public function getLocalisation(): Localisation
+	{
+		return $this->localisation;
 	}
 
 	public function getCandidats(): array
@@ -38,22 +43,22 @@ class Etablissement
 		return $this->formations;
 	}
 
-	public function getLocalisation(): ?Localisation
-	{
-		return $this->localisation;
-	}
-
 	/*-------------------------------*/
 	/*  Setters                      */
 	/*-------------------------------*/
-	public function setEtablissementId(int $etablissemet_id): void
+	public function setEtablissementId(int $etablissement_id): void
 	{
-		$this->etablissemet_id = $etablissemet_id;
+		$this->etablissement_id = $etablissement_id;
 	}
 
 	public function setEtablissementNom(string $etablissement_nom): void
 	{
 		$this->etablissement_nom = $etablissement_nom;
+	}
+
+	public function setLocalisation(Localisation $localisation): void
+	{
+		$this->localisation = $localisation;
 	}
 
 	public function setCandidats(array $candidats): void
@@ -64,10 +69,5 @@ class Etablissement
 	public function setFormations(array $formations): void
 	{
 		$this->formations = $formations;
-	}
-
-	public function setLocalisation(?Localisation $localisation): void
-	{
-		$this->localisation = $localisation;
 	}
 }

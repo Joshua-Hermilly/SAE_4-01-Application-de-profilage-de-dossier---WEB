@@ -5,7 +5,8 @@ class Localisation
 	/*---------------------------------*/
 	/*          Constructeur           */
 	/*---------------------------------*/
-	public function __construct(
+	public function __construct
+	(
 		private ?int    $localisation_id,
 		private ?string $localisation_pays,
 		private ?string $localisation_code_postal,
