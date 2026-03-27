@@ -21,16 +21,17 @@ class CandidatRepository extends Repository
 	public function create(Candidat $candidat): ?Candidat
 	{
 		$sql = "INSERT INTO candidat 
-				(candidat_nom, candidat_prenom, candidat_civilite, candidat_profil, 
+				(candidat_code, candidat_nom, candidat_prenom, candidat_civilite, candidat_profil, 
 				 candidat_boursier_code, candidat_note_lycee, candidat_note_fiche, 
 				 candidat_note_global, candidat_commentaire, etablissement_code, groupe_code, diplome_code)
 				VALUES 
-				(:nom, :prenom, :civilite, :profil, 
+				(:code, :nom, :prenom, :civilite, :profil, 
 				 :boursier, :note_lycee, :note_fiche, 
 				 :note_global, :commentaire, :etablissement, :groupe, :diplome)
 				RETURNING candidat_code";
 
 		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':code'       , $candidat->getCandidatCode()        );
 		$stmt->bindValue(':nom'        , $candidat->getCandidatNom()         );
 		$stmt->bindValue(':prenom'     , $candidat->getCandidatPrenom()      );
 		$stmt->bindValue(':civilite'   , $candidat->getCandidatCivilite()    );
@@ -49,15 +50,6 @@ class CandidatRepository extends Repository
 		$stmt->bindValue(':groupe'       , $groupe_code       );
 		$stmt->bindValue(':diplome'      , $diplome_code      );
 
-		if ($stmt->execute())
-		{
-			$result = $stmt->fetch(PDO::FETCH_ASSOC);
-			if ($result)
-			{
-				$candidat->setCandidatCode($result['candidat_code']);
-				return $candidat;
-			}
-		}
 		return null;
 	}
 
