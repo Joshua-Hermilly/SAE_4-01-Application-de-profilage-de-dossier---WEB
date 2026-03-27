@@ -11,8 +11,7 @@ class Etablissement
 		private string        $etablissement_nom,
 
 		private Localisation  $localisation,
-		private array         $candidats  = [],
-		private array         $formations = []
+		private array         $candidats  = []
 	) {}
 
 	/*-------------------------------*/
@@ -38,11 +37,6 @@ class Etablissement
 		return $this->candidats;
 	}
 
-	public function getFormations(): array
-	{
-		return $this->formations;
-	}
-
 	/*-------------------------------*/
 	/*  Setters                      */
 	/*-------------------------------*/
@@ -64,10 +58,5 @@ class Etablissement
 	public function setCandidats(array $candidats): void
 	{
 		$this->candidats = $candidats;
-	}
-
-	public function setFormations(array $formations): void
-	{
-		$this->formations = $formations;
 	}
 }

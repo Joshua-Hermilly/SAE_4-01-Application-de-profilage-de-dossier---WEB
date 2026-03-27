@@ -163,4 +163,20 @@ class CandidatRepository
 		}
 		return $result;
 	}
+
+	public function findByEtablissementId(int $etablissement_id): array
+	{
+		$sql = "SELECT * FROM CANDIDAT WHERE etablissement_id = :etablissement_id";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':etablissement_id', $etablissement_id);
+		$stmt->execute();
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$result[] = $this->createCandidatFromRow($row);
+		}
+		return $result;
+
+	}
 }
