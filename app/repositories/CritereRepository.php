@@ -76,7 +76,7 @@ class CritereRepository
         $req->execute();
     }
 
-	public function findByGroupe(int $groupe_id): array
+	public function findByGroupeId(int $groupe_id): array
 	{
 		$sql = "SELECT c.*
 				FROM critere c

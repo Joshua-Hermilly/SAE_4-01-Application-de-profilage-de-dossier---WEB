@@ -2,7 +2,7 @@
 
 require_once '../app/core/Repository.php';
 require_once '../app/entities/Groupe.php';
-require_once '../app/entities/Critere.php';
+require_once '../app/repositories/CandidatRepository.php';
 require_once '../app/repositories/CritereRepository.php';
 
 class GroupeRepository
@@ -23,33 +23,60 @@ class GroupeRepository
 	/*-------------------------------*/
 	/*            Méthodes           */
 	/*-------------------------------*/
-	public function create(Groupe $groupe): ?Groupe
+	public function create(Groupe $groupe)
 	{
-		$sql = "INSERT INTO groupe (groupe_id, groupe_nom) VALUES (:id, :nom)";
-		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':id' , $groupe->getGroupeId());
-		$stmt->bindValue(':nom', $groupe->getGroupeNom());
+		$sql = "INSERT INTO GROUPE (groupe_nom, groupe_couleur, groupe_note_dossier)
+				VALUES (:nom, :couleur, :note_dossier)
+				RETURNING groupe_id";
 
-		if ($stmt->execute()) { return $groupe; }
-		return null;
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':nom'          , $groupe->getGroupeNom          ());
+		$stmt->bindValue(':couleur'      , $groupe->getGroupeCouleur      ());
+		$stmt->bindValue(':note_dossier' , $groupe->getGroupeNoteDossier  ());
+
+		if ($stmt->execute())
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		$groupe->setGroupeId( $row['groupe_id'] );
+
+		$stmt->execute();
+	}
+
+	public function update(Groupe $groupe): bool
+	{
+		$sql = "UPDATE GROUPE SET
+				groupe_nom           = :nom,
+				groupe_couleur       = :couleur,
+				groupe_note_dossier  = :note_dossier
+				WHERE groupe_id = :id";
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':id'           , $groupe->getGroupeId           ());
+		$stmt->bindValue(':nom'          , $groupe->getGroupeNom          ());
+		$stmt->bindValue(':couleur'      , $groupe->getGroupeCouleur      ());
+		$stmt->bindValue(':note_dossier' , $groupe->getGroupeNoteDossier  ());
+
+		return $stmt->execute();
 	}
 
 	private function createGroupeFromRow(array $row): Groupe
 	{
-		$criteres = (new CritereRepository())->findByGroupe((int)$row['groupe_id']);
+		$candidats = (new CandidatRepository())->findByGroupeId((int)$row['groupe_id']);
+		$criteres  = (new CritereRepository ())->findByGroupeId((int)$row['groupe_id']);
 
 		return new Groupe
 		(
 			(int)$row['groupe_id'],
 			$row['groupe_nom'],
+			$row['groupe_couleur'],
+			$row['groupe_note_dossier'] !== null ? (float)$row['groupe_note_dossier'] : null,
 			$criteres,
-			[]
+			$candidats
 		);
 	}
 
-	public function getGroupeById(int $id): ?Groupe
+	public function findById(int $id): ?Groupe
 	{
-		$sql  = "SELECT * FROM groupe WHERE groupe_id = :id";
+		$sql  = "SELECT * FROM GROUPE WHERE groupe_id = :id";
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
@@ -58,5 +85,18 @@ class GroupeRepository
 		if ($row) { return $this->createGroupeFromRow($row); }
 
 		return null;
+	}
+
+	public function findAll(): array
+	{
+		$sql = "SELECT * FROM GROUPE";
+		$stmt = $this->pdo->query($sql);
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$result[] = $this->createGroupeFromRow($row);
+		}
+		return $result;
 	}
 }
