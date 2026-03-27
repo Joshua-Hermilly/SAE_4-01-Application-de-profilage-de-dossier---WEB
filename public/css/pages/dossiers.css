@@ -1,0 +1,79 @@
+/* ============================================================
+   ZONE SOUS-HEADER & BOUTON FILTRER
+============================================================ */
+.under-header-zone {
+	border-bottom: 1px solid var(--gris-select-assets);
+	min-height: 56px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+	z-index: 10;
+}
+.js-filter-toggle {
+	background: var(--gris-fond-assets) !important;
+	color: var(--bleu-fond-faide) !important;
+	border: none;
+	font-weight: 500;
+	font-size: 1.1rem;
+	padding: 8px 20px;
+	border-radius: 22px;
+	transition: background 0.2s;
+	box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.js-filter-toggle:hover {
+	background: var(--gris-select-assets) !important;
+	color: var(--blanc) !important;
+}
+.js-filter-toggle .bi-funnel {
+	color: var(--bleu-fond-faide);
+	font-size: 1.4em;
+	margin-right: 8px;
+	vertical-align: middle;
+}
+/* ============================================================
+   FILTRE
+============================================================ */
+.filter-sidebar {
+	position: fixed;
+	top: 80px;
+	left: 0;
+	width: 320px;
+	max-width: 90vw;
+	height: 100vh;
+	background: var(--gris-fond-assets);
+	color: var(--gris-text-fond-foncé);
+	box-shadow: 2px 0 16px rgba(0, 0, 0, 0.15);
+	z-index: 1050;
+	padding: 2rem 1.5rem 1.5rem 1.5rem;
+	border-top-right-radius: 18px;
+	border-bottom-right-radius: 18px;
+	transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
+	transform: translateX(-100%);
+	opacity: 0;
+	pointer-events: none;
+}
+
+.filter-sidebar.show {
+	transform: translateX(0);
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.filter-header {
+	font-size: 1.2rem;
+	margin-bottom: 1.5rem;
+}
+
+.js-filter-close {
+	background: none;
+	border: none;
+	color: var(--gris-text-fond-foncé);
+	font-size: 1.5rem;
+	cursor: pointer;
+}
+
+@media (max-width: 600px) {
+	.filter-sidebar {
+		width: 100vw;
+		border-radius: 0;
+		padding: 1.5rem 1rem 1rem 1rem;
+	}
+}
