@@ -20,24 +20,36 @@ class SpecialiteRepository
 	/*-------------------------------*/
 	public function create(Specialite $specialite): ?Specialite
 	{
-		$sql = "INSERT INTO specialite 
-				(specialite_id, specialite_nom)
-				VALUES 
-				(:id, :nom)";
+		$sql = "INSERT INTO specialite (specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_speAbd, id_diplome)
+		        VALUES (:opt1, :opt2, :spe1, :spe2, :speAbd, id_diplome)";
 
 		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':id' , $specialite->getSpecialiteId());
-		$stmt->bindValue(':nom', $specialite->getSpecialiteNom());
+		$stmt->bindValue(':id'    , $specialite->getSpecialiteId    ());
+		$stmt->bindValue(':opt1'  , $specialite->getSpecialiteOpt1  ());
+		$stmt->bindValue(':opt2'  , $specialite->getSpecialiteOpt2  ());
+		$stmt->bindValue(':spe1'  , $specialite->getSpecialiteSpe1  ());
+		$stmt->bindValue(':spe2'  , $specialite->getSpecialiteSpe2  ());
+		$stmt->bindValue(':speAbd', $specialite->getSpecialiteSpeAbd());
+		$stmt->execute();
 
-		if ($stmt->execute()) { return $specialite; }
-		return null;
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		if ($row && isset($row['specialite_id']))
+		{
+			$specialite->setSpecialiteId((int)$row['specialite_id']);
+		}
+		return $specialite;
 	}
 
 	public function createSpecialiteFromRow(array $row): Specialite
 	{
 		return new Specialite(
-			$row['specialite_id'],
-			$row['specialite_nom']
+			(int)$row['specialite_id'    ],
+			     $row['specialite_opt1'  ] ?? null,
+			     $row['specialite_opt2'  ] ?? null,
+			     $row['specialite_spe1'  ] ?? null,
+			     $row['specialite_spe2'  ] ?? null,
+			     $row['specialite_speAbd'] ?? null,
+			     $row['id_diplome'       ]
 		);
 	}
 
@@ -55,24 +67,4 @@ class SpecialiteRepository
 		return null;
 	}
 
-	public function getSpecialitesByFormation(int $formation_id): array
-	{
-		$sql = "SELECT s.*
-				FROM specialite s
-				JOIN formation_specialite fs ON fs.specialite_id = s.specialite_id
-				WHERE fs.formation_id = :formation_id";
-
-		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':formation_id', $formation_id, PDO::PARAM_INT);
-		$stmt->execute();
-
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$items = [];
-		foreach ($rows as $row)
-		{
-			$items[] = $this->createSpecialiteFromRow($row);
-		}
-
-		return $items;
-	}
 }
