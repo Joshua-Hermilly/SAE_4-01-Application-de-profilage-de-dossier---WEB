@@ -23,9 +23,7 @@ body, html {
 
 .main-header {
 	display: flex;
-	justify-content: space-between;
 	align-items: center;
-	padding: 12px 20px;
 }
 
 .header-left {
@@ -33,22 +31,49 @@ body, html {
 	align-items: center;
 	gap: 12px;
 	background-color: var(--gris-fond-assets);
+	border: 2px solid var(--gris-select-assets);
+	border-radius: 22px;
+	padding: 10px 20px;
+	flex: 1;
+	height: 54px;
+}
+
+.bar-menu-text {
+	color: var(--gris-text-fond-foncé);
+	font-weight: bold;
+	font-size: 18px;
+}
+
+.avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: var(--gris-select-assets);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
 }
 
 .header-right {
 	display: flex;
 	gap: 12px;
+	flex: 1;
 }
 
 .menu-btn {
 	background: var(--gris-fond-assets);
 	color: var(--gris-text-fond-foncé);
 	border: none;
-	padding: 8px 20px;
+	padding: 12px 20px;
 	border-radius: 22px;
 	font-size: 16px;
 	cursor: pointer;
-
+	height: 54px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
 	transition: all 0.2s ease;
 }
 
@@ -59,6 +84,7 @@ body, html {
 
 .menu-btn.active {
 	color: var(--blanc);
+	font-weight: bold;
 	background: var(--gris-select-assets);
 	border: 2px solid var(--blanc);
 }

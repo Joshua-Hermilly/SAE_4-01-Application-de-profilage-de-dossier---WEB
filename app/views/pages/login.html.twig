@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% set show_header = false %}
+{% set css_page = '/css/pages/login.css' %}
+{% set show_header = true %}
+{% set title = 'Connexion' %}
 
 {% block content %}
 	{% include 'components/auth/login_form.html.twig' %}

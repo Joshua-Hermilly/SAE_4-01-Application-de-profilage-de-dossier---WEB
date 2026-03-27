@@ -1,12 +1,22 @@
-<header class="main-header">
-	<div class="header-left">
-		<div class="avatar"></div>
-		<span class="name">{{ project_name | default('Nom de l\'application') }}</span>
-	</div>
+<header class="main-header container-fluid py-3 px-4">
+  	<div class="row w-100 g-3 align-items-center">
 
-	<div class="header-right">
-		<button class="menu-btn active">Dossiers</button>
-		<button class="menu-btn">Groupes</button>
-		<button class="menu-btn">Formations</button>
-	</div>
+		<!-- LEFT (responsif) -->
+		<div class="col-12 col-lg-8">
+			<div class="header-left d-flex align-items-center">
+				<div class="avatar"></div>
+				<span class="bar-menu-text ms-3">{{ project_name | default('Nom de l\'application') }}</span>
+			</div>
+		</div>
+
+		<!-- RIGHT (responsif) -->
+		<div class="col-12 col-lg-4">
+			<div class="header-right d-flex gap-2">
+				<button class="menu-btn active flex-grow-1">Dossiers</button>
+				<button class="menu-btn flex-grow-1">Groupes</button>
+				<button class="menu-btn flex-grow-1">Formations</button>
+			</div>
+		</div>
+
+  	</div>
 </header>
