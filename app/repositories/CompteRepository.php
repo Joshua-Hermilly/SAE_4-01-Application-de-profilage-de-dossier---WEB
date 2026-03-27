@@ -1,7 +1,7 @@
 <?php
 
 require_once '../app/entities/Compte.php';
-require_once '../app/ore/Repository.php';
+require_once '../app/core/Repository.php';
 
 class CompteRepository
 {
@@ -35,10 +35,12 @@ class CompteRepository
 		$stmt->execute();
 
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		/*
 		if ($row && isset($row['compte_id']))
 		{
 			$compte->setCompteId((int)$row['compte_id']);
 		}
+		*/
 		return $compte;
 
 	}
@@ -49,7 +51,7 @@ class CompteRepository
 		(
 			$row['compte_identifiant' ],
 			$row['compte_mdp'         ],
-			$row['compte_isadmin'     ]
+			(string)$row['compte_isadmin'     ]
 		);
 	}
 

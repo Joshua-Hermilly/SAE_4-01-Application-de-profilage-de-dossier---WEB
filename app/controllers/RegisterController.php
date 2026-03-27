@@ -2,8 +2,8 @@
 
 require_once '../app/core/Controller.php';
 require_once '../app/trait/FormTrait.php';
-require_once '../app/repositories/AccountRepository.php';
-require_once '../app/entities/Account.php';
+require_once '../app/repositories/CompteRepository.php';
+require_once '../app/entities/Compte.php';
 
 class RegisterController extends Controller
 {
@@ -44,12 +44,12 @@ class RegisterController extends Controller
 				$errors[] = "La confirmation du mot de passe ne correspond pas.";
 			}
 
-
+				var_dump($errors);
 			if (empty($errors))
 			{
 				// Hash du mot de passe et insertion
 				$passwordHash = password_hash($compte_mdp, PASSWORD_DEFAULT);
-				$compte = new Compte( null,$compte_identifiant, null, $passwordHash, false);
+				$compte = new Compte($compte_identifiant, $passwordHash, "false");
 
 				$repo = new CompteRepository();
 				$repo->create($compte);
@@ -63,6 +63,6 @@ class RegisterController extends Controller
 			}
 		}
 
-		$this->view('register', 'Inscription', $data);
+		$this->view('pages/register', 'Inscription', $data);
 	}
 }

@@ -1,6 +1,7 @@
 <?php
 
 require_once '../app/core/Controller.php';
+require_once '../app/trait/FormTrait.php';
 require_once '../app/repositories/CompteRepository.php';
 require_once '../app/entities/Compte.php';
 
@@ -47,6 +48,6 @@ class LoginController extends Controller
 			$data['withFailed'] = true;
 		}
 
-		$this->view('login', 'Connexion', $data);
+		$this->view('pages/login', 'Connexion', $data);
 	}
 }

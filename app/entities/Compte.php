@@ -7,12 +7,12 @@ class Compte
 	/*╚════════════════════════╝*/
 	private  string $compte_identifiant;
 	private  string $compte_mdp;
-	private  string $compte_isAdmin;
+	private  bool   $compte_isAdmin;
 
 	/*╔════════════════════════╗*/
 	/*║     Constructeur       ║*/
 	/*╚════════════════════════╝*/
-	public function __construct( string $identifiant, string $mdp, string $isAdmin )
+	public function __construct( string $identifiant, string $mdp, bool $isAdmin )
 	{
 		$this->compte_identifiant = $identifiant;
 		$this->compte_mdp         = $mdp;
@@ -39,22 +39,22 @@ class Compte
 	/*╔════════════════════════╗*/
 	/*║   Getters/Setters      ║*/
 	/*╚════════════════════════╝*/
-	public function getCompteIdentifiant(): int
+	public function getCompteIdentifiant(): string
 	{
 		return $this->compte_identifiant;
 	}
 
-	public function setCompteId(int $compte_identifiant): void
+	public function setCompteId(string $compte_identifiant): void
 	{
 		$this->compte_identifiant = $compte_identifiant;
 	}
 
-	public function getCompteIsAdmin(): string
+	public function getCompteIsAdmin(): bool
 	{
 		return $this->compte_isAdmin;
 	}
 
-	public function setCompteIsAdmin(string $compte_isAdmin): void
+	public function setCompteIsAdmin(bool $compte_isAdmin): void
 	{
 		$this->compte_isAdmin = $compte_isAdmin;
 	}
