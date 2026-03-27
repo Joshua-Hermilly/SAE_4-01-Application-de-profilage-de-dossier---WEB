@@ -1,291 +1,90 @@
-/* ============================================================
-   VARIABLES
-============================================================ */
 :root {
-  --bg:           #f0ede6;
-  --black:        #111111;
-  --red:          #e63329;
-  --yellow:       #f5c518;
-  --muted:        #888888;
-  --border:       1.5px solid #111111;
-  --border-s:     1px solid #cccccc;
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body:    'IBM Plex Sans', sans-serif;
+	--gris-fond-assets     : #242423;
+	--gris-select-assets   : #343533;
+	--noir-text-fond-claire: #000000;
+	--gris-text-fond-foncé : #CBD5F5;
+	--gris-fond-info-tab   : #DEDEDE;
+	--bleu-icon            : #DEDEDE;
+	--bleu-fond-faide      : #2158BD;
+	--blanc                : #FFFFFF;
 }
 
-/* ============================================================
-   RESET & BASE
-============================================================ */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  border-radius: 0;
+body, html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	font-family: 'IBM Plex Sans', sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
+.background {
+	min-height: 100vh;
+	background: linear-gradient(to bottom, var(--bleu-fond-faide) 0%, var(--gris-fond-assets) 93%);
 }
 
-body {
-  background-color: var(--bg);
-  color: var(--black);
-  font-family: var(--font-body), serif;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+.main-header {
+	display: flex;
+	align-items: center;
 }
 
-main {
-  flex: 1;
+.header-left {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	background-color: var(--gris-fond-assets);
+	border: 2px solid var(--gris-select-assets);
+	border-radius: 22px;
+	padding: 10px 20px;
+	flex: 1;
+	height: 54px;
 }
 
-/* ============================================================
-   BARRE ROUGE TOP
-============================================================ */
-.top-bar {
-  background: var(--red);
-  padding: 0.35rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.bar-menu-text {
+	color: var(--gris-text-fond-foncé);
+	font-weight: bold;
+	font-size: 18px;
 }
 
-.top-bar-left {
-  color: #ffffff;
-  font-size: 0.72rem;
-  letter-spacing: 0.05em;
-  font-family: var(--font-body), serif;
+.avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: var(--gris-select-assets);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
 }
 
-.top-bar-right {
-  display: flex;
-  gap: 1.5rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.72rem;
-  font-family: var(--font-body), serif;
+.header-right {
+	display: flex;
+	gap: 12px;
+	flex: 1;
 }
 
-/* ============================================================
-   NAVBAR
-============================================================ */
-.navbar-brutalist {
-  padding: 0.9rem 1.5rem;
-  border-bottom: var(--border);
-  display: flex;
-  align-items: center;
+.menu-btn {
+	background: var(--gris-fond-assets);
+	color: var(--gris-text-fond-foncé);
+	border: none;
+	padding: 12px 20px;
+	border-radius: 22px;
+	font-size: 16px;
+	cursor: pointer;
+	height: 54px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+	transition: all 0.2s ease;
 }
 
-.nav-logo {
-  font-family: var(--font-display), serif;
-  font-size: 1.3rem;
-  letter-spacing: 0.05em;
-  color: var(--black);
-  text-transform: uppercase;
-  line-height: 1;
+.menu-btn:hover {
+	color: var(--gris-text-fond-foncé);
+	background: var(--gris-select-assets);
 }
 
-/* ============================================================
-   HERO
-============================================================ */
-.hero {
-  padding: 2.5rem 1.5rem 1rem;
-  border-bottom: var(--border);
-}
-
-.hero-sub {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-  font-family: var(--font-body), serif;;
-  margin-bottom: 0.75rem;
-}
-
-.hero-title {
-  font-family: var(--font-display), serif;;
-  font-size: clamp(3rem, 8vw, 6rem);
-  line-height: 0.95;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--black);
-  margin-bottom: 1.25rem;
-}
-
-.hero-title .accent {
-  color: var(--red);
-}
-
-.hero-meta {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  font-size: 0.8rem;
-  color: var(--muted);
-  font-family: var(--font-body), serif;;
-  padding: 0.8rem 0;
-  border-top: var(--border-s);
-  border-bottom: var(--border-s);
-}
-
-/* ============================================================
-   TICKER DÉFILANT
-============================================================ */
-.ticker {
-  overflow: hidden;
-  border-bottom: var(--border);
-  padding: 0.6rem 0;
-  white-space: nowrap;
-}
-
-.ticker-inner {
-  display: inline-block;
-  animation: ticker 14s linear infinite;
-}
-
-.ticker-inner span {
-  font-family: var(--font-display), serif;;
-  font-size: 2.2rem;
-  letter-spacing: 0.04em;
-  padding: 0 1.5rem;
-  color: var(--black);
-  text-transform: uppercase;
-}
-
-.ticker-inner .sep {
-  color: var(--red);
-}
-
-@keyframes ticker {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-/* ============================================================
-   GRILLE ARCHITECTURE
-============================================================ */
-.arch-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: var(--border);
-  border-bottom: var(--border);
-}
-
-.grid-col {
-  padding: 1rem 1.2rem;
-  border-right: var(--border-s);
-}
-
-.grid-col:last-child {
-  border-right: none;
-}
-
-.grid-num {
-  font-family: var(--font-display), serif;;
-  font-size: 3.2rem;
-  line-height: 1;
-  margin-bottom: 0.5rem;
-  color: var(--black);
-}
-
-.grid-label {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  font-family: var(--font-body), serif;;
-  margin-bottom: 0.75rem;
-}
-
-.grid-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.4rem;
-  font-size: 0.72rem;
-  color: #333333;
-  font-family: var(--font-body), serif;
-  margin-bottom: 0.4rem;
-  line-height: 1.4;
-}
-
-.dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-
-.dot-red    { background: var(--red); }
-.dot-black  { background: var(--black); }
-.dot-yellow { background: var(--yellow); }
-
-.item-time {
-  font-size: 0.65rem;
-  color: var(--muted);
-  margin-left: auto;
-  white-space: nowrap;
-  font-family: var(--font-body), serif;;
-}
-
-/* ============================================================
-   FOOTER
-============================================================ */
-.footer-brutalist {
-  border-top: var(--border);
-  padding: 0.8rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.72rem;
-  color: var(--muted);
-  font-family: var(--font-body), serif;;
-}
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-@media (max-width: 640px) {
-  .arch-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .grid-col:nth-child(2) {
-    border-right: none;
-  }
-
-  .grid-col:nth-child(1),
-  .grid-col:nth-child(2) {
-    border-bottom: var(--border-s);
-  }
-
-  .ticker-inner span {
-    font-size: 1.6rem;
-  }
-
-  .top-bar-right {
-    display: none;
-  }
-}
-
-@media (max-width: 420px) {
-  .arch-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .grid-col {
-    border-right: none;
-    border-bottom: var(--border-s);
-  }
-
-  .grid-col:last-child {
-    border-bottom: none;
-  }
-
-  .hero-meta {
-    gap: 1rem;
-  }
+.menu-btn.active {
+	color: var(--blanc);
+	font-weight: bold;
+	background: var(--gris-select-assets);
+	border: 2px solid var(--blanc);
 }

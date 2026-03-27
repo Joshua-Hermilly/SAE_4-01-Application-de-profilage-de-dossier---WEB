@@ -1,0 +1,9 @@
+
+{# Barre sous-header fixe sur toute la largeur, avec bouton Filtrer à gauche #}
+<div class="under-header-zone fixed-top w-100 d-flex align-items-center px-4">
+	<button type="button" class="js-filter-toggle btn d-flex align-items-center gap-2" style="padding-left: 0;" aria-label="Afficher les filtres">
+	    <i class="bi bi-funnel bi-funnel-fill" style="font-size: 1.4em;"></i>
+		<span>Filtrer</span>
+		{% include 'components/content/assets/filter_sidebar.html.twig' %}
+	</button>
+</div>
