@@ -1,108 +1,64 @@
-/* RESET */
+:root {
+	--gris-fond-assets     : #242423;
+	--gris-select-assets   : #343533;
+	--noir-text-fond-claire: #000000;
+	--gris-text-fond-foncé : #CBD5F5;
+	--gris-fond-info-tab   : #DEDEDE;
+	--bleu-icon            : #DEDEDE;
+	--bleu-fond-faide      : #2158BD;
+	--blanc                : #FFFFFF;
+}
+
 body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: 'IBM Plex Sans', sans-serif;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	font-family: 'IBM Plex Sans', sans-serif;
 }
 
-/* Fond dégradé bleu → gris */
-.app-background {
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #4c6edb 0%, #e0e0e0 100%);
+.background {
+	min-height: 100vh;
+	background: linear-gradient(to bottom, var(--bleu-fond-faide) 0%, var(--gris-fond-assets) 93%);
 }
 
-/* Header */
 .main-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px;
-  
-  background: #2a2a2a;
-  border-bottom: 4px solid #3f5fbf;
-  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.1);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 20px;
 }
 
-/* LEFT */
 .header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	background-color: var(--gris-fond-assets);
 }
 
-/* Avatar style "icone utilisateur" */
-.avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #3a3a3a;
-  border: 2px solid #6f8cff;
-  position: relative;
-}
-
-/* Petit effet icône interne */
-.avatar::after {
-  content: "";
-  position: absolute;
-  top: 9px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid #9bb3ff;
-}
-
-.avatar::before {
-  content: "";
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 18px;
-  height: 10px;
-  border: 2px solid #9bb3ff;
-  border-top: none;
-  border-radius: 0 0 10px 10px;
-}
-
-/* Nom app */
-.app-name {
-  color: #eaeaea;
-  font-size: 22px;
-  font-weight: 500;
-}
-
-/* RIGHT MENU */
 .header-right {
-  display: flex;
-  gap: 12px;
+	display: flex;
+	gap: 12px;
 }
 
-/* Boutons */
 .menu-btn {
-  background: #2f2f2f;
-  color: #d0d0d0;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 22px;
-  font-size: 16px;
-  cursor: pointer;
+	background: var(--gris-fond-assets);
+	color: var(--gris-text-fond-foncé);
+	border: none;
+	padding: 8px 20px;
+	border-radius: 22px;
+	font-size: 16px;
+	cursor: pointer;
 
-  transition: all 0.2s ease;
+	transition: all 0.2s ease;
 }
 
-/* Hover */
 .menu-btn:hover {
-  color: #fff;
-  background: #3a3a3a;
+	color: var(--gris-text-fond-foncé);
+	background: var(--gris-select-assets);
 }
 
-/* Actif (comme sur ton image) */
 .menu-btn.active {
-  color: #fff;
-  background: #2f2f2f;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+	color: var(--blanc);
+	background: var(--gris-select-assets);
+	border: 2px solid var(--blanc);
 }
