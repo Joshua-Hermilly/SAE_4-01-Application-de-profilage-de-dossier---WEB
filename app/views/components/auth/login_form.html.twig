@@ -1,0 +1,29 @@
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-md-6">
+			<div class="card mt-5">
+				<div class="card-body">
+					<h3 class="card-title text-center mb-4">Connexion</h3>
+					<form method="POST" action="/login">
+						<div class="mb-3">
+							<label for="identifier" class="form-label">Identifiant</label>
+							<input type="identifier" class="form-control" id="identifier" name="identifier" required>
+						</div>
+						<div class="mb-3">
+							<label for="password" class="form-label">Mot de passe</label>
+							<input type="password" class="form-control" id="password" name="password" required>
+						</div>
+						<div class="mb-3">
+							<input type="checkbox" class="form-check-input" id="remember" name="remember">
+							<label for="remember" class="form-check-label">Se souvenir de moi</label>
+						</div>
+						<div class="mb-3">
+							<button type="submit" class="btn btn-primary w-100">Se connecter</button>
+						</div>
+						<a href="/register" class="btn btn-link">Mot de passe oublié?</a>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
