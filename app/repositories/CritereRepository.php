@@ -62,7 +62,6 @@ class CritereRepository
 
 	public function update(Critere $critere)
     {
-        $now = (new DateTime())->format('Y-m-d H:i:s');
         $sql = "UPDATE CRITERE SET
                     critere_id      = :series_id,
                     critere_libelle = :title,
