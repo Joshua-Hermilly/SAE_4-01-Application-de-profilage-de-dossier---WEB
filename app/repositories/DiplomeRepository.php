@@ -13,32 +13,38 @@ class DiplomeRepository
 	/*-------------------------------*/
 	/*         Constructeur          */
 	/*-------------------------------*/
-	public function __construct() { $this->pdo = Repository::getInstance()->getPDO(); }
+	public function __construct()
+	{
+		$this->pdo = Repository::getInstance()->getPDO();
+	}
 
 	/*-------------------------------*/
 	/*            Méthodes           */
 	/*-------------------------------*/
-	public function create(Diplome $diplome): ?Diplome
+	public function create(Diplome $diplome)
 	{
 		$sql = "INSERT INTO diplome 
-				(diplome_id, diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle)
+				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle)
 				VALUES 
-				(:id, :type_code, :type_libelle, :serie_code, :serie_libelle)";
+				(:type_code, :type_libelle, :serie_code, :serie_libelle)
+				RETURNING diplome_id";
 
 		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':id'          , $diplome->getDiplomeId()         );
-		$stmt->bindValue(':type_code'    , $diplome->getDiplomeTypeCode()    );
-		$stmt->bindValue(':type_libelle' , $diplome->getDiplomeTypeLibelle() );
-		$stmt->bindValue(':serie_code'   , $diplome->getDiplomeSerieCode()   );
+		$stmt->bindValue(':type_code'    , $diplome->getDiplomeTypeCode    ());
+		$stmt->bindValue(':type_libelle' , $diplome->getDiplomeTypeLibelle ());
+		$stmt->bindValue(':serie_code'   , $diplome->getDiplomeSerieCode   ());
 		$stmt->bindValue(':serie_libelle', $diplome->getDiplomeSerieLibelle());
 
-		if ($stmt->execute()) { return $diplome; }
-		return null;
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		$diplome->setDiplomeId( $row['diplome_id'] );
+
+		$stmt->execute();
 	}
 
 	public function createDiplomeFromRow(array $row): Diplome
 	{
-		return new Diplome(
+		return new Diplome
+		(
 			$row['diplome_id'           ],
 			$row['diplome_type_code'    ],
 			$row['diplome_type_libelle' ],
@@ -47,7 +53,7 @@ class DiplomeRepository
 		);
 	}
 
-	public function getDiplomeById($id): ?Diplome
+	public function findById($id): ?Diplome
 	{
 		$sql = "SELECT * FROM diplome WHERE diplome_id = :id";
 		$stmt = $this->pdo->prepare($sql);
@@ -61,24 +67,16 @@ class DiplomeRepository
 		return null;
 	}
 
-	public function getDiplomesByFormation(int $formation_id): array
+	public function findAll() : array
 	{
-		$sql = "SELECT d.*
-				FROM diplome d
-				JOIN diplome_formation df ON df.diplome_id = d.diplome_id
-				WHERE df.formation_id = :formation_id";
+		$sql = "SELECT * FROM DIPLOME";
+		$stmt = $this->pdo->query($sql);
 
-		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':formation_id', $formation_id, PDO::PARAM_INT);
-		$stmt->execute();
-
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$items = [];
-		foreach ($rows as $row)
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
-			$items[] = $this->createDiplomeFromRow($row);
+			$result[] = $this->createDiplomeFromRow($row);
 		}
-
-		return $items;
+		return $result;
 	}
 }
