@@ -13,7 +13,7 @@ class CritereRepository
 	/*-------------------------------*/
 	/*  Construct                    */
 	/*-------------------------------*/
-	function __construct()
+	public function __construct()
 	{
 		$this->pdo = Repository::getInstance()->getPDO();
 	}

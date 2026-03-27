@@ -11,8 +11,8 @@ class Groupe
 		private ?string $groupe_nom,
 		//private ?string $groupe_couleur,
 
-		private Filtre $filtre,
-		private array  $candidats = []
+		private array $criteres  = [],
+		private array $candidats = []
 	){}
 
 	/*-------------------------------*/
@@ -28,9 +28,9 @@ class Groupe
 		return $this->groupe_nom;
 	}
 
-	public function getFiltre(): Filtre
+	public function getCriteres(): array
 	{
-		return $this->filtre;
+		return $this->criteres;
 	}
 
 	public function getCandidats(): array
@@ -51,9 +51,9 @@ class Groupe
 		$this->groupe_nom = $groupe_nom;
 	}
 
-	public function setFiltre(Filtre $filtre): void
+	public function setFiltre(array $criteres): void
 	{
-		$this->filtre = $filtre;
+		$this->criteres = $criteres;
 	}
 
 	public function setCandidats(array $candidats): void

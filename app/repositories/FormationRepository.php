@@ -1,14 +1,16 @@
 <?php
 
-require_once __DIR__ . '/../core/Repository.php';
-require_once __DIR__ . '/../entities/Formation.php';
+require_once '../app/core/Repository.php';
+require_once '../app/entities/Formation.php';
+require_once '../app/entities/Etablissement.php';
+require_once '../app/entities/Diplome.php';
 
-class FormationRepository extends Repository
+class FormationRepository
 {
 	/*-------------------------------*/
 	/*          Attributs            */
 	/*-------------------------------*/
-	private PDO $pdo;
+	private $pdo;
 
 	/*-------------------------------*/
 	/*         Constructeur          */
