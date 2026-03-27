@@ -21,23 +21,15 @@ class SpecialiteRepository
 	public function create(Specialite $specialite): ?Specialite
 	{
 		$sql = "INSERT INTO specialite 
-				(specialite_nom)
+				(specialite_id, specialite_nom)
 				VALUES 
-				(:nom)
-				RETURNING specialite_id";
+				(:id, :nom)";
 
 		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':id' , $specialite->getSpecialiteId());
 		$stmt->bindValue(':nom', $specialite->getSpecialiteNom());
 
-		if ($stmt->execute())
-		{
-			$result = $stmt->fetch(PDO::FETCH_ASSOC);
-			if ($result)
-			{
-				$specialite->setSpecialiteId($result['specialite_id']);
-				return $specialite;
-			}
-		}
+		if ($stmt->execute()) { return $specialite; }
 		return null;
 	}
 
@@ -61,5 +53,26 @@ class SpecialiteRepository
 			if ($row) { return $this->createSpecialiteFromRow($row); }
 		}
 		return null;
+	}
+
+	public function getSpecialitesByFormation(int $formation_id): array
+	{
+		$sql = "SELECT s.*
+				FROM specialite s
+				JOIN formation_specialite fs ON fs.specialite_id = s.specialite_id
+				WHERE fs.formation_id = :formation_id";
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':formation_id', $formation_id, PDO::PARAM_INT);
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$items = [];
+		foreach ($rows as $row)
+		{
+			$items[] = $this->createSpecialiteFromRow($row);
+		}
+
+		return $items;
 	}
 }

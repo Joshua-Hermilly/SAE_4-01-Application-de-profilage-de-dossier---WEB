@@ -2,6 +2,9 @@
 
 require_once '../app/core/Repository.php';
 require_once '../app/entities/Candidat.php';
+require_once '../app/repositories/EtablissementRepository.php';
+require_once '../app/repositories/GroupeRepository.php';
+require_once '../app/repositories/DiplomeRepository.php';
 
 class CandidatRepository
 {
@@ -26,7 +29,7 @@ class CandidatRepository
 		$sql = "INSERT INTO candidat 
 				(candidat_code, candidat_nom, candidat_prenom, candidat_civilite, candidat_profil, 
 				 candidat_boursier_code, candidat_note_lycee, candidat_note_fiche, 
-				 candidat_note_global, candidat_commentaire, etablissement_id, groupe_id, diplome_id)
+				 candidat_note_globale, candidat_commentaire, etablissement_id, groupe_id, diplome_id)
 				VALUES 
 				(:code, :nom, :prenom, :civilite, :profil, 
 				 :boursier, :note_lycee, :note_fiche, 
@@ -65,7 +68,7 @@ class CandidatRepository
 				candidat_boursier_code = :boursier,
 				candidat_note_lycee    = :note_lycee,
 				candidat_note_fiche    = :note_fiche,
-				candidat_note_global   = :note_global,
+				candidat_note_globale  = :note_global,
 				candidat_commentaire   = :commentaire,
 				etablissement_id       = :etablissement,
 				groupe_id              = :groupe,
@@ -118,15 +121,15 @@ class CandidatRepository
 		return new Candidat
 		(
 			(int)$row['candidat_code'],
-			$row['candidat_nom'     ],
-			$row['candidat_prenom'  ],
-			$row['candidat_civilite'],
-			$row['candidat_profil'  ],
+			$row['candidat_nom'      ],
+			$row['candidat_prenom'   ],
+			$row['candidat_civilite' ],
+			$row['candidat_profil'   ],
 			(int)$row['candidat_boursier_code'],
-			$row['candidat_note_lycee' ] ? (float)$row['candidat_note_lycee' ] : null,
-			$row['candidat_note_fiche' ] ? (float)$row['candidat_note_fiche' ] : null,
-			$row['candidat_note_global'] ? (float)$row['candidat_note_global'] : null,
-			$row['candidat_commentaire'],
+			$row['candidat_note_lycee'   ] !== null ? (float)$row['candidat_note_lycee'   ] : null,
+			$row['candidat_note_fiche'   ] !== null ? (float)$row['candidat_note_fiche'   ] : null,
+			$row['candidat_note_globale' ] !== null ? (float)$row['candidat_note_globale' ] : null,
+			$row['candidat_commentaire'  ],
 			$etablissement,
 			$groupe,
 			$diplome

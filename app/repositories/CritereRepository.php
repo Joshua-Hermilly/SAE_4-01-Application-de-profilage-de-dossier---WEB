@@ -35,8 +35,8 @@ class CritereRepository
 
 	public function findById($id)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM CRITERE WHERE id = :id");
-        $stmt->execute(['id' => $id]);
+		$stmt = $this->pdo->prepare("SELECT * FROM critere WHERE critere_id = :id");
+		$stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) { return $this->createCritereFromRow($row); }
@@ -46,7 +46,7 @@ class CritereRepository
 
 	public function create(Critere $critere)
 	{
-		$sql = "INSERT INTO CRITERE (critere_libelle, critere_filtre, critere_min, critere_max)
+		$sql = "INSERT INTO critere (critere_libelle, critere_filtre, critere_min, critere_max)
 				VALUES (:libelle, :filtre, :min, :max)";
 
 		$req = $this->pdo->prepare($sql);
@@ -56,25 +56,44 @@ class CritereRepository
 		$req->bindValue(':max'    , $critere->getCritereMax    () );
 		$req->execute();
 
-		$row = $req->fetch(PDO::FETCH_ASSOC);
-		$critere->setCritereId( (int) $row['critere_id'] );
+		$critere->setCritereId( (int) $this->pdo->lastInsertId() );
 	}
 
 	public function update(Critere $critere)
     {
-        $sql = "UPDATE CRITERE SET
-                    critere_id      = :series_id,
-                    critere_libelle = :title,
-                    critere_filtre  = :season,
-                    critere_min     = :episode_number,
-                    critere_max     = :duration
-                WHERE id = :id";
+		$sql = "UPDATE critere SET
+					critere_libelle = :libelle,
+					critere_filtre  = :filtre,
+					critere_min     = :min,
+					critere_max     = :max
+				WHERE critere_id = :id";
         $req = $this->pdo->prepare($sql);
-        $req->bindValue(':critere_id', $critere->getCritereId     () );
-		$req->bindValue(':libelle'   , $critere->getCritereLibelle() );
-		$req->bindValue(':filtre'    , $critere->getCritereFiltre () );
-		$req->bindValue(':min'       , $critere->getCritereMin    () );
-		$req->bindValue(':max'       , $critere->getCritereMax    () );
+		$req->bindValue(':id'     , $critere->getCritereId     () );
+		$req->bindValue(':libelle', $critere->getCritereLibelle() );
+		$req->bindValue(':filtre' , $critere->getCritereFiltre () );
+		$req->bindValue(':min'    , $critere->getCritereMin    () );
+		$req->bindValue(':max'    , $critere->getCritereMax    () );
         $req->execute();
     }
+
+	public function findByGroupe(int $groupe_id): array
+	{
+		$sql = "SELECT c.*
+				FROM critere c
+				JOIN filtre f ON f.critere_id = c.critere_id
+				WHERE f.groupe_id = :groupe_id";
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':groupe_id', $groupe_id, PDO::PARAM_INT);
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$items = [];
+		foreach ($rows as $row)
+		{
+			$items[] = $this->createCritereFromRow($row);
+		}
+
+		return $items;
+	}
 }

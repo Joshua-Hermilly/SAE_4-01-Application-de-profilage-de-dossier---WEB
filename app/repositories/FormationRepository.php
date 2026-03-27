@@ -4,6 +4,9 @@ require_once '../app/core/Repository.php';
 require_once '../app/entities/Formation.php';
 require_once '../app/entities/Etablissement.php';
 require_once '../app/entities/Diplome.php';
+require_once '../app/repositories/EtablissementRepository.php';
+require_once '../app/repositories/SpecialiteRepository.php';
+require_once '../app/repositories/DiplomeRepository.php';
 
 class FormationRepository
 {
@@ -23,31 +26,23 @@ class FormationRepository
 	public function create(Formation $formation): ?Formation
 	{
 		$sql = "INSERT INTO formation 
-				(formation_nom)
+				(formation_id, formation_nom)
 				VALUES 
-				(:nom)
-				RETURNING formation_id";
+				(:id, :nom)";
 
 		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':id' , $formation->getFormationId());
 		$stmt->bindValue(':nom', $formation->getFormationNom());
 
-		if ($stmt->execute())
-		{
-			$result = $stmt->fetch(PDO::FETCH_ASSOC);
-			if ($result)
-			{
-				$formation->setFormationId($result['formation_id']);
-				return $formation;
-			}
-		}
+		if ($stmt->execute()) { return $formation; }
 		return null;
 	}
 
 	public function createFormationFromRow(array $row): Formation
 	{
 		$etablissements = [];
-		$specialites = [];
-		$diplomes = [];
+		$specialites    = [];
+		$diplomes       = [];
 
 		$etablissements = (new EtablissementRepository())->getEtablissementsByFormation($row['formation_id']);
 		$specialites    = (new SpecialiteRepository   ())->getSpecialitesByFormation   ($row['formation_id']);

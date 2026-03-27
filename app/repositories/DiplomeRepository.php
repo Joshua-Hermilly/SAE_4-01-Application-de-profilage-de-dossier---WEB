@@ -21,26 +21,18 @@ class DiplomeRepository
 	public function create(Diplome $diplome): ?Diplome
 	{
 		$sql = "INSERT INTO diplome 
-				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle)
+				(diplome_id, diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle)
 				VALUES 
-				(:type_code, :type_libelle, :serie_code, :serie_libelle)
-				RETURNING diplome_id";
+				(:id, :type_code, :type_libelle, :serie_code, :serie_libelle)";
 
 		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':id'          , $diplome->getDiplomeId()         );
 		$stmt->bindValue(':type_code'    , $diplome->getDiplomeTypeCode()    );
 		$stmt->bindValue(':type_libelle' , $diplome->getDiplomeTypeLibelle() );
 		$stmt->bindValue(':serie_code'   , $diplome->getDiplomeSerieCode()   );
 		$stmt->bindValue(':serie_libelle', $diplome->getDiplomeSerieLibelle());
 
-		if ($stmt->execute())
-		{
-			$result = $stmt->fetch(PDO::FETCH_ASSOC);
-			if ($result)
-			{
-				$diplome->setDiplomeId($result['diplome_id']);
-				return $diplome;
-			}
-		}
+		if ($stmt->execute()) { return $diplome; }
 		return null;
 	}
 
@@ -67,5 +59,26 @@ class DiplomeRepository
 			if ($row) { return $this->createDiplomeFromRow($row); }
 		}
 		return null;
+	}
+
+	public function getDiplomesByFormation(int $formation_id): array
+	{
+		$sql = "SELECT d.*
+				FROM diplome d
+				JOIN diplome_formation df ON df.diplome_id = d.diplome_id
+				WHERE df.formation_id = :formation_id";
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':formation_id', $formation_id, PDO::PARAM_INT);
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$items = [];
+		foreach ($rows as $row)
+		{
+			$items[] = $this->createDiplomeFromRow($row);
+		}
+
+		return $items;
 	}
 }

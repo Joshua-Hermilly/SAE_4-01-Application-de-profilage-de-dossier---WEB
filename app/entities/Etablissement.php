@@ -7,12 +7,12 @@ class Etablissement
 	/*-------------------------------*/
 	public function __construct
 	(
-		private int           $etablissemet_id,
-		private string        $etablissement_nom,
+		private int             $etablissemet_id,
+		private string          $etablissement_nom,
 
-		private array         $candidats  = [],
-		private array         $formations = [],
-		private Localisation  $localisation,
+		private array           $candidats  = [],
+		private array           $formations = [],
+		private ?Localisation   $localisation = null,
 	) {}
 
 	/*-------------------------------*/
@@ -38,7 +38,7 @@ class Etablissement
 		return $this->formations;
 	}
 
-	public function getLocalisation(): Localisation
+	public function getLocalisation(): ?Localisation
 	{
 		return $this->localisation;
 	}
@@ -66,7 +66,7 @@ class Etablissement
 		$this->formations = $formations;
 	}
 
-	public function setLocalisation(Localisation $localisation): void
+	public function setLocalisation(?Localisation $localisation): void
 	{
 		$this->localisation = $localisation;
 	}
