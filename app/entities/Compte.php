@@ -5,22 +5,18 @@ class Compte
 	/*╔════════════════════════╗*/
 	/*║       Attributs        ║*/
 	/*╚════════════════════════╝*/
-	private ?int    $compte_id;
-	private  string $compte_nom;
-	private ?string $compte_email;
+	private  string $compte_identifiant;
 	private  string $compte_mdp;
 	private  string $compte_isAdmin;
 
 	/*╔════════════════════════╗*/
 	/*║     Constructeur       ║*/
 	/*╚════════════════════════╝*/
-	public function __construct( int $id, string $nom, string $email, string $mdp, string $isAdmin )
+	public function __construct( string $identifiant, string $mdp, string $isAdmin )
 	{
-		$this->compte_id      = $id;
-		$this->compte_nom     = $nom;
-		$this->compte_email   = $email;
-		$this->compte_mdp     = $mdp;
-		$this->compte_isAdmin = $isAdmin;
+		$this->compte_identifiant = $identifiant;
+		$this->compte_mdp         = $mdp;
+		$this->compte_isAdmin     = $isAdmin;
 	}
 
 	/*╔════════════════════════╗*/
@@ -29,32 +25,28 @@ class Compte
 	public function __serialize(): array
 	{
 		return [
-			'compte_id'      => $this->compte_id,
-			'compte_nom'     => $this->compte_nom,
-			'compte_email'   => $this->compte_email,
-			'compte_isAdmin' => $this->compte_isAdmin
+			'compte_identifiant' => $this->compte_identifiant,
+			'compte_isAdmin'     => $this->compte_isAdmin
 		];
 	}
 
 	public function __unserialize(array $data): void
 	{
-		$this->compte_id      = $data['compte_id'     ];
-		$this->compte_nom     = $data['compte_nom'    ];
-		$this->compte_email   = $data['compte_email'  ];
-		$this->compte_isAdmin = $data['compte_isAdmin'];
+		$this->compte_identifiant = $data['compte_identifiant'];
+		$this->compte_isAdmin     = $data['compte_isAdmin'    ];
 	}
 
 	/*╔════════════════════════╗*/
 	/*║   Getters/Setters      ║*/
 	/*╚════════════════════════╝*/
-	public function getCompteId(): int
+	public function getCompteIdentifiant(): int
 	{
-		return $this->compte_id;
+		return $this->compte_identifiant;
 	}
 
-	public function setCompteId(int $compte_id): void
+	public function setCompteId(int $compte_identifiant): void
 	{
-		$this->compte_id = $compte_id;
+		$this->compte_identifiant = $compte_identifiant;
 	}
 
 	public function getCompteIsAdmin(): string
@@ -76,25 +68,4 @@ class Compte
 	{
 		$this->compte_mdp = $compte_mdp;
 	}
-
-	public function getCompteEmail(): string
-	{
-		return $this->compte_email;
-	}
-
-	public function setCompteEmail(string $compte_email): void
-	{
-		$this->compte_email = $compte_email;
-	}
-
-	public function getCompteNom(): string
-	{
-		return $this->compte_nom;
-	}
-
-	public function setCompteNom(string $compte_nom): void
-	{
-		$this->compte_nom = $compte_nom;
-	}
-
 }

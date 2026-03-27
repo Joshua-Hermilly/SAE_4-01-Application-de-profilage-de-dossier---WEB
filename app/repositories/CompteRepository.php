@@ -25,14 +25,13 @@ class CompteRepository
 	//Création
 	public function create(Compte $compte): Compte
 	{
-		$sql = "INSERT INTO compte (compte_nom, compte_email, compte_mdp, compte_isadmin) 
-		        VALUES (:compte_nom, :compte_email, :compte_mdp, :compte_isAdmin)";
+		$sql = "INSERT INTO compte (compte_identifiant, compte_mdp, compte_isadmin) 
+		        VALUES (:compte_identifiant, :compte_mdp, :compte_isAdmin)";
 
 		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':compte_nom'    , $compte->getCompteNom    ());
-		$stmt->bindValue(':compte_email'  , $compte->getCompteEmail  ());
-		$stmt->bindValue(':compte_mdp'    , $compte->getCompteMdp    ());
-		$stmt->bindValue(':compte_isAdmin', $compte->getCompteIsAdmin());
+		$stmt->bindValue(':compte_identifiant', $compte->getCompteIdentifiant());
+		$stmt->bindValue(':compte_mdp'        , $compte->getCompteMdp        ());
+		$stmt->bindValue(':compte_isAdmin'    , $compte->getCompteIsAdmin    ());
 		$stmt->execute();
 
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -48,37 +47,22 @@ class CompteRepository
 	{
 		return new Compte
 		(
-			$row['compte_id'     ],
-			$row['compte_nom'    ],
-			$row['compte_email'  ],
-			$row['compte_mdp'    ],
-			$row['compte_isadmin']
+			$row['compte_identifiant' ],
+			$row['compte_mdp'         ],
+			$row['compte_isadmin'     ]
 		);
 	}
 
 	//Recherche
-	public function findById(int $compte_id): ?Compte
+	public function findByIdentifiant(string $compte_identifiant): ?Compte
 	{
-		$sql ="SELECT * FROM compte WHERE  compte_id = :compte_id";
+		$sql ="SELECT * FROM compte WHERE  compte_identifiant = :compte_identifiant";
 		$stmt = $this->pdo->prepare($sql);
 
-		$stmt->execute(['compte_id' => $compte_id]);
+		$stmt->execute(['compte_identifiant' => $compte_identifiant]);
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		return $row ? $this->createCompteFromRow($row) : null;
 
 	}
-
-	public function findByNom(string $compte_nom): ?Compte
-	{
-		$sql ="SELECT * FROM compte WHERE  compte_nom = :compte_nom";
-		$stmt = $this->pdo->prepare($sql);
-
-		$stmt->execute(['compte_nom' => $compte_nom]);
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-		return $row ? $this->createCompteFromRow($row) : null;
-
-	}
-
 }

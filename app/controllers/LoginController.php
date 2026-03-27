@@ -15,12 +15,12 @@ class LoginController extends Controller
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST')
 		{
-			$compte_nom  = $this->getPostParam('compte_nom', '');
-			$compte_mdp  = $this->getPostParam('compte_mdp', '');
+			$compte_identifiant = $this->getPostParam('compte_identifiant', '');
+			$compte_mdp         = $this->getPostParam('compte_mdp'        , '');
 
 			// Recherche de l'utilisateur et vérification du mot de passe
 			$repo   = new CompteRepository();
-			$compte = $repo->findByNom($compte_nom);
+			$compte = $repo->findByIdentifiant($compte_identifiant);
 
 			if ($compte !== null && password_verify($compte_mdp, $compte->getCompteMdp()))
 			{

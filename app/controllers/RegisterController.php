@@ -18,16 +18,16 @@ class RegisterController extends Controller
 			$errors = [];
 
 			// Récupération et nettoyage via FormTrait
-			$compte_nom         = trim($this->getPostParam('compte_nom'        , ''));
+			$compte_identifiant = trim($this->getPostParam('compte_identifiant', ''));
 			$compte_mdp         =      $this->getPostParam('compte_mdp'        , '' );
 			$compte_mdp_confirm =      $this->getPostParam('compte_mdp_confirm', '' );
 
 			$oldData = array(
-				'compte_id' => $compte_nom
+				'compte_identifiant' => $compte_identifiant
 			);
 
 			// --- Validation ---
-			if (empty($compte_nom) || strlen($compte_nom) < 3 || strlen($compte_nom) > 20 || !preg_match('/^[A-Za-z0-9_]+$/', $compte_nom))
+			if (empty($compte_identifiant) || strlen($compte_identifiant) < 3 || strlen($compte_identifiant) > 20 || !preg_match('/^[A-Za-z0-9_]+$/', $compte_identifiant))
 			{
 				$errors[] = "Le nom d'utilisateur doit contenir entre 3 et 20 caractères (lettres, chiffres ou _).";
 			}
@@ -49,7 +49,7 @@ class RegisterController extends Controller
 			{
 				// Hash du mot de passe et insertion
 				$passwordHash = password_hash($compte_mdp, PASSWORD_DEFAULT);
-				$compte = new Compte( null,$compte_nom, null, $passwordHash, false);
+				$compte = new Compte( null,$compte_identifiant, null, $passwordHash, false);
 
 				$repo = new CompteRepository();
 				$repo->create($compte);
