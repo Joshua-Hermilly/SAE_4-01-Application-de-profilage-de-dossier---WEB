@@ -7,6 +7,13 @@
 	--bleu-icon            : #DEDEDE;
 	--bleu-fond-faide      : #2158BD;
 	--blanc                : #FFFFFF;
+	
+	/* Filtres */
+	--filter-bg            : var(--gris-fond-assets);
+	--filter-border        : var(--gris-select-assets);
+	--filter-text          : var(--gris-text-fond-foncé);
+	--filter-button-bg     : var(--gris-fond-assets);
+	--filter-button-hover  : var(--gris-select-assets);
 }
 
 body, html {
@@ -87,4 +94,49 @@ body, html {
 	font-weight: bold;
 	background: var(--gris-select-assets);
 	border: 2px solid var(--blanc);
+}
+
+/* ============================================================
+   UTILITAIRES GLOBAUX
+============================================================ */
+
+/* Scroll bar personnalisée pour le filtre */
+.filter-sidebar::-webkit-scrollbar {
+	width: 8px;
+}
+
+.filter-sidebar::-webkit-scrollbar-track {
+	background: var(--filter-button-bg);
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb {
+	background: var(--filter-border);
+	border-radius: 4px;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb:hover {
+	background: var(--bleu-fond-faide);
+}
+
+/* Animations de collapse */
+@keyframes slideInFromLeft {
+	from {
+		transform: translateX(-100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes slideOutToLeft {
+	from {
+		transform: translateX(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateX(-100%);
+		opacity: 0;
+	}
 }
