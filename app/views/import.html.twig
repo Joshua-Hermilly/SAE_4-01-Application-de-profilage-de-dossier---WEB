@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Import</title>
+	<style>
+		body { font-family: Arial, sans-serif; margin: 0; padding: 2rem; background: #f5f6fa; }
+		.container { max-width: 480px; margin: 0 auto; background: #fff; border: 1px solid #e1e5ee; border-radius: 8px; padding: 1.5rem; box-shadow: 0 6px 24px rgba(0,0,0,0.06); }
+		h1 { margin: 0 0 1rem; font-size: 1.25rem; color: #1f2a44; }
+		button { display: inline-flex; align-items: center; gap: 0.5rem; background: #1f7aed; color: #fff; border: none; border-radius: 6px; padding: 0.75rem 1.25rem; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(31,122,237,0.35); transition: transform 0.08s ease, box-shadow 0.12s ease; }
+		button:hover { box-shadow: 0 6px 18px rgba(31,122,237,0.4); transform: translateY(-1px); }
+		button:active { transform: translateY(0); box-shadow: 0 3px 10px rgba(31,122,237,0.25); }
+	</style>
+</head>
+<body>
+	<div class="container">
+		{%  if error is not empty %}
+			<p>{{ error }}</p>
+		{% endif %}
+
+		<h1>Importer un fichier</h1>
+		<form method="POST" action="import.php" enctype="multipart/form-data">
+			<div>
+				<label for="file">Choisir un fichier</label>
+				<input type="file" id="file" name="file" required/>
+			</div>
+			<div>
+				<button type="submit">Envoyer le fichier</button>
+			</div>
+		</form>
+	</div>
+</body>
+</html>
