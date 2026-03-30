@@ -33,7 +33,7 @@ class Candidat
 		return $this->candidat_commentaire;
 	}
 
-	public function getCandidatCode(): int
+	public function getCandidatCode(): string
 	{
 		return $this->candidat_code;
 	}

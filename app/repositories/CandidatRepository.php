@@ -132,7 +132,7 @@ class CandidatRepository
 		$stmt->bindValue(':boursier'     , $candidat->getCandidatBoursierCode());
 		$stmt->bindValue(':note_lycee'   , $candidat->getCandidatNoteLycee   ());
 		$stmt->bindValue(':note_fiche'   , $candidat->getCandidatNoteFiche   ());
-		$stmt->bindValue(':note_globale' , $candidat->getCandidatNoteGlobale ());
+		$stmt->bindValue(':note_globale' , $candidat->getCandidatNoteGlobal  ());
 		$stmt->bindValue(':commentaire'  , $candidat->getCandidatCommentaire ());
 		$stmt->bindValue(':diplome'      , $candidat->getDiplomeId           ());
 		$stmt->bindValue(':etablissement', $candidat->getEtablissementId     ());
