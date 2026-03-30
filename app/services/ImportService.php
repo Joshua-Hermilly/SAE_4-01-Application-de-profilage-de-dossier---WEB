@@ -215,8 +215,8 @@ class ImportService
 
 	private function createFms( $ligne ): ?FormationSup
 	{
-		$f1 = trim($ligne ['Filiere (pour scolarité du supérieur)- Libellé 2024/2025' ]);
-		$f2 = trim($ligne ['Formation - Libellé (Saisie manuelle) 2024/2025'          ]);
+		$f1 = $ligne ['Filiere (pour scolarité du supérieur)- Libellé 2024/2025' ];
+		$f2 = $ligne ['Formation - Libellé (Saisie manuelle) 2024/2025'          ];
 
 		if ( $f1 === $f2 ) { return null;    }
 		if ( isset($f1)  ) { $filiere = $f1; }
@@ -252,10 +252,10 @@ class ImportService
 		(
 			0,
 			trim($ligne['Spécialité - Libellé'                             ]),
-			trim($ligne['Spécialité / Mention - Libellé  2024/2025'        ]),
+			$ligne['Spécialité / Mention - Libellé  2024/2025'        ],
 			$spe1,
 			$spe2,
-			trim($ligne['Enseignement De spécialité abandonné en Première' ]),
+			$ligne['Enseignement De spécialité abandonné en Première' ],
 			$diplome->getDiplomeId()
 		);
 
@@ -290,7 +290,7 @@ class ImportService
 			$this->getNoteOrNull($ligne['Note Globale Calculée'    ]),
 			$this->getNoteOrNull($ligne['Note Fiche Avenir'        ]),
 			$this->getNoteOrNull($ligne['Note Lycée calculée'      ]),
-			trim(                $ligne['Commentaire'              ]),
+			$ligne['Commentaire'              ],
 			$etablissement?->getEtablissementId(),
 			null,
 			$formationSup ?->getFormationId    (),
