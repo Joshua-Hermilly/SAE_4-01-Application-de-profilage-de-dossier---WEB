@@ -1,9 +1,29 @@
 
-{# Barre sous-header fixe sur toute la largeur, avec bouton Filtrer à gauche #}
-<div class="under-header-zone fixed-top w-100 d-flex align-items-center px-4">
-	<button type="button" class="js-filter-toggle btn d-flex align-items-center gap-2" style="padding-left: 0;" aria-label="Afficher les filtres">
-	    <i class="bi bi-funnel bi-funnel-fill" style="font-size: 1.4em;"></i>
+{# Barre sous-header fixe sur toute la largeur avec bouton Filtrer #}
+<div class="under-header-zone w-100 d-flex align-items-center px-4">
+	<button 
+		type="button" 
+		class="filter-toggle-btn btn d-flex align-items-center gap-2" 
+		aria-label="Afficher les filtres"
+		data-bs-toggle="collapse"
+		data-bs-target="#filterSidebar"
+		aria-expanded="false"
+	>
+		<i class="bi bi-funnel"></i>
 		<span>Filtrer</span>
-		{% include 'components/content/assets/filter_sidebar.html.twig' %}
 	</button>
+</div>
+
+{# Filtre sidebar collapsable #}
+<div class="filter-collapse-wrapper">
+	{% include 'components/content/assets/filter_sidebar.html.twig' with {
+		filters: filters | default([
+			{ label: 'Filtre 1', name: 'filter1', placeholder: 'Entrée...', disabled: true },
+			{ label: 'Filtre 2', name: 'filter2', placeholder: 'Entrée...', disabled: true },
+			{ label: 'Filtre 3', name: 'filter3', placeholder: 'Entrée...', disabled: false }
+		]),
+		title: 'Filtres',
+		buttonText: 'Créer un groupe',
+		buttonDisabled: true
+	} %}
 </div>

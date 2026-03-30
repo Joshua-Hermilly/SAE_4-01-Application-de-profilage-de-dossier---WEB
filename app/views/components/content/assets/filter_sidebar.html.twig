@@ -1,23 +1,51 @@
-<aside class="filter-sidebar js-filter-sidebar collapse">
-	<div class="filter-header d-flex align-items-center justify-content-between mb-3">
-		<span class="fw-bold">
+{# 
+   Composant Filtre Sidebar - Configurable
+   
+   Paramètres acceptés :
+   - filters: array de filtres [{ label: "...", name: "...", placeholder: "...", disabled: false }, ...]
+   - title: titre du filtre (défaut: "Filtres")
+   - buttonText: texte du bouton action (défaut: "Créer un groupe")
+   - buttonDisabled: booléen pour désactiver le bouton (défaut: true)
+   - buttonClass: classe CSS du bouton (défaut: "btn-danger")
+#}
+
+<aside class="filter-sidebar js-filter-sidebar" id="filterSidebar">
+	<div class="filter-header d-flex align-items-center justify-content-between mb-4">
+		<span class="fw-bold d-flex align-items-center gap-2">
 			<i class="bi bi-funnel"></i>
-			Filtres</span>
+			{{ title | default('Filtres') }}
+		</span>
 		<button type="button" class="btn-close js-filter-close" aria-label="Fermer"></button>
 	</div>
+
 	<form class="js-filter-form">
-		<div class="mb-3">
-			<label>Filtre 1 :</label>
-			<input type="text" class="form-control" placeholder="À compléter..." disabled>
-		</div>
-		<div class="mb-3">
-			<label>Filtre 2 :</label>
-			<input type="text" class="form-control" placeholder="À compléter..." disabled>
-		</div>
-		<div class="mb-3">
-			<label>Filtre 3 :</label>
-			<input type="text" class="form-control" placeholder="À compléter..." disabled>
-		</div>
-		<button type="button" class="btn btn-secondary w-100 mt-2 js-create-group-btn" disabled>Créer un groupe</button>
+		{% if filters is defined and filters is not empty %}
+			{% for filter in filters %}
+				<div class="mb-3">
+					<label for="filter_{{ filter.name }}" class="form-label">{{ filter.label }}</label>
+					<input 
+						type="text" 
+						class="form-control filter-input" 
+						id="filter_{{ filter.name }}" 
+						name="{{ filter.name }}"
+						placeholder="{{ filter.placeholder | default('À compléter...') }}"
+						{% if filter.disabled | default(false) %}disabled{% endif %}
+					>
+				</div>
+			{% endfor %}
+		{% else %}
+			<div class="alert alert-info" role="alert">
+				Aucun filtre configuré
+			</div>
+		{% endif %}
+
+		<button 
+			type="button" 
+			class="btn w-100 mt-4 js-action-btn {{ buttonClass | default('btn-danger') }}"
+			{% if buttonDisabled | default(true) %}disabled{% endif %}
+			aria-label="{{ buttonText | default('Action') }}"
+		>
+			{{ buttonText | default('Créer un groupe') }}
+		</button>
 	</form>
 </aside>
