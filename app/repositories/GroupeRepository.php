@@ -34,11 +34,9 @@ class GroupeRepository
 		$stmt->bindValue(':couleur'      , $groupe->getGroupeCouleur      ());
 		$stmt->bindValue(':note_dossier' , $groupe->getGroupeNoteDossier  ());
 
-		if ($stmt->execute())
+		$stmt->execute();
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$groupe->setGroupeId( $row['groupe_id'] );
-
-		$stmt->execute();
 	}
 
 	public function update(Groupe $groupe): bool
