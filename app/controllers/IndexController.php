@@ -8,10 +8,7 @@ class IndexController extends Controller
 {
     public function index(): void
     {
-		if (session_status() === PHP_SESSION_NONE)
-		{
-            session_start();
-        }
+		if (session_status() === PHP_SESSION_NONE)  session_start();
 
        if (empty($_SESSION['compte']))
 		{
@@ -19,6 +16,6 @@ class IndexController extends Controller
 			return;
         }
 
-	   die("Bienvenue sur la page index, " .$_SESSION['compte']->getCompteIdentifiant() . " !");
+	   $this->view('pages/dossiers', 'Dossiers');
 	}
 }

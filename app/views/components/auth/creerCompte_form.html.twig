@@ -4,7 +4,17 @@
 
 			<div id="bloc" class="card">
 				<div class="card-body body p-4">
-					<h2 id="text" class="card-title">S'inscrire</h2>
+					<h2 id="text" class="card-title">Créer un compte</h2>
+
+					{% if errors %}
+						<div class="alert alert-danger text-start">
+							<ul>
+								{% for error in errors %}
+									<li >{{ error }}</li>
+								{% endfor %}
+							</ul>
+						</div>
+					{% endif %}
 
 					<form method="POST" action="creerCompte.php">
 						<div id="espacement" class="mb-3">

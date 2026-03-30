@@ -27,10 +27,8 @@ class LoginController extends Controller
 			{
 
 				// Démarrer la session si nécessaire
-				if (session_status() === PHP_SESSION_NONE)
-				{
-					session_start();
-				}
+				if (session_status() === PHP_SESSION_NONE)  session_start();
+
 				// Stocker l'objet Account dans la session
 				$_SESSION['compte'] = $compte;
 

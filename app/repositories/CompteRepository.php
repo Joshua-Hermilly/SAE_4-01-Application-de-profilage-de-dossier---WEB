@@ -55,4 +55,12 @@ class CompteRepository
 
 		return $row ? $this->createCompteFromRow($row) : null;
 	}
+
+	public function changePassword(string $compte_identifiant, string $passwordHash): void
+	{
+		$sql = "UPDATE compte SET compte_mdp = :compte_mdp WHERE compte_identifiant = :compte_identifiant";
+
+		 $stmt = $this->pdo->prepare($sql);
+		 $stmt->execute(['compte_identifiant' => $compte_identifiant, 'compte_mdp' => $passwordHash]);
+	}
 }
