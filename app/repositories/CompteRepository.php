@@ -31,18 +31,10 @@ class CompteRepository
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':compte_identifiant', $compte->getCompteIdentifiant());
 		$stmt->bindValue(':compte_mdp'        , $compte->getCompteMdp        ());
-		$stmt->bindValue(':compte_isAdmin'    , $compte->getCompteIsAdmin    ());
+		$stmt->bindValue(':compte_isAdmin'    , $compte->getCompteIsAdmin    (), PDO::PARAM_BOOL);
 		$stmt->execute();
 
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		/*
-		if ($row && isset($row['compte_id']))
-		{
-			$compte->setCompteId((int)$row['compte_id']);
-		}
-		*/
 		return $compte;
-
 	}
 
 	public function createCompteFromRow(array $row): Compte
@@ -51,7 +43,7 @@ class CompteRepository
 		(
 			$row['compte_identifiant' ],
 			$row['compte_mdp'         ],
-			(string)$row['compte_isadmin'     ]
+			(string)$row['compte_isadmin']
 		);
 	}
 
@@ -65,6 +57,5 @@ class CompteRepository
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		return $row ? $this->createCompteFromRow($row) : null;
-
 	}
 }

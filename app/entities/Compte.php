@@ -12,11 +12,11 @@ class Compte
 	/*╔════════════════════════╗*/
 	/*║     Constructeur       ║*/
 	/*╚════════════════════════╝*/
-	public function __construct( string $identifiant, string $mdp, bool $isAdmin )
+	public function __construct( string $identifiant, string $mdp )
 	{
 		$this->compte_identifiant = $identifiant;
 		$this->compte_mdp         = $mdp;
-		$this->compte_isAdmin     = $isAdmin;
+		$this->compte_isAdmin     = false;
 	}
 
 	/*╔════════════════════════╗*/

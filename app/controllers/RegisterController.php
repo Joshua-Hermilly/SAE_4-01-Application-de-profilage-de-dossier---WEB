@@ -11,12 +11,11 @@ class RegisterController extends Controller
 
 	public function register(): void
 	{
-		$data = [];
+		$data   = [];
+		$errors = [];
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST')
 		{
-			$errors = [];
-
 			// Récupération et nettoyage via FormTrait
 			$compte_identifiant = trim($this->getPostParam('compte_identifiant', ''));
 			$compte_mdp         =      $this->getPostParam('compte_mdp'        , '' );
@@ -33,7 +32,7 @@ class RegisterController extends Controller
 			}
 
 
-			$pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
+			$pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/';
 			if (!preg_match($pattern, $compte_mdp))
 			{
 				$errors[] = "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.";
@@ -44,9 +43,9 @@ class RegisterController extends Controller
 				$errors[] = "La confirmation du mot de passe ne correspond pas.";
 			}
 
-				var_dump($errors);
 			if (empty($errors))
 			{
+				echo "envoye";
 				// Hash du mot de passe et insertion
 				$passwordHash = password_hash($compte_mdp, PASSWORD_DEFAULT);
 				$compte = new Compte($compte_identifiant, $passwordHash, "false");
@@ -61,8 +60,9 @@ class RegisterController extends Controller
 				$data['errors' ] = $errors;
 				$data['oldData'] = $oldData;
 			}
+
 		}
 
-		$this->view('pages/register', 'Inscription', $data);
+		$this->view('pages/register', 'Inscription', [ 'errors' => 'errors']) ;
 	}
 }
