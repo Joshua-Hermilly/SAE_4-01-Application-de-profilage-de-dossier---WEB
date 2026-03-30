@@ -1,225 +1,447 @@
 /* ============================================================
-   ZONE SOUS-HEADER & BOUTON FILTRER
+   DOSSIERS PAGE - CSS MINIMAL (Bootstrap-first)
 ============================================================ */
-.under-header-zone {
-	margin-top: 68px;
-	border-bottom: 1px solid var(--filter-border);
-	min-height: 56px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-	position: relative;
-	background: var(--gris-fond-assets);
-}
 
-.filter-toggle-btn {
-	background: var(--filter-button-bg) !important;
-	color: var(--bleu-fond-faide) !important;
-	border: none;
-	font-weight: 500;
-	font-size: 1rem;
-	padding: 8px 20px;
-	border-radius: 22px;
-	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-	text-decoration: none;
-}
-
-.filter-toggle-btn:hover,
-.filter-toggle-btn:focus {
-	background: var(--filter-button-hover) !important;
-	color: var(--blanc) !important;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-}
-
-.filter-toggle-btn:not(.collapsed) {
-	color: var(--blanc) !important;
-	background: var(--filter-button-hover) !important;
-}
-
-.filter-toggle-btn i {
-	font-size: 1.2em;
+:root {
+	--primary-color: #2158BD;
+	--dark-bg: #242423;
+	--light-bg: #f8f9fa;
+	--border-color: #dee2e6;
+	--header-dark: #2b2b2b;
+	--filter-width: 320px;
+	--map-width: 350px;
 }
 
 /* ============================================================
-   FILTRE SIDEBAR
+   CONTENEUR PRINCIPAL
 ============================================================ */
-.filter-collapse-wrapper {
-	position: relative;
+
+.dossiers-wrapper {
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - 260px); /* Header (68px) + Footer (60px) */
 }
 
-.filter-sidebar {
-	position: fixed;
-	top: 124px;
-	left: 0;
-	width: 320px;
-	max-width: 90vw;
-	height: calc(100vh - 124px);
-	background: var(--filter-bg);
-	color: var(--filter-text);
-	box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
-	z-index: 1050;
-	padding: 2rem 1.5rem 1.5rem 1.5rem;
-	border-top-right-radius: 12px;
-	border-bottom-right-radius: 12px;
-	transform: translateX(-100%);
-	opacity: 0;
-	pointer-events: none;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.dossiers-content {
+	flex: 1;
+	background: var(--light-bg);
+	padding-bottom: 2rem;
+}
+
+/* ============================================================
+   TOOLBAR (STICKY)
+============================================================ */
+
+.dossiers-toolbar {
+	top: 68px;
+	background: white;
+	border-bottom: 1px solid var(--border-color);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	z-index: 99;
+}
+
+.dossiers-toolbar .input-group-text {
+	border-right: none;
+	color: #6c757d;
+}
+
+.dossiers-toolbar .form-control {
+	border-left: none;
+}
+
+.dossiers-toolbar .form-control:focus {
+	border-color: var(--primary-color);
+	box-shadow: 0 0 0 0.2rem rgba(33, 88, 189, 0.15);
+}
+
+.dossiers-toolbar .btn-light {
+	color: #495057;
+	transition: all 0.2s ease;
+}
+
+.dossiers-toolbar .btn-light:hover {
+	background-color: #e9ecef !important;
+	color: var(--primary-color);
+}
+
+/* ============================================================
+   TABLE
+============================================================ */
+
+.dossiers-table {
+	background: white;
+	border-radius: 8px;
+	border: 1px solid var(--border-color);
+	overflow: hidden;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.dossiers-table-header {
+	background: var(--header-dark);
+	color: white;
+	border-bottom: 2px solid var(--border-color);
+}
+
+.dossiers-table-header .table-row {
+	display: grid;
+	grid-template-columns: 40px 80px 1fr 150px 120px 120px 120px;
+	gap: 0;
+	align-items: center;
+	padding: 1rem 1.5rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.dossiers-table-header .table-cell {
+	color: #b0b0b0;
+	text-align: left;
+}
+
+.dossiers-table-header .checkbox-cell {
+	text-align: center;
+}
+
+/* ============================================================
+   TABLE BODY
+============================================================ */
+
+.dossiers-table-body {
+	max-height: 600px;
 	overflow-y: auto;
 }
 
-.filter-sidebar.show {
-	transform: translateX(0);
-	opacity: 1;
-	pointer-events: auto;
-}
-
-.filter-header {
-	font-size: 1.1rem;
-	color: var(--blanc);
-	margin-bottom: 2rem;
-	padding-bottom: 1rem;
-	border-bottom: 1px solid var(--filter-border);
-}
-
-.filter-header i {
-	color: var(--bleu-fond-faide);
-	font-size: 1.3em;
-}
-
-.filter-header .btn-close {
-	background: none;
-	border: none;
-	color: var(--filter-text);
-	font-size: 1.5rem;
+.dossiers-table-body .table-row {
+	display: grid;
+	grid-template-columns: 40px 80px 1fr 150px 120px 120px 120px;
+	gap: 0;
+	align-items: center;
+	padding: 1rem 1.5rem;
+	border-bottom: 1px solid var(--border-color);
 	cursor: pointer;
-	opacity: 0.7;
-	transition: opacity 0.2s;
-	padding: 0;
-	width: auto;
-	height: auto;
+	transition: background-color 0.15s ease;
 }
 
-.filter-header .btn-close:hover {
-	opacity: 1;
+.dossiers-table-body .table-row:hover {
+	background-color: #f8f9fa;
 }
 
-.filter-sidebar .form-label {
-	color: var(--filter-text);
-	font-size: 0.95rem;
+.dossiers-table-body .table-row:focus {
+	outline: 2px solid var(--primary-color);
+	outline-offset: -2px;
+	background-color: #f0f4ff;
+}
+
+.dossiers-table-body .table-row:last-child {
+	border-bottom: none;
+}
+
+/* Styles pour colonnes spéciales */
+.table-cell.checkbox-cell {
+	text-align: center;
+}
+
+.table-cell.number-cell {
+	flex: 0 0 80px;
+}
+
+.table-cell.title-cell {
 	font-weight: 500;
+	color: #212529;
+}
+
+.table-cell.ville-cell {
+	font-size: 0.9rem;
+	color: #6c757d;
+}
+
+.table-cell.filter-cell {
+	font-size: 0.85rem;
+	color: #6c757d;
+}
+
+/* Empty state */
+.table-row.empty-state {
+	grid-column: 1 / -1;
+	padding: 3rem 1.5rem;
+	border: none;
+}
+
+.table-row.empty-state .table-cell {
+	text-align: center;
+	color: #adb5bd;
+}
+
+/* ============================================================
+   OFFCANVAS FILTRE (Bootstrap override)
+============================================================ */
+
+.filter-offcanvas {
+	--bs-offcanvas-width: var(--filter-width);
+}
+
+.filter-offcanvas .offcanvas-header {
+	background: var(--dark-bg);
+	color: white;
+}
+
+.filter-offcanvas .offcanvas-title {
+	color: white;
+	font-weight: 600;
+}
+
+.filter-offcanvas .btn-close {
+	filter: brightness(0) invert(1);
+	opacity: 0.7;
+}
+
+.filter-offcanvas .btn-close:focus {
+	opacity: 1;
+	box-shadow: none;
+}
+
+.filter-offcanvas .offcanvas-body {
+	background: #f0f0f0;
+	padding: 1.5rem;
+}
+
+.filter-form .form-label {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: #212529;
 	margin-bottom: 0.5rem;
-	display: block;
 }
 
-.filter-sidebar .form-control {
-	background: var(--filter-button-bg);
-	border: 1px solid var(--filter-border);
-	color: var(--filter-text);
-	font-size: 0.95rem;
-	padding: 0.5rem 0.75rem;
-	border-radius: 6px;
-	transition: all 0.2s;
+.filter-form .form-control {
+	font-size: 0.9rem;
+	border-color: #ccc;
+	background: white;
 }
 
-.filter-sidebar .form-control:focus {
-	background: var(--filter-button-bg);
-	border-color: var(--bleu-fond-faide);
-	color: var(--blanc);
-	box-shadow: 0 0 0 0.2rem rgba(33, 88, 189, 0.25);
+.filter-form .form-control:focus {
+	border-color: var(--primary-color);
+	box-shadow: 0 0 0 0.2rem rgba(33, 88, 189, 0.15);
 }
 
-.filter-sidebar .form-control:disabled {
-	background: var(--gris-select-assets);
-	border-color: var(--filter-border);
-	color: var(--filter-text);
+.filter-form .form-control:disabled {
+	background-color: #e9ecef;
 	opacity: 0.6;
 	cursor: not-allowed;
 }
 
-.filter-sidebar .filter-input {
-	color: var(--filter-text);
-}
-
-.filter-sidebar .btn {
-	font-weight: 600;
-	padding: 0.75rem 1rem;
-	border-radius: 8px;
-	transition: all 0.2s;
-	margin-top: 1rem;
-}
-
-.filter-sidebar .btn-danger {
-	background: #dc3545;
-	border-color: #dc3545;
-	color: var(--blanc);
-}
-
-.filter-sidebar .btn-danger:hover:not(:disabled) {
-	background: #c82333;
-	border-color: #c82333;
-}
-
-.filter-sidebar .btn:disabled,
-.filter-sidebar .btn[disabled] {
-	background: var(--filter-button-hover);
-	border-color: var(--filter-border);
-	color: var(--filter-text);
-	opacity: 0.5;
-	cursor: not-allowed;
-}
-
-.filter-sidebar .alert {
-	background: var(--gris-select-assets);
-	border: 1px solid var(--filter-border);
-	color: var(--filter-text);
-	padding: 1rem;
-	border-radius: 6px;
-	margin-bottom: 0;
+.filter-form .alert {
+	font-size: 0.9rem;
 }
 
 /* ============================================================
-   OVERLAY/BACKDROP POUR LE FILTRE (optionnel)
+   CARTE (SIDEBAR DROIT)
 ============================================================ */
-.filter-sidebar::before {
-	content: '';
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.4);
-	z-index: -1;
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity 0.3s;
+
+.dossiers-map {
+	background: white;
+	border-radius: 8px;
+	border: 1px solid var(--border-color);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.filter-sidebar.show::before {
-	opacity: 1;
-	pointer-events: auto;
+.map-header {
+	background: var(--header-dark);
+	color: white;
+	padding: 1rem 1.5rem;
+	border-bottom: 1px solid var(--border-color);
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+.map-header i {
+	margin-right: 0.5rem;
+	color: #6CB4E5;
+}
+
+.map-container {
+	flex: 1;
+	min-height: 300px;
+	background: #f8f9fa;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.map-placeholder {
+	text-align: center;
+}
+
+.map-placeholder i {
+	color: #ccc;
+	display: block;
+	margin-bottom: 0.5rem;
+}
+
+/* Légende */
+.map-legend {
+	padding: 1rem 1.5rem;
+	border-top: 1px solid var(--border-color);
+	background: #fafbfc;
+}
+
+.map-legend h6 {
+	color: #495057;
+	margin-bottom: 1rem;
+	font-size: 0.8rem;
+	letter-spacing: 0.5px;
+}
+
+.legend-items {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.legend-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	font-size: 0.9rem;
+	color: #495057;
+}
+
+.legend-color {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border-radius: 3px;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	flex-shrink: 0;
+}
+
+.legend-label {
+	font-weight: 500;
 }
 
 /* ============================================================
    RESPONSIVE
 ============================================================ */
+
+@media (max-width: 992px) {
+	.dossiers-table-header .table-row,
+	.dossiers-table-body .table-row {
+		grid-template-columns: 40px 60px 1fr 100px 80px 80px 80px;
+		padding: 0.75rem 1rem;
+		font-size: 0.8rem;
+	}
+
+	.dossiers-toolbar .d-lg-inline {
+		display: none !important;
+	}
+}
+
 @media (max-width: 768px) {
-	.under-header-zone {
-		padding: 0.5rem 1rem;
+	.dossiers-table-header .table-row,
+	.dossiers-table-body .table-row {
+		grid-template-columns: 40px 50px 1fr 80px 60px 60px 60px;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.75rem;
 	}
 
-	.filter-toggle-btn {
-		padding: 6px 16px;
-		font-size: 0.9rem;
+	.dossiers-toolbar .d-md-inline {
+		display: none !important;
 	}
 
-	.filter-sidebar {
-		width: 100vw;
-		border-radius: 0;
-		padding: 1.5rem 1rem 1rem 1rem;
-		max-height: 100vh;
+	.dossiers-toolbar .btn-group {
+		flex-direction: column;
+		gap: 0.25rem;
 	}
 
-	.filter-header {
-		margin-bottom: 1.5rem;
+	.dossiers-wrapper {
+		min-height: calc(100vh - 240px);
 	}
+}
+
+@media (max-width: 576px) {
+	.dossiers-table-header .table-row,
+	.dossiers-table-body .table-row {
+		grid-template-columns: 40px 1fr;
+		gap: 0.5rem;
+	}
+
+	.dossiers-table-header .table-cell:not(.checkbox-cell):not(.title-cell),
+	.dossiers-table-body .table-cell:not(.checkbox-cell):not(.title-cell) {
+		display: none;
+	}
+
+	.dossiers-container {
+		padding: 1rem 0.5rem;
+	}
+
+	.dossiers-toolbar .d-sm-inline {
+		display: none !important;
+	}
+
+	.filter-offcanvas {
+		--bs-offcanvas-width: 100%;
+	}
+
+	.dossiers-map {
+		margin-top: 2rem;
+	}
+}
+
+/* ============================================================
+   ACCESSIBILITY
+============================================================ */
+
+.form-check-input:focus {
+	border-color: var(--primary-color);
+	box-shadow: 0 0 0 0.25rem rgba(33, 88, 189, 0.25);
+}
+
+.form-check-input:checked {
+	background-color: var(--primary-color);
+	border-color: var(--primary-color);
+}
+
+.btn:focus {
+	box-shadow: 0 0 0 0.25rem rgba(33, 88, 189, 0.25);
+}
+
+/* ============================================================
+   ANIMATIONS
+============================================================ */
+
+.dossiers-table-body .table-row {
+	animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(2px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Scroll bar styling pour la table */
+.dossiers-table-body::-webkit-scrollbar {
+	width: 8px;
+}
+
+.dossiers-table-body::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 4px;
+}
+
+.dossiers-table-body::-webkit-scrollbar-thumb {
+	background: #ccc;
+	border-radius: 4px;
+}
+
+.dossiers-table-body::-webkit-scrollbar-thumb:hover {
+	background: #999;
 }

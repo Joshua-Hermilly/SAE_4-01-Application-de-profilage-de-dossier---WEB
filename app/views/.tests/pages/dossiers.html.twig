@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% set css_page = '/css/pages/dossiers.css' %}
+{% set is_admin = true %}
+
+{% block content %}
+	
+	{# Données exemple pour démonstration #}
+	{% set dossiers = [
+		{
+			id: 1,
+			number: '001',
+			title: 'Dossier Commercial A',
+			ville: 'Paris',
+			filters: [
+				{ label: 'Type 1', value: 'Urgent' },
+				{ label: 'Type 2', value: 'En cours' },
+				{ label: 'Type 3', value: 'Q1 2026' }
+			]
+		},
+		{
+			id: 2,
+			number: '002',
+			title: 'Projet Innovation',
+			ville: 'Lyon',
+			filters: [
+				{ label: 'Type 1', value: 'Planifié' },
+				{ label: 'Type 2', value: 'En attente' },
+				{ label: 'Type 3', value: 'Q2 2026' }
+			]
+		},
+		{
+			id: 3,
+			number: '003',
+			title: 'Expansion Régionale',
+			ville: 'Marseille',
+			filters: [
+				{ label: 'Type 1', value: 'Normal' },
+				{ label: 'Type 2', value: 'Approuvé' },
+				{ label: 'Type 3', value: 'Q3 2026' }
+			]
+		},
+		{
+			id: 4,
+			number: '004',
+			title: 'Partenariat Stratégique',
+			ville: 'Toulouse',
+			filters: [
+				{ label: 'Type 1', value: 'Urgent' },
+				{ label: 'Type 2', value: 'Révision' },
+				{ label: 'Type 3', value: 'Q4 2026' }
+			]
+		},
+		{
+			id: 5,
+			number: '005',
+			title: 'Digitalisation',
+			ville: 'Bordeaux',
+			filters: [
+				{ label: 'Type 1', value: 'Normal' },
+				{ label: 'Type 2', value: 'En cours' },
+				{ label: 'Type 3', value: 'Q1 2027' }
+			]
+		},
+		{
+			id: 6,
+			number: '006',
+			title: 'Formation équipe',
+			ville: 'Nice',
+			filters: [
+				{ label: 'Type 1', value: 'Standard' },
+				{ label: 'Type 2', value: 'Planifié' },
+				{ label: 'Type 3', value: 'Q2 2027' }
+			]
+		}
+	] %}
+
+	{% set legend = [
+		{ name: 'Groupe A', color: '#2158BD' },
+		{ name: 'Groupe B', color: '#6CB4E5' },
+		{ name: 'Groupe C', color: '#A8D5BA' }
+	] %}
+
+	{% include 'components/content/zones/dossiers-section.html.twig' with {
+		rows: dossiers,
+		showMap: true,
+		legend: legend,
+		filters: [
+			{ label: 'Ville', name: 'ville', placeholder: 'Entrez une ville...', disabled: false },
+			{ label: 'Statut', name: 'statut', placeholder: 'Sélectionnez...', disabled: true },
+			{ label: 'Date min', name: 'date_min', placeholder: 'JJ/MM/AAAA', disabled: false }
+		]
+	} %}
+
+{% endblock %}

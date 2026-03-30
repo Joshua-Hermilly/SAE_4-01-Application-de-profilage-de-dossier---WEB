@@ -1,0 +1,50 @@
+{# 
+   Composant Table - Tableau des dossiers
+   
+   Paramètres:
+   - rows: array de lignes pour affichage [{ id, number, title, ville, filters }, ...]
+   - columns: array de définition de colonnes (utilisé dans table-header)
+   - showCheckbox: afficher colonne checkbox (défaut: true)
+#}
+
+<div class="dossiers-table">
+	
+	<!-- HEADER -->
+	{% include 'components/content/assets/table-header.html.twig' with {
+		columns: columns | default([
+			{ label: 'Numéro', width: '80px' },
+			{ label: 'Titre' },
+			{ label: 'Ville', width: '150px' },
+			{ label: 'Filtre 1', width: '120px' },
+			{ label: 'Filtre 2', width: '120px' },
+			{ label: 'Filtre 3', width: '120px' }
+		]),
+		showCheckbox: showCheckbox | default(true)
+	} %}
+
+	<!-- BODY -->
+	<div class="dossiers-table-body">
+		{% if rows is defined and rows is not empty %}
+			{% for row in rows %}
+				{% include 'components/content/assets/table-row.html.twig' with {
+					id: row.id,
+					number: row.number,
+					title: row.title,
+					ville: row.ville,
+					filters: row.filters | default([]),
+					showCheckbox: showCheckbox | default(true)
+				} %}
+			{% endfor %}
+		{% else %}
+			<div class="table-row empty-state">
+				<div class="table-cell" style="flex: 1; text-align: center; padding: 2rem;">
+					<p class="text-muted mb-0">
+						<i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i><br>
+						Aucun dossier trouvé
+					</p>
+				</div>
+			</div>
+		{% endif %}
+	</div>
+
+</div>

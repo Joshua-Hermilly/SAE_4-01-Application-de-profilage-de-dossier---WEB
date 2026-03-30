@@ -1,0 +1,50 @@
+{# 
+   Composant Table Row - Ligne de tableau
+   
+   Paramètres:
+   - id: id unique du dossier
+   - number: numéro/badge du dossier
+   - title: titre/nom du dossier
+   - ville: ville du dossier
+   - showCheckbox: afficher checkbox (défaut: true)
+   - filters: array de données de filtres [{ label: "...", value: "..." }, ...]
+#}
+
+<div class="table-row" tabindex="0" role="button" aria-label="Dossier {{ id }}">
+	
+	<!-- CHECKBOX -->
+	{% if showCheckbox | default(true) %}
+		<div class="table-cell checkbox-cell">
+			<input 
+				type="checkbox" 
+				class="form-check-input row-checkbox"
+				data-row-id="{{ id }}"
+			>
+		</div>
+	{% endif %}
+
+	<!-- NUMÉRO/BADGE -->
+	<div class="table-cell number-cell">
+		<span class="badge bg-primary">{{ number | default('N/A') }}</span>
+	</div>
+
+	<!-- TITRE -->
+	<div class="table-cell title-cell flex-grow-1">
+		<strong>{{ title | default('Sans titre') }}</strong>
+	</div>
+
+	<!-- VILLE -->
+	<div class="table-cell ville-cell">
+		<span class="text-muted">{{ ville | default('-') }}</span>
+	</div>
+
+	<!-- COLONNES DE FILTRES -->
+	{% if filters is defined and filters is not empty %}
+		{% for filter in filters %}
+			<div class="table-cell filter-cell">
+				<span class="text-muted small">{{ filter.value | default('-') }}</span>
+			</div>
+		{% endfor %}
+	{% endif %}
+
+</div>

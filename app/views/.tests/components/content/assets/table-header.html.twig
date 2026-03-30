@@ -1,0 +1,37 @@
+{# 
+   Composant Table Header - Entête de tableau
+   
+   Paramètres:
+   - columns: array de colonnes [{ label: "...", width?: "80px", align?: "center" }, ...]
+   - showCheckbox: afficher colonne checkbox (défaut: true)
+   - checkboxTitle: texte title du checkbox (défaut: "Sélectionner tout")
+#}
+
+<div class="dossiers-table-header">
+	<div class="table-row">
+		
+		<!-- CHECKBOX -->
+		{% if showCheckbox | default(true) %}
+			<div class="table-cell checkbox-cell">
+				<input 
+					type="checkbox" 
+					class="form-check-input select-all-checkbox"
+					title="{{ checkboxTitle | default('Sélectionner tout') }}"
+				>
+			</div>
+		{% endif %}
+
+		<!-- COLONNES -->
+		{% if columns is defined and columns is not empty %}
+			{% for column in columns %}
+				<div class="table-cell" {% if column.width %}style="flex: 0 0 {{ column.width }}"{% endif %}>
+					<span class="text-uppercase text-muted small fw-semibold">
+						{% if column.icon %}<i class="bi bi-{{ column.icon }}"></i> {% endif %}
+						{{ column.label }}
+					</span>
+				</div>
+			{% endfor %}
+		{% endif %}
+
+	</div>
+</div>

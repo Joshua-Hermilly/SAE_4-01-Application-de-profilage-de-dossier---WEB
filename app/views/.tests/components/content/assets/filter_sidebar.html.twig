@@ -1,0 +1,62 @@
+{# 
+   Composant Filtre Sidebar - Bootstrap Offcanvas
+   
+   Paramètres acceptés :
+   - filters: array de filtres [{ label: "...", name: "...", placeholder: "...", disabled: false }, ...]
+   - title: titre du filtre (défaut: "Filtres")
+   - buttonText: texte du bouton action (défaut: "Créer un groupe")
+   - buttonDisabled: booléen pour désactiver le bouton (défaut: true)
+   - containerId: id de la offcanvas (défaut: "filterOffcanvas")
+#}
+
+<div class="offcanvas offcanvas-start filter-offcanvas" tabindex="-1" id="{{ containerId | default('filterOffcanvas') }}" aria-labelledby="filterOffcanvasLabel">
+	
+	<!-- HEADER -->
+	<div class="offcanvas-header border-bottom">
+		<h5 class="offcanvas-title d-flex align-items-center gap-2" id="filterOffcanvasLabel">
+			<i class="bi bi-funnel"></i>
+			{{ title | default('Filtres') }}
+		</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
+	</div>
+
+	<!-- BODY -->
+	<div class="offcanvas-body">
+		<form class="filter-form">
+			
+			{% if filters is defined and filters is not empty %}
+				{% for filter in filters %}
+					<div class="mb-3">
+						<label for="filter_{{ filter.name }}" class="form-label">{{ filter.label }}</label>
+						<input 
+							type="text" 
+							class="form-control" 
+							id="filter_{{ filter.name }}" 
+							name="{{ filter.name }}"
+							placeholder="{{ filter.placeholder | default('À compléter...') }}"
+							{% if filter.disabled | default(false) %}disabled{% endif %}
+						>
+					</div>
+				{% endfor %}
+			{% else %}
+				<div class="alert alert-info small mb-3" role="alert">
+					Aucun filtre configuré
+				</div>
+			{% endif %}
+
+			<!-- BOUTON ACTION -->
+			<button 
+				type="button" 
+				class="btn btn-danger w-100 mt-4"
+				{% if buttonDisabled | default(true) %}disabled{% endif %}
+				aria-label="{{ buttonText | default('Action') }}"
+				data-bs-toggle="modal"
+				data-bs-target="#createGroupModal"
+			>
+				{{ buttonText | default('Créer un groupe') }}
+			</button>
+
+		</form>
+	</div>
+
+</div>

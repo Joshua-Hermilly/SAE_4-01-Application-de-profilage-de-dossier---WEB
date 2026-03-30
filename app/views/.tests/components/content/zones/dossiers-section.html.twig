@@ -1,0 +1,58 @@
+{# 
+   Zone Dossiers - Composition complète
+   
+   Paramètres:
+   - rows: array de dossiers à afficher
+   - showMap: afficher la carte (défaut: false)
+   - filters: array de filtres pour la sidebar
+   - legend: array de légende pour la carte
+#}
+
+<div class="dossiers-wrapper">
+	
+	<!-- TOOLBAR (sticky) -->
+	{% include 'components/content/assets/toolbar.html.twig' with {
+		showFilter: true,
+		filterTargetId: 'filterOffcanvas'
+	} %}
+
+	<!-- CONTENU PRINCIPAL -->
+	<div class="dossiers-content">
+		<div class="container-fluid px-4 py-4">
+			<div class="row g-4">
+				
+				<!-- TABLE (main content) -->
+				<div class="col-12 {% if showMap | default(false) %}col-lg-8{% endif %}">
+					{% include 'components/content/assets/table.html.twig' with {
+						rows: rows | default([]),
+						showCheckbox: true
+					} %}
+				</div>
+
+				<!-- MAP (sidebar droit optionnel) -->
+				{% if showMap | default(false) %}
+					<div class="col-12 col-lg-4">
+						{% include 'components/content/assets/map.html.twig' with {
+							legend: legend | default([])
+						} %}
+					</div>
+				{% endif %}
+
+			</div>
+		</div>
+	</div>
+
+	<!-- OFFCANVAS FILTRE -->
+	{% include 'components/content/assets/filter_sidebar.html.twig' with {
+		filters: filters | default([
+			{ label: 'Filtre 1', name: 'filter1', placeholder: 'Entrée...', disabled: true },
+			{ label: 'Filtre 2', name: 'filter2', placeholder: 'Entrée...', disabled: true },
+			{ label: 'Filtre 3', name: 'filter3', placeholder: 'Entrée...', disabled: false }
+		]),
+		title: 'Filtres',
+		buttonText: 'Créer un groupe',
+		buttonDisabled: true,
+		containerId: 'filterOffcanvas'
+	} %}
+
+</div>
