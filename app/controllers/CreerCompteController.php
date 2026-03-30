@@ -5,12 +5,20 @@ require_once '../app/trait/FormTrait.php';
 require_once '../app/repositories/CompteRepository.php';
 require_once '../app/entities/Compte.php';
 
-class RegisterController extends Controller
+class CreerCompteController extends Controller
 {
 	use FormTrait;
 
-	public function register(): void
+	public function creerCompte(): void
 	{
+		session_start();
+
+		if ( !isset($_SESSION['compte']) || !$_SESSION['compte']->getCompteIsAdmin())
+		{
+			 $this->redirectTo('index.php');
+			return;
+		}
+
 		$data   = [];
 		$errors = [];
 
@@ -51,7 +59,7 @@ class RegisterController extends Controller
 				$repo = new CompteRepository();
 				$repo->create($compte);
 
-				$this->redirectTo('login.php');
+				$this->redirectTo('admin.php');
 				return;
 			} else
 			{
@@ -61,6 +69,6 @@ class RegisterController extends Controller
 
 		}
 
-		$this->view('pages/register', 'Inscription', [ 'errors' => 'errors']) ;
+		$this->view('pages/creerCompte', 'Inscription', [ 'errors' => 'errors']) ;
 	}
 }

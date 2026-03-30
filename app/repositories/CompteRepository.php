@@ -39,12 +39,9 @@ class CompteRepository
 
 	public function createCompteFromRow(array $row): Compte
 	{
-		return new Compte
-		(
-			$row['compte_identifiant' ],
-			$row['compte_mdp'         ],
-			(string)$row['compte_isadmin']
-		);
+		$compte = new Compte($row['compte_identifiant'], $row['compte_mdp']);
+		$compte->setCompteIsAdmin((bool)$row['compte_isadmin']);
+		return $compte;
 	}
 
 	//Recherche
