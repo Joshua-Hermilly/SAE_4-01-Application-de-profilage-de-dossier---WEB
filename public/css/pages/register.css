@@ -1,0 +1,40 @@
+#transparent{
+	background-color: transparent;
+	border: none;
+}
+
+#bloc {
+	background-color: var(--gris-fond-assets);
+	color: var(--blanc);
+	border-radius: 15px;
+	border: none;
+	text-align: center;
+	margin: 0 50px;
+	padding: 0 20px;
+}
+
+#espacement {
+	margin: 20px 0;
+}
+
+#bouton {
+	background-color: var(--gris-select-assets);
+	color: var(--blanc);
+	border-radius: 15px;
+	border: none;
+	display: block;
+	margin: 0 auto;
+	cursor: pointer;
+}
+
+#bouton:hover {
+	background-color: var(--gris-text-fond-foncé);
+	border: 2px solid var(--gris-text-fond-foncé);
+	color: var(--noir-text-fond-claire);
+}
+
+#text {
+	color: var(--gris-text-fond-foncé);
+	text-decoration: none;
+}
+
