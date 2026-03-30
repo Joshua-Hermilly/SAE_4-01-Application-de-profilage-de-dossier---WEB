@@ -3,7 +3,7 @@
 require_once '../app/core/Repository.php';
 require_once '../app/entities/FormationSup.php';
 
-class FormationSupSupRepository
+class FormationSupRepository
 {
 	/*-------------------------------*/
 	/*          Attributs            */
@@ -18,32 +18,35 @@ class FormationSupSupRepository
 	/*-------------------------------*/
 	/*            Méthodes           */
 	/*-------------------------------*/
-	public function create(FormationSup $formationSup): ?FormationSup
+	public function create(FormationSup $formationSup)
 	{
-		$sql = "INSERT INTO formationSup 
-				(formation_id, formation_nom)
+		$sql = "INSERT INTO FORMATION_SUP 
+				(formation_nom)
 				VALUES 
-				(:id, :nom)";
+				(:nom)
+				RETURNING formation_id;";
 
 		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':id' , $formationSup->getFormationId());
 		$stmt->bindValue(':nom', $formationSup->getFormationNom());
 
-		if ($stmt->execute()) { return $formationSup; }
-		return null;
+		$stmt->execute();
+
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		$formationSup->setFormationId((int) $row['formation_id'] );
 	}
 
 	public function createFormationSupFromRow(array $row): FormationSup
 	{
-		return new FormationSup(
-			$row['formationSup_id'],
-			$row['formationSup_nom'],
+		return new FormationSup
+		(
+			$row['formation_id' ],
+			$row['formation_nom'],
 		);
 	}
 
-	public function getFormationSupById($id): ?FormationSup
+	public function findById($id): ?FormationSup
 	{
-		$sql = "SELECT * FROM formationSup WHERE formation_id = :id";
+		$sql = "SELECT * FROM FORMATION_SUP WHERE formation_id = :id";
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':id', $id, PDO::PARAM_INT);
 
@@ -53,5 +56,18 @@ class FormationSupSupRepository
 			if ($row) { return $this->createFormationSupFromRow($row); }
 		}
 		return null;
+	}
+
+	public function findAll(): array
+	{
+		$sql = "SELECT * FROM FORMATION_SUP";
+		$stmt = $this->pdo->query($sql);
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$result[] = $this->createFormationSupFromRow($row);
+		}
+		return $result;
 	}
 }

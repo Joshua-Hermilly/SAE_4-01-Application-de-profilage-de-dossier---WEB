@@ -23,7 +23,7 @@ class DiplomeRepository
 	/*-------------------------------*/
 	public function create(Diplome $diplome)
 	{
-		$sql = "INSERT INTO diplome 
+		$sql = "INSERT INTO DIPLOME 
 				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle)
 				VALUES 
 				(:type_code, :type_libelle, :serie_code, :serie_libelle)
@@ -35,10 +35,10 @@ class DiplomeRepository
 		$stmt->bindValue(':serie_code'   , $diplome->getDiplomeSerieCode   ());
 		$stmt->bindValue(':serie_libelle', $diplome->getDiplomeSerieLibelle());
 
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		$diplome->setDiplomeId( $row['diplome_id'] );
-
 		$stmt->execute();
+
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		$diplome->setDiplomeId((int) $row['diplome_id'] );
 	}
 
 	public function createDiplomeFromRow(array $row): Diplome

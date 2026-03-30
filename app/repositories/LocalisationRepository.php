@@ -49,27 +49,9 @@ class LocalisationRepository
 		$localisation->setLocalisationId((int) $this->pdo->lastInsertId());
 	}
 
-	public function update(Localisation $localisation): void
+	public function findById(int $id): ?Localisation
 	{
-		$sql = "UPDATE LOCALISATION SET
-					localisation_pays        = :pays,
-					localisation_code_postal = :code_postal,
-					localisation_commune     = :commune,
-					localisation_departement = :departement
-				WHERE localisation_id = :id";
-
-		$req = $this->pdo->prepare($sql);
-		$req->bindValue(':id'         , $localisation->getLocalisationId         ());
-		$req->bindValue(':pays'       , $localisation->getLocalisationPays       ());
-		$req->bindValue(':code_postal', $localisation->getLocalisationCodePostal ());
-		$req->bindValue(':commune'    , $localisation->getLocalisationCommune    ());
-		$req->bindValue(':departement', $localisation->getLocalisationDepartement());
-		$req->execute();
-	}
-
-	public function getLocalisationById(int $id): ?Localisation
-	{
-		$sql  = "SELECT * FROM localisation WHERE localisation_id = :id";
+		$sql  = "SELECT * FROM localisation WHERE localisation_id = :id LIMIT 1";
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
@@ -79,4 +61,38 @@ class LocalisationRepository
 
 		return null;
 	}
-}
+
+	public function findAll(): array
+	{
+		$sql = "SELECT * FROM LOCALISATION";
+		$stmt = $this->pdo->query($sql);
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$result[] = $this->createLocalisationFromRow($row);
+		}
+		return $result;
+	}
+
+	public function exist(Localisation $localisation): int
+	{
+		$sql  = "SELECT * FROM localisation 
+                 WHERE localisation_pays        = :pays
+				   AND localisation_code_postal = :code_postal
+				   AND localisation_commune     = :commune
+				   AND localisation_departement = :departement
+				 LIMIT 1";
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':pays'       , $localisation->getLocalisationPays       ());
+		$stmt->bindValue(':code_postal', $localisation->getLocalisationCodePostal ());
+		$stmt->bindValue(':commune'    , $localisation->getLocalisationCommune    ());
+		$stmt->bindValue(':departement', $localisation->getLocalisationDepartement());
+
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		if ($row) { return $row['localisation_id']; }
+		return -1;
+	}
+	}

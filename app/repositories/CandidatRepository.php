@@ -1,4 +1,4 @@
-<?php
+ <?PHP
 
 require_once '../app/core/Repository.php';
 require_once '../app/entities/Candidat.php';
@@ -41,7 +41,7 @@ class CandidatRepository
 		$stmt->bindValue(':boursier'     , $candidat->getCandidatBoursierCode());
 		$stmt->bindValue(':note_lycee'   , $candidat->getCandidatNoteLycee   ());
 		$stmt->bindValue(':note_fiche'   , $candidat->getCandidatNoteFiche   ());
-		$stmt->bindValue(':note_globale' , $candidat->getCandidatNoteGlobale ());
+		$stmt->bindValue(':note_globale' , $candidat->getCandidatNoteGlobal  ());
 		$stmt->bindValue(':commentaire'  , $candidat->getCandidatCommentaire ());
 		$stmt->bindValue(':diplome'      , $candidat->getDiplomeId           ());
 		$stmt->bindValue(':etablissement', $candidat->getEtablissementId     ());
@@ -65,7 +65,6 @@ class CandidatRepository
 				candidat_commentaire   = :commentaire,
 				etablissement_id       = :etablissement,
 				groupe_id              = :groupe,
-				formation_id           = :formation,
 				diplome_id             = :diplome
 				WHERE candidat_code = :code";
 
@@ -166,7 +165,7 @@ class CandidatRepository
 
 	public function findByEtablissementId(int $etablissement_id): array
 	{
-		$sql = "SELECT * FROM CANDIDAT WHERE etablissement_id = :etablissement_id";
+		$sql = "SELECT * FROM CANDIDAT WHERE etablissement_id = :etablissement_id LIMIT 1";
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':etablissement_id', $etablissement_id);
 		$stmt->execute();

@@ -13,7 +13,7 @@ class Specialite
 		private ?string $specialite_spe1,
 		private ?string $specialite_spe2,
 		private ?string $specialite_speAbd,
-		private int     $id_diplome
+		private int     $diplome_id
 	) {}
 
 
@@ -50,9 +50,9 @@ class Specialite
 		return $this->specialite_speAbd;
 	}
 
-	public function getIdDiplome(): int
+	public function getDiplomeId(): int
 	{
-		return $this->id_diplome;
+		return $this->diplome_id;
 	}
 
 
@@ -89,8 +89,8 @@ class Specialite
 		$this->specialite_speAbd = $specialite_speAbd;
 	}
 
-	public function setIdDiplome(int $id_diplome): void
+	public function setDiplomeId(int $diplomeId): void
 	{
-		$this->id_diplome = $id_diplome;
+		$this->diplome_id = $diplomeId;
 	}
 }

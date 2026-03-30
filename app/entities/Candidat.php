@@ -7,16 +7,16 @@ class Candidat
 	/*-------------------------------*/
 	function __construct
 	(
-		private int            $candidat_code,
-		private string         $candidat_nom,
-		private string         $candidat_prenom,
-		private string         $candidat_civilite,
-		private string         $candidat_profil,
-		private int            $candidat_boursier_code,
-		private ?float         $candidat_note_lycee,
-		private ?float         $candidat_note_fiche,
-		private ?float         $candidat_note_global,
-		private ?string        $candidat_commentaire,
+		private string  $candidat_code,
+		private string  $candidat_nom,
+		private string  $candidat_prenom,
+		private string  $candidat_civilite,
+		private string  $candidat_profil,
+		private int     $candidat_boursier_code,
+		private ?float  $candidat_note_lycee,
+		private ?float  $candidat_note_fiche,
+		private ?float  $candidat_note_global,
+		private ?string $candidat_commentaire,
 
 		// Relation exterieur
 		private ?int  $etablissement_id,

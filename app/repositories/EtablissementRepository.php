@@ -29,7 +29,7 @@ class EtablissementRepository
 		(
 			(int) $row['etablissement_id'],
 			$row['etablissement_nom'],
-			$row['localisation_id'] !== null ? (int) $row['localisation_id'] : null,
+			(new LocalisationRepository())->findById( (int) $row['localisation_id']),
 			$candidats
 		);
 	}
@@ -38,12 +38,16 @@ class EtablissementRepository
 	{
 		$sql = "INSERT INTO ETABLISSEMENT
 				(etablissement_nom, localisation_id)
-				VALUES (:nom, :localisation)";
+				VALUES (:nom, :localisation)
+				RETURNING etablissement_id";
 
 		$req = $this->pdo->prepare($sql);
 		$req->bindValue(':nom'         , $etablissement->getEtablissementNom()                     );
 		$req->bindValue(':localisation', $etablissement->getLocalisation    ()->getLocalisationId());
 		$req->execute();
+
+		$row = $req->fetch(PDO::FETCH_ASSOC);
+		$etablissement->setEtablissementId( (int) $row['etablissement_id'] );
 	}
 
 	public function update(Etablissement $etablissement): void
@@ -62,7 +66,7 @@ class EtablissementRepository
 
 	public function findById(int $id): ?Etablissement
 	{
-		$sql  = "SELECT * FROM ETABLISSEMENT WHERE etablissement_id = :id";
+		$sql  = "SELECT * FROM ETABLISSEMENT WHERE etablissement_id = :id LIMIT 1";
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
@@ -77,7 +81,7 @@ class EtablissementRepository
 
 	public function findAll(): array
 	{
-		$sql = "SELECT * FROM CANDIDAT";
+		$sql = "SELECT * FROM ETABLISSEMENT";
 		$stmt = $this->pdo->query($sql);
 
 		$result = [];
@@ -86,5 +90,22 @@ class EtablissementRepository
 			$result[] = $this->createEtablissementFromRow($row);
 		}
 		return $result;
+	}
+
+	public function exist(Etablissement $etablissement): int
+	{
+		$sql = "SELECT * FROM ETABLISSEMENT
+         		WHERE etablissement_nom = :nom
+         		  AND localisation_id   = :localisation
+         		LIMIT 1";
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':nom'         , $etablissement->getEtablissementNom()                     );
+		$stmt->bindValue(':localisation', $etablissement->getLocalisation    ()->getLocalisationId());
+
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		if ($row) { return $row['etablissement_id']; }
+		return -1;
 	}
 }

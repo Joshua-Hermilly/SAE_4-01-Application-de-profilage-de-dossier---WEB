@@ -18,44 +18,45 @@ class SpecialiteRepository
 	/*-------------------------------*/
 	/*            Méthodes           */
 	/*-------------------------------*/
-	public function create(Specialite $specialite): ?Specialite
+	public function create(Specialite $specialite)
 	{
-		$sql = "INSERT INTO specialite (specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_speAbd, id_diplome)
-		        VALUES (:opt1, :opt2, :spe1, :spe2, :speAbd, id_diplome)";
+		$sql = "INSERT INTO SPECIALITE 
+    				(specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_speabd, diplome_id)
+		        VALUES 
+		            (:opt1, :opt2, :spe1, :spe2, :speAbd, :diplome_id )
+		        RETURNING specialite_id;";
 
 		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':id'    , $specialite->getSpecialiteId    ());
-		$stmt->bindValue(':opt1'  , $specialite->getSpecialiteOpt1  ());
-		$stmt->bindValue(':opt2'  , $specialite->getSpecialiteOpt2  ());
-		$stmt->bindValue(':spe1'  , $specialite->getSpecialiteSpe1  ());
-		$stmt->bindValue(':spe2'  , $specialite->getSpecialiteSpe2  ());
-		$stmt->bindValue(':speAbd', $specialite->getSpecialiteSpeAbd());
+		$stmt->bindValue(':opt1'      , $specialite->getSpecialiteOpt1  ());
+		$stmt->bindValue(':opt2'      , $specialite->getSpecialiteOpt2  ());
+		$stmt->bindValue(':spe1'      , $specialite->getSpecialiteSpe1  ());
+		$stmt->bindValue(':spe2'      , $specialite->getSpecialiteSpe2  ());
+		$stmt->bindValue(':speAbd'    , $specialite->getSpecialiteSpeAbd());
+		$stmt->bindValue(':diplome_id', $specialite->getDiplomeId       ());
+		$stmt->execute();
+
 		$stmt->execute();
 
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		if ($row && isset($row['specialite_id']))
-		{
-			$specialite->setSpecialiteId((int)$row['specialite_id']);
-		}
-		return $specialite;
+		$specialite->setSpecialiteId((int) $row['specialite_id'] );
 	}
 
 	public function createSpecialiteFromRow(array $row): Specialite
 	{
 		return new Specialite(
 			(int)$row['specialite_id'    ],
-			     $row['specialite_opt1'  ] ?? null,
-			     $row['specialite_opt2'  ] ?? null,
-			     $row['specialite_spe1'  ] ?? null,
-			     $row['specialite_spe2'  ] ?? null,
-			     $row['specialite_speAbd'] ?? null,
-			     $row['id_diplome'       ]
+			$row['specialite_opt1'  ],
+			$row['specialite_opt2'  ],
+			$row['specialite_spe1'  ],
+			$row['specialite_spe2'  ],
+			$row['specialite_speabd'],
+			$row['diplome_id'       ]
 		);
 	}
 
-	public function getSpecialiteById($id): ?Specialite
+	public function findById($id): ?Specialite
 	{
-		$sql = "SELECT * FROM specialite WHERE specialite_id = :id";
+		$sql = "SELECT * FROM specialite WHERE specialite_id = :id LIMIT 1;";
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':id', $id, PDO::PARAM_INT);
 
@@ -65,6 +66,19 @@ class SpecialiteRepository
 			if ($row) { return $this->createSpecialiteFromRow($row); }
 		}
 		return null;
+	}
+
+	public function findAll()
+	{
+		$sql = "SELECT * FROM SPECIALITE";
+		$stmt = $this->pdo->query($sql);
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$result[] = $this->createSpecialiteFromRow($row);
+		}
+		return $result;
 	}
 
 }

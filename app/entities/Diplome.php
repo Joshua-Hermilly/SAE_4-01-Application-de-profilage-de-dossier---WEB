@@ -12,7 +12,6 @@ class Diplome
 		private string $diplome_type_libelle,
 		private string $diplome_serie_code,
 		private string $diplome_serie_libelle,
-		private string $diplome_statut,
 
 		// Relation
 		private array $candidats  = [],
@@ -46,12 +45,6 @@ class Diplome
 	{
 		return $this->diplome_serie_libelle;
 	}
-
-	public function getDiplomeStatut(): string
-	{
-		return $this->diplome_statut;
-	}
-
 	public function getCandidats(): array
 	{
 		return $this->candidats;
@@ -88,11 +81,6 @@ class Diplome
 	public function setDiplomeSerieLibelle(string $diplome_serie_libelle): void
 	{
 		$this->diplome_serie_libelle = $diplome_serie_libelle;
-	}
-
-	public function setDiplomeStatut(string $diplome_statut): void
-	{
-		$this->diplome_statut = $diplome_statut;
 	}
 
 	public function setCandidats(array $candidats): void

@@ -15,11 +15,19 @@
 </head>
 <body>
 	<div class="container">
-		<h1>Importer des données</h1>
-		<form method="post" enctype="multipart/form-data">
-			<input type="file" name="import_file" style="margin: 0 0 1rem 0;" />
-			<br />
-			<button type="submit">Importer</button>
+		{%  if error is not empty %}
+			<p>{{ error }}</p>
+		{% endif %}
+
+		<h1>Importer un fichier</h1>
+		<form method="POST" action="import.php" enctype="multipart/form-data">
+			<div>
+				<label for="file">Choisir un fichier</label>
+				<input type="file" id="file" name="file" required/>
+			</div>
+			<div>
+				<button type="submit">Envoyer le fichier</button>
+			</div>
 		</form>
 	</div>
 </body>

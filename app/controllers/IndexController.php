@@ -7,6 +7,6 @@ class IndexController extends Controller
 {
     public function index(): void
     {
-        $this->view('temp_import');
+        $this->view('index');
     }
 }
