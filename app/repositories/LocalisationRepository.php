@@ -49,6 +49,49 @@ class LocalisationRepository
 		$localisation->setLocalisationId((int) $this->pdo->lastInsertId());
 	}
 
+		public function creates(array $localisations): void
+	{
+		$valeurBrut = [];
+		$valeurBind = [];
+
+		for ($cpt = 0; $cpt < count($localisations); $cpt++)
+		{
+			$localisation = $localisations[$cpt];
+			$valeurBind[]  = "(:pays{$cpt}, :code_postal{$cpt}, :commune{$cpt}, :departement{$cpt})";
+
+			$valeurBrut[":pays{$cpt}"]        = $localisation->getLocalisationPays();
+			$valeurBrut[":code_postal{$cpt}"] = $localisation->getLocalisationCodePostal();
+			$valeurBrut[":commune{$cpt}"]     = $localisation->getLocalisationCommune();
+			$valeurBrut[":departement{$cpt}"] = $localisation->getLocalisationDepartement();
+		}
+
+		$sql = "INSERT INTO LOCALISATION 
+				(localisation_pays, localisation_code_postal, localisation_commune, localisation_departement)
+				VALUES " . implode(', ', $valeurBind) . "
+				RETURNING localisation_id";
+
+		$stmt = $this->pdo->prepare($sql);
+
+		for ($cpt = 0; $cpt < count($localisations); $cpt++)
+		{
+			$stmt->bindValue(":pays{$cpt}",        $valeurBrut[":pays{$cpt}"]);
+			$stmt->bindValue(":code_postal{$cpt}", $valeurBrut[":code_postal{$cpt}"]);
+			$stmt->bindValue(":commune{$cpt}",     $valeurBrut[":commune{$cpt}"]);
+			$stmt->bindValue(":departement{$cpt}", $valeurBrut[":departement{$cpt}"]);
+		}
+
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		for ($cpt = 0; $cpt < count($localisations); $cpt++)
+		{
+			if (isset($rows[$cpt]))
+			{
+				$localisations[$cpt]->setLocalisationId((int) $rows[$cpt]['localisation_id']);
+			}
+		}
+	}
+
 	public function findById(int $id): ?Localisation
 	{
 		$sql  = "SELECT * FROM localisation WHERE localisation_id = :id LIMIT 1";

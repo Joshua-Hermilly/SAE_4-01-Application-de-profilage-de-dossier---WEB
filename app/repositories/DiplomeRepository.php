@@ -41,6 +41,49 @@ class DiplomeRepository
 		$diplome->setDiplomeId((int) $row['diplome_id'] );
 	}
 
+	public function creates(array $diplomes)
+	{
+		$valeurBrut = [];
+		$valeurBind = [];
+
+		for ($cpt = 0; $cpt < count($diplomes); $cpt++) 
+		{
+			$diplome      = $diplomes[$cpt];
+			$valeurBind[] = "(:type_code{$cpt}, :type_libelle{$cpt}, :serie_code{$cpt}, :serie_libelle{$cpt})";
+			
+			$valeurBrut[":type_code{$cpt}"]    = $diplome->getDiplomeTypeCode    ();
+			$valeurBrut[":type_libelle{$cpt}"] = $diplome->getDiplomeTypeLibelle ();
+			$valeurBrut[":serie_code{$cpt}"]   = $diplome->getDiplomeSerieCode   ();
+			$valeurBrut[":serie_libelle{$cpt}"]= $diplome->getDiplomeSerieLibelle();
+		}
+
+		$sql = "INSERT INTO DIPLOME 
+				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle)
+				VALUES " . implode(', ', $valeurBind) . "
+				RETURNING diplome_id";
+
+		$stmt = $this->pdo->prepare($sql);
+		
+		for ($cpt = 0; $cpt < count($diplomes); $cpt++) 
+		{
+			$stmt->bindValue(":type_code{$cpt}"    , $valeurBrut[":type_code{$cpt}"    ]);
+			$stmt->bindValue(":type_libelle{$cpt}" , $valeurBrut[":type_libelle{$cpt}" ]);
+			$stmt->bindValue(":serie_code{$cpt}"   , $valeurBrut[":serie_code{$cpt}"   ]);
+			$stmt->bindValue(":serie_libelle{$cpt}", $valeurBrut[":serie_libelle{$cpt}"]);
+		}
+
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		for ($cpt = 0; $cpt < count($diplomes); $cpt++) 
+		{
+			if (isset($rows[$cpt])) 
+			{
+				$diplomes[$cpt]->setDiplomeId((int) $rows[$cpt]['diplome_id']);
+			}
+		}
+	}
+
 	public function createDiplomeFromRow(array $row): Diplome
 	{
 		return new Diplome

@@ -51,6 +51,61 @@ class CandidatRepository
 		$stmt->execute();
 	}
 
+	public function creates(array $candidats)
+	{
+		$valeurBrut = [];
+		$valeurBind = [];
+
+		for ($cpt = 0; $cpt < count($candidats); $cpt++)
+		{
+			$candidat     = $candidats[$cpt];
+			$valeurBind[] = "(:code{$cpt}, :nom{$cpt}, :prenom{$cpt}, :civilite{$cpt}, :profil{$cpt}, :boursier{$cpt}, :note_lycee{$cpt}, :note_fiche{$cpt}, :note_globale{$cpt}, :commentaire{$cpt}, :etablissement{$cpt},:groupe{$cpt}, :formation{$cpt}, :diplome{$cpt})";
+
+			$valeurBrut[":code{$cpt}"         ] = $candidat->getCandidatCode        ();
+			$valeurBrut[":nom{$cpt}"          ] = $candidat->getCandidatNom         ();
+			$valeurBrut[":prenom{$cpt}"       ] = $candidat->getCandidatPrenom      ();
+			$valeurBrut[":civilite{$cpt}"     ] = $candidat->getCandidatCivilite    ();
+			$valeurBrut[":profil{$cpt}"       ] = $candidat->getCandidatProfil      ();
+			$valeurBrut[":boursier{$cpt}"     ] = $candidat->getCandidatBoursierCode();
+			$valeurBrut[":note_lycee{$cpt}"   ] = $candidat->getCandidatNoteLycee   ();
+			$valeurBrut[":note_fiche{$cpt}"   ] = $candidat->getCandidatNoteFiche   ();
+			$valeurBrut[":note_globale{$cpt}" ] = $candidat->getCandidatNoteGlobal  ();
+			$valeurBrut[":commentaire{$cpt}"  ] = $candidat->getCandidatCommentaire ();
+			$valeurBrut[":etablissement{$cpt}"] = $candidat->getEtablissementId     ();
+			$valeurBrut[":groupe{$cpt}"       ] = $candidat->getGroupeId            ();
+			$valeurBrut[":formation{$cpt}"    ] = $candidat->getFormationId         ();
+			$valeurBrut[":diplome{$cpt}"      ] = $candidat->getDiplomeId           ();
+		}
+
+		$sql = "INSERT INTO CANDIDAT
+				(candidat_code, candidat_nom, candidat_prenom, candidat_civilite, candidat_profil, candidat_boursier_code,
+				 candidat_note_lycee, candidat_note_fiche, candidat_note_globale, candidat_commentaire,
+				 etablissement_id, groupe_id, formation_id, diplome_id)
+				VALUES " . implode(', ', $valeurBind);
+
+		$stmt = $this->pdo->prepare($sql);
+
+		for ($cpt = 0; $cpt < count($candidats); $cpt++)
+		{
+			$stmt->bindValue(":code{$cpt}"         , $valeurBrut[":code{$cpt}"         ]);
+			$stmt->bindValue(":nom{$cpt}"          , $valeurBrut[":nom{$cpt}"          ]);
+			$stmt->bindValue(":prenom{$cpt}"       , $valeurBrut[":prenom{$cpt}"       ]);
+			$stmt->bindValue(":civilite{$cpt}"     , $valeurBrut[":civilite{$cpt}"     ]);
+			$stmt->bindValue(":profil{$cpt}"       , $valeurBrut[":profil{$cpt}"       ]);
+			$stmt->bindValue(":boursier{$cpt}"     , $valeurBrut[":boursier{$cpt}"     ]);
+			$stmt->bindValue(":note_lycee{$cpt}"   , $valeurBrut[":note_lycee{$cpt}"   ]);
+			$stmt->bindValue(":note_fiche{$cpt}"   , $valeurBrut[":note_fiche{$cpt}"   ]);
+			$stmt->bindValue(":note_globale{$cpt}" , $valeurBrut[":note_globale{$cpt}" ]);
+			$stmt->bindValue(":commentaire{$cpt}"  , $valeurBrut[":commentaire{$cpt}"  ]);
+			$stmt->bindValue(":etablissement{$cpt}", $valeurBrut[":etablissement{$cpt}"]);
+			$stmt->bindValue(":groupe{$cpt}"       , $valeurBrut[":groupe{$cpt}"       ]);
+			$stmt->bindValue(":formation{$cpt}"    , $valeurBrut[":formation{$cpt}"    ]);
+			$stmt->bindValue(":diplome{$cpt}"      , $valeurBrut[":diplome{$cpt}"      ]);
+		}
+
+		$stmt->execute();
+	}
+
 	public function update(Candidat $candidat): bool
 	{
 		$sql = "UPDATE CANDIDAT SET

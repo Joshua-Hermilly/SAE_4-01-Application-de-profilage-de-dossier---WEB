@@ -38,6 +38,7 @@ class ImportService
 	private array $specialites;
 	private array $candidats;
 
+
 	/*-------------------------------*/
 	/* Construct                     */
 	/*-------------------------------*/
@@ -74,6 +75,9 @@ class ImportService
 			$data
 		);
 
+		$specialiteRelations   = [];
+		$candidatRelations     = [];
+
 		foreach ($lignes as $ligne)
 		{
 			$localisation  = $this->createLoc( $ligne                                         );
@@ -82,9 +86,51 @@ class ImportService
 			$formationSup  = $this->createFms( $ligne                                         );
 			$specialite    = $this->createSpt( $ligne, $diplome                               );
 			$candidat      = $this->createCdt( $ligne,$etablissement, $diplome, $formationSup );
+
+			$specialiteRelations[] = [
+				'specialite' => $specialite,
+				'diplome'    => $diplome
+			];
+
+			$candidatRelations[] = [
+				'candidat'      => $candidat,
+				'etablissement' => $etablissement,
+				'diplome'       => $diplome,
+				'formationSup'  => $formationSup
+			];
 		}
 
+		// Insertion  en base :
+		// - - - - - - - - - - -
+		$this->localisationRepository ->creates($this->localisations );
+		$this->etablissementRepository->creates($this->etablissements);
+		$this->formationsSupRepository->creates($this->formationsSup );
+		$this->diplomeRepository      ->creates($this->diplomes      );
+
+		for ($cpt = 0; $cpt < count($specialiteRelations); $cpt++)
+		{
+			$specialite = $specialiteRelations[$cpt]['specialite'];
+			$diplome    = $specialiteRelations[$cpt]['diplome'];
+
+			$specialite->setDiplomeId($diplome->getDiplomeId());
+		}
+		$this->specialiteRepository->creates($this->specialites);
+
+		for ($cpt = 0; $cpt < count($candidatRelations); $cpt++)
+		{
+			$candidat      = $candidatRelations[$cpt]['candidat'     ];
+			$etablissement = $candidatRelations[$cpt]['etablissement'];
+			$diplome       = $candidatRelations[$cpt]['diplome'      ];
+			$formationSup  = $candidatRelations[$cpt]['formationSup' ];
+
+			$candidat->setEtablissementId($etablissement?->getEtablissementId());
+			$candidat->setFormationId    ($formationSup ?->getFormationId    ());
+			$candidat->setDiplomeId      ($diplome       ->getDiplomeId      ());
+
+		}
+		$this->candidatRepository->creates($this->candidats);
 	}
+
 
 	/*-------------------------------*/
 	/* Create                        */
@@ -112,7 +158,7 @@ class ImportService
 
 		}
 
-		$this->localisationRepository->create($localisation);
+		//$this->localisationRepository->create($localisation);
 		$this->localisations[] = $localisation;
 		return $localisation;
 	}
@@ -135,7 +181,7 @@ class ImportService
 			}
 		}
 
-		$this->etablissementRepository->create($etablissement);
+		//$this->etablissementRepository->create($etablissement);
 		$this->etablissements[] = $etablissement;
 		return $etablissement;
 	}
@@ -163,7 +209,7 @@ class ImportService
 			}
 		}
 
-		$this->diplomeRepository->create($diplome);
+		//$this->diplomeRepository->create($diplome);
 		$this->diplomes[] = $diplome;
 		return $diplome;
 	}
@@ -191,7 +237,7 @@ class ImportService
 			}
 		}
 
-		$this->formationsSupRepository->create($formationSup);
+		//$this->formationsSupRepository->create($formationSup);
 		$this->formationsSup[] = $formationSup;
 		return $formationSup;
 	}
@@ -227,7 +273,7 @@ class ImportService
 			}
 		}
 
-		$this->specialiteRepository->create($specialite);
+		//$this->specialiteRepository->create($specialite);
 		$this->specialites[] = $specialite;
 		return $specialite;
 	}
@@ -261,7 +307,8 @@ class ImportService
 			}
 		}
 
-		$this->candidatRepository->create($candidat);
+		//$this->candidatRepository->create($candidat);
+		$this->candidats[] = $candidat;
 		return $candidat;
 	}
 

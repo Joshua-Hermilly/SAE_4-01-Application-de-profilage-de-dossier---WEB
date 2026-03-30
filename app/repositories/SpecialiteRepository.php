@@ -41,6 +41,54 @@ class SpecialiteRepository
 		$specialite->setSpecialiteId((int) $row['specialite_id'] );
 	}
 
+
+	public function creates(array $specialites): void
+	{
+		$valeurBrut = [];
+		$valeurBind = [];
+
+		for ($cpt = 0; $cpt < count($specialites); $cpt++)
+		{
+			$specialite = $specialites[$cpt];
+			$valeurBind[] = "(:opt1_{$cpt}, :opt2_{$cpt}, :spe1_{$cpt}, :spe2_{$cpt}, :speAbd_{$cpt}, :diplome_id_{$cpt})";
+
+			$valeurBrut[":opt1_{$cpt}"] = $specialite->getSpecialiteOpt1();
+			$valeurBrut[":opt2_{$cpt}"] = $specialite->getSpecialiteOpt2();
+			$valeurBrut[":spe1_{$cpt}"] = $specialite->getSpecialiteSpe1();
+			$valeurBrut[":spe2_{$cpt}"] = $specialite->getSpecialiteSpe2();
+			$valeurBrut[":speAbd_{$cpt}"] = $specialite->getSpecialiteSpeAbd();
+			$valeurBrut[":diplome_id_{$cpt}"] = $specialite->getDiplomeId();
+		}
+
+		$sql = "INSERT INTO SPECIALITE 
+				(specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_speabd, diplome_id)
+				VALUES " . implode(', ', $valeurBind) . "
+				RETURNING specialite_id";
+
+		$stmt = $this->pdo->prepare($sql);
+
+		for ($cpt = 0; $cpt < count($specialites); $cpt++)
+		{
+			$stmt->bindValue(":opt1_{$cpt}"      , $valeurBrut[":opt1_{$cpt}"      ]);
+			$stmt->bindValue(":opt2_{$cpt}"      , $valeurBrut[":opt2_{$cpt}"      ]);
+			$stmt->bindValue(":spe1_{$cpt}"      , $valeurBrut[":spe1_{$cpt}"      ]);
+			$stmt->bindValue(":spe2_{$cpt}"      , $valeurBrut[":spe2_{$cpt}"      ]);
+			$stmt->bindValue(":speAbd_{$cpt}"    , $valeurBrut[":speAbd_{$cpt}"    ]);
+			$stmt->bindValue(":diplome_id_{$cpt}", $valeurBrut[":diplome_id_{$cpt}"]);
+		}
+
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		for ($cpt = 0; $cpt < count($specialites); $cpt++)
+		{
+			if (isset($rows[$cpt]))
+			{
+				$specialites[$cpt]->setSpecialiteId((int)$rows[$cpt]['specialite_id']);
+			}
+		}
+	}
+
 	public function createSpecialiteFromRow(array $row): Specialite
 	{
 		return new Specialite(

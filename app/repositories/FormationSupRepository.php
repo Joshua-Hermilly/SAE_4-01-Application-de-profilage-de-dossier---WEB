@@ -35,6 +35,43 @@ class FormationSupRepository
 		$formationSup->setFormationId((int) $row['formation_id'] );
 	}
 
+	public function creates(array $formationSups)
+	{
+		$valeurBrut = [];
+		$valeurBind = [];
+
+		for ($cpt = 0; $cpt < count($formationSups); $cpt++)
+		{
+			$formationSup = $formationSups[$cpt];
+			$valeurBind[]  = "(:nom{$cpt})";
+
+			$valeurBrut[":nom{$cpt}"] = $formationSup->getFormationNom();
+		}
+
+		$sql = "INSERT INTO FORMATION_SUP 
+				(formation_nom)
+				VALUES " . implode(', ', $valeurBind) . "
+				RETURNING formation_id";
+
+		$stmt = $this->pdo->prepare($sql);
+
+		for ($cpt = 0; $cpt < count($formationSups); $cpt++)
+		{
+			$stmt->bindValue(":nom{$cpt}", $valeurBrut[":nom{$cpt}"]);
+		}
+
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		for ($cpt = 0; $cpt < count($formationSups); $cpt++)
+		{
+			if (isset($rows[$cpt]))
+			{
+				$formationSups[$cpt]->setFormationId((int) $rows[$cpt]['formation_id']);
+			}
+		}
+	}
+
 	public function createFormationSupFromRow(array $row): FormationSup
 	{
 		return new FormationSup

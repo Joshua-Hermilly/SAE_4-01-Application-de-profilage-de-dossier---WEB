@@ -50,6 +50,45 @@ class EtablissementRepository
 		$etablissement->setEtablissementId( (int) $row['etablissement_id'] );
 	}
 
+	public function creates(array $etablissements): void
+	{
+		$valeurBrut = [];
+		$valeurBind = [];
+
+		for ($cpt = 0; $cpt < count($etablissements); $cpt++)
+		{
+			$etablissement = $etablissements[$cpt];
+			$valeurBind[]  = "(:nom{$cpt}, :localisation{$cpt})";
+
+			$valeurBrut[":nom{$cpt}"]          = $etablissement->getEtablissementNom();
+			$valeurBrut[":localisation{$cpt}"] = $etablissement->getLocalisation()->getLocalisationId();
+		}
+
+		$sql = "INSERT INTO ETABLISSEMENT 
+				(etablissement_nom, localisation_id)
+				VALUES " . implode(', ', $valeurBind) . "
+				RETURNING etablissement_id";
+
+		$stmt = $this->pdo->prepare($sql);
+
+		for ($cpt = 0; $cpt < count($etablissements); $cpt++)
+		{
+			$stmt->bindValue(":nom{$cpt}"         , $valeurBrut[":nom{$cpt}"         ]);
+			$stmt->bindValue(":localisation{$cpt}", $valeurBrut[":localisation{$cpt}"]);
+		}
+
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		for ($cpt = 0; $cpt < count($etablissements); $cpt++)
+		{
+			if (isset($rows[$cpt]))
+			{
+				$etablissements[$cpt]->setEtablissementId((int) $rows[$cpt]['etablissement_id']);
+			}
+		}
+	}
+
 	public function update(Etablissement $etablissement): void
 	{
 		$sql = "UPDATE ETABLISSEMENT SET
