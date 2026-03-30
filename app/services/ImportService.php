@@ -140,10 +140,10 @@ class ImportService
 		$localisation = new Localisation
 		(
 			0,
-			$ligne['Pays Etablissement origine - Libellé 2024/2025'       ],
-			$ligne['Commune Etablissement origine - CodePostal 2024/2025' ],
-			$ligne['Commune Etablissement origine - Libellé 2024/2025'    ],
-			$ligne['Département Etablissement origine - Libellé 2024/2025'],
+			trim($ligne['Pays Etablissement origine - Libellé 2024/2025'       ]),
+			trim($ligne['Commune Etablissement origine - CodePostal 2024/2025' ]),
+			trim($ligne['Commune Etablissement origine - Libellé 2024/2025'    ]),
+			trim($ligne['Département Etablissement origine - Libellé 2024/2025']),
 		);
 
 		foreach ($this->localisations as $loc)
@@ -168,7 +168,7 @@ class ImportService
 		$etablissement = new Etablissement
 		(
 			0,
-			$ligne['Nom Etablissement origine 2024/2025'],
+			trim($ligne['Nom Etablissement origine 2024/2025']),
 			$localisation,
 		);
 
@@ -190,12 +190,11 @@ class ImportService
 	{
 		$diplome = new Diplome
 		(
-
 			0,
-			$ligne['Type Diplôme - Code'    ],
-			$ligne['Type Diplôme - Libellé' ],
-			$ligne['Série Diplôme - Code'   ],
-			$ligne['Série Diplôme - Libellé']
+			trim($ligne['Type Diplôme - Code'    ]),
+			trim($ligne['Type Diplôme - Libellé' ]),
+			trim($ligne['Série Diplôme - Code'   ]),
+			trim($ligne['Série Diplôme - Libellé'])
 		);
 
 		foreach ($this->diplomes as $dip)
@@ -216,8 +215,8 @@ class ImportService
 
 	private function createFms( $ligne ): ?FormationSup
 	{
-		$f1 = $ligne ['Filiere (pour scolarité du supérieur)- Libellé 2024/2025' ];
-		$f2 = $ligne ['Formation - Libellé (Saisie manuelle) 2024/2025'          ];
+		$f1 = trim($ligne ['Filiere (pour scolarité du supérieur)- Libellé 2024/2025' ]);
+		$f2 = trim($ligne ['Formation - Libellé (Saisie manuelle) 2024/2025'          ]);
 
 		if ( $f1 === $f2 ) { return null;    }
 		if ( isset($f1)  ) { $filiere = $f1; }
@@ -252,11 +251,11 @@ class ImportService
 		$specialite = new Specialite
 		(
 			0,
-			$ligne['Spécialité - Libellé'                             ],
-			$ligne['Spécialité / Mention - Libellé  2024/2025'        ],
+			trim($ligne['Spécialité - Libellé'                             ]),
+			trim($ligne['Spécialité / Mention - Libellé  2024/2025'        ]),
 			$spe1,
 			$spe2,
-			$ligne['Enseignement De spécialité abandonné en Première' ],
+			trim($ligne['Enseignement De spécialité abandonné en Première' ]),
 			$diplome->getDiplomeId()
 		);
 
@@ -282,16 +281,16 @@ class ImportService
 	{
 		$candidat = new Candidat
 		(
-			$ligne['Candidat - Code'          ],
-			$ligne['Candidat - Nom'           ],
-			$ligne['Candidat - Prénom'        ],
-			$ligne['Civilité'                 ],
-			$ligne['Profil Candidat - Libellé'],
-			$ligne['Candidat boursier - Code' ],
-			$this->getNoteOrNull($ligne['Note Globale Calculée']),
-			$this->getNoteOrNull($ligne['Note Fiche Avenir'    ]),
-			$this->getNoteOrNull($ligne['Note Lycée calculée'  ]),
-			$ligne['Commentaire'              ],
+			trim(                $ligne['Candidat - Code'          ]),
+			trim(                $ligne['Candidat - Nom'           ]),
+			trim(                $ligne['Candidat - Prénom'        ]),
+			trim(                $ligne['Civilité'                 ]),
+			trim(                $ligne['Profil Candidat - Libellé']),
+			trim(                $ligne['Candidat boursier - Code' ]),
+			$this->getNoteOrNull($ligne['Note Globale Calculée'    ]),
+			$this->getNoteOrNull($ligne['Note Fiche Avenir'        ]),
+			$this->getNoteOrNull($ligne['Note Lycée calculée'      ]),
+			trim(                $ligne['Commentaire'              ]),
 			$etablissement?->getEtablissementId(),
 			null,
 			$formationSup ?->getFormationId    (),
