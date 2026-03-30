@@ -1,0 +1,42 @@
+<div class="container min-vh-100 d-flex align-items-center">
+	<div class="row justify-content-center w-100">
+		<div class="col-md-6">
+
+			<div id="bloc" class="card">
+				<div class="card-body body p-4">
+					<h2 id="text" class="card-title">Créer un compte</h2>
+
+					{% if errors %}
+						<div class="alert alert-danger text-start">
+							<ul>
+								{% for error in errors %}
+									<li >{{ error }}</li>
+								{% endfor %}
+							</ul>
+						</div>
+					{% endif %}
+
+					<form method="POST" action="creerCompte.php">
+						<div id="espacement" class="mb-3">
+							<label id="text" for="compte_identifiant" class="form-label">Identifiant</label>
+							<input type="text" class="form-control" id="compte_identifiant" name="compte_identifiant" placeholder="Entrez votre identifiant" required>
+						</div>
+
+						<div id="espacement" class="mb-3">
+							<label id="text" for="compte_mdp" class="form-label">Mot de passe</label>
+							<input type="password" class="form-control" id="compte_mdp" name="compte_mdp" placeholder="Entrez votre mot de passe" required>
+						</div>
+
+						<div id="espacement" class="mb-3">
+							<label id="text" for="compte_mdp_confirm" class="form-label">Confirmer le mot de passe</label>
+							<input type="password" class="form-control" id="compte_mdp_confirm" name="compte_mdp_confirm" placeholder="Entrez à nouveau votre mot de passe" required>
+						</div>
+
+						<button id="bouton" type="submit" class="btn btn-login w-100">Créer le compte</button>
+					</form>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
