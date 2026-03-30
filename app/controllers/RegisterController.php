@@ -31,7 +31,6 @@ class RegisterController extends Controller
 				$errors[] = "Le nom d'utilisateur doit contenir entre 3 et 20 caractères (lettres, chiffres ou _).";
 			}
 
-
 			$pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/';
 			if (!preg_match($pattern, $compte_mdp))
 			{
@@ -45,7 +44,6 @@ class RegisterController extends Controller
 
 			if (empty($errors))
 			{
-				echo "envoye";
 				// Hash du mot de passe et insertion
 				$passwordHash = password_hash($compte_mdp, PASSWORD_DEFAULT);
 				$compte = new Compte($compte_identifiant, $passwordHash, "false");

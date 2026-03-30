@@ -25,6 +25,7 @@ class LoginController extends Controller
 
 			if ($compte !== null && password_verify($compte_mdp, $compte->getCompteMdp()))
 			{
+
 				// Démarrer la session si nécessaire
 				if (session_status() === PHP_SESSION_NONE)
 				{
@@ -33,14 +34,7 @@ class LoginController extends Controller
 				// Stocker l'objet Account dans la session
 				$_SESSION['compte'] = $compte;
 
-				if ( $compte->getCompteIsAdmin() )
-				{
-					$this->redirectTo('admin.php');
-				}
-				 else
-				{
-					$this->redirectTo('index.php');
-				}
+				$compte->getCompteIsAdmin() ? $this->redirectTo('admin.php') : $this->redirectTo('index.php');
 				return;
 			}
 
