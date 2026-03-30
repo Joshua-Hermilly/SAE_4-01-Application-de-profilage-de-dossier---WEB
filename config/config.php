@@ -2,34 +2,34 @@
 // Charger les variables du fichier .env manuellement
 function loadEnv($filePath)
 {
-    if (!file_exists($filePath)) {
-        return;
-    }
+	if (!file_exists($filePath)) {
+		return;
+	}
 
-    $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	$lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-    foreach ($lines as $line) {
-        // Ignorer les commentaires
-        if (strpos(trim($line), '#') === 0) {
-            continue;
-        }
+	foreach ($lines as $line) {
+		// Ignorer les commentaires
+		if (strpos(trim($line), '#') === 0) {
+			continue;
+		}
 
-        // Parser KEY=VALUE
-        if (strpos($line, '=') !== false) {
-            list($key, $value) = explode('=', $line, 2);
-            $key = trim($key);
-            $value = trim($value);
+		// Parser KEY=VALUE
+		if (strpos($line, '=') !== false) {
+			list($key, $value) = explode('=', $line, 2);
+			$key = trim($key);
+			$value = trim($value);
 
-            // Enlever les guillemets si présents
-            if ((strpos($value, '"') === 0 && strrpos($value, '"') === strlen($value) - 1) ||
-                (strpos($value, "'") === 0 && strrpos($value, "'") === strlen($value) - 1)
-            ) {
-                $value = substr($value, 1, -1);
-            }
+			// Enlever les guillemets si présents
+			if ((strpos($value, '"') === 0 && strrpos($value, '"') === strlen($value) - 1) ||
+				(strpos($value, "'") === 0 && strrpos($value, "'") === strlen($value) - 1)
+			) {
+				$value = substr($value, 1, -1);
+			}
 
-            $_ENV[$key] = $value;
-        }
-    }
+			$_ENV[$key] = $value;
+		}
+	}
 }
 
 // Charger .env au démarrage
