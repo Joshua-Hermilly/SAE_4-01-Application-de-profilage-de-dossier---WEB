@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
 
-	{% include 'components/head.html.twig' %}
+	{% include 'components/struct/head.html.twig' %}
 
 <body>
 
 <div class="background">
 
 	{% if show_header is not defined or show_header %}
-		{% include 'components/header.html.twig' %}
+		{% include 'components/struct/header.html.twig' %}
 	{% endif %}
 	
 	{% block content %}
 	{# Le contenu des pages s'insère ici #}
 	{% endblock %}
 
-	{% include 'components/footer.html.twig' %}
+	{% include 'components/struct/footer.html.twig' %}
 
 </div>
 

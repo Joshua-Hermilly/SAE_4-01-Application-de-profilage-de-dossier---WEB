@@ -4,7 +4,7 @@
 	--noir-text-fond-claire: #000000;
 	--gris-text-fond-foncé : #CBD5F5;
 	--gris-fond-info-tab   : #DEDEDE;
-	--bleu-icon            : #DEDEDE;
+	--bleu-icon            : #699EFF;
 	--bleu-fond-faide      : #2158BD;
 	--blanc                : #FFFFFF;
 }
@@ -20,6 +20,9 @@ body, html {
 	min-height: 100vh;
 	background: linear-gradient(to bottom, var(--bleu-fond-faide) 0%, var(--gris-fond-assets) 93%);
 }
+/* ============================================================
+   HEADER
+============================================================ */
 
 .main-header {
 	display: flex;
@@ -87,4 +90,16 @@ body, html {
 	font-weight: bold;
 	background: var(--gris-select-assets);
 	border: 2px solid var(--blanc);
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+
+.footer {
+	background-color: var(--gris-fond-assets);
+	color: var(--blanc);
+	font-size: 14px;
+	left: 0;
+	right: 0;
 }
