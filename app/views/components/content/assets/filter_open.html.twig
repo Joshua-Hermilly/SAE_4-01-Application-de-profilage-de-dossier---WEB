@@ -21,17 +21,17 @@
 								type="text"
 								id="filter_{{ filter.name }}"
 								name="{{ filter.name }}"
-								data-bac-tags="{{ filter.bac_tags | default([]) | join(',') }}"
 								placeholder="{{ filter.placeholder | default('À compléter...') }}" />
 						{% elseif filter.type == 'select' %}
 							<select
 								class="form-control"
 								id="filter_{{ filter.name }}"
-								name="{{ filter.name }}"
-								data-bac-tags="{{ filter.bac_tags | default([]) | join(',') }}">
-								<option value="">Sélectionnez...</option>
+									name="{{ filter.name }}">
+								<option
+										value="">Sélectionnez...</option>
 								{% for value, label in filter.options %}
-									<option value="{{ value }}">{{ label }}</option>
+									<option
+											value="{{ value }}">{{ label }}</option>
 								{% endfor %}
 							</select>
 						{% elseif filter.type == 'checkbox' %}
@@ -40,8 +40,7 @@
 									class="form-check-input"
 									type="checkbox"
 									id="filter_{{ filter.name }}"
-									name="{{ filter.name }}"
-									data-bac-tags="{{ filter.bac_tags | default([]) | join(',') }}" />
+										name="{{ filter.name }}" />
 								<label class="form-check-label" for="filter_{{ filter.name }}">
 									{{ filter.label }}
 								</label>
@@ -53,20 +52,20 @@
 									type="number"
 									id="filter_{{ filter.name }}_min"
 									name="{{ filter.name }}_min"
-									data-bac-tags="{{ filter.bac_tags | default([]) | join(',') }}"
 									placeholder="Min"
-									min="{{ filter.min | default('0') }}"
-									step="0.01" />
+									min="{{ filter.min is not null ? filter.min : 0 }}"
+									max="{{ filter.max is not null ? filter.max : 20 }}"
+									step="1" />
 								<span class="fw-bold">{{ filter.operator | default('>=') }}</span>
 								<input
 									class="form-control"
 									type="number"
 									id="filter_{{ filter.name }}_max"
 									name="{{ filter.name }}_max"
-									data-bac-tags="{{ filter.bac_tags | default([]) | join(',') }}"
 									placeholder="Max"
-									max="{{ filter.max | default('20') }}"
-									step="0.01" />
+									min="{{ filter.min is not null ? filter.min : 0 }}"
+									max="{{ filter.max is not null ? filter.max : 20 }}"
+									step="1" />
 							</div>
 						{% endif %}
 					</div>
