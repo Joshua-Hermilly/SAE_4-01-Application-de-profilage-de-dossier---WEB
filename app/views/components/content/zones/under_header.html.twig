@@ -3,12 +3,6 @@
 {% block content %}
 	{% include 'components/content/assets/filter_close.html.twig' %}
 
-	{% if pages == 'dossiers' %}
-		{% include 'components/content/assets/filter_dossiers.html.twig' %}
-	{% elseif pages == 'groupes' %}
-		{% include 'components/content/assets/filter_groupes.html.twig' %}
-	{% elseif pages == 'formations' %}
-		{% include 'components/content/assets/filter_formations.html.twig' %}
-	{% endif %}
+	{% include 'components/content/assets/filter_open.html.twig' %}
 
 {% endblock %}
