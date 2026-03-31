@@ -9,10 +9,10 @@ btn.addEventListener('click', function (event)
 	const annee     = document.getElementById( 'annee_promotion' ).value;
 	const fichier   = document.getElementById( 'file'            ).value;
 	const tabFile   = fichier.split('.');
-	const extention = tabFile[tabFile.length - 1];
+	const extension = tabFile[tabFile.length - 1];
 
-	if (annee    && /^\d$/.test(annee)                         &&
-		fichier  && ['xlsx', 'xls', 'csv'].includes(extention)    )
+	if (annee    && /^\d{4}$/.test(annee)                         &&
+		fichier  && ['xlsx', 'xls', 'csv'].includes(extension)    )
 	{
 		bloc.style.display = "none";
 		div.innerHTML      = GIF_CHARGEMENT;
