@@ -2,7 +2,7 @@
 // app/controllers/DossiersController.php
 
 require_once '../app/core/Controller.php';
-require_once '../app/core/Repository.php';
+require_once '../app/repositories/FiltreRepository.php';
 
 class DossiersController extends Controller
 {
@@ -12,11 +12,9 @@ class DossiersController extends Controller
 	public function dossiers(): void
 	{
 		$filterConfig = $this->buildFilterConfig();
+		$filtreRepo = new FiltreRepository();
 
-		$pdo           = Repository::getInstance()->getPDO();
-		$optionQueries = $this->getOptionQueries();
-
-		$this->hydrateSelectFilters($filterConfig, $optionQueries, $pdo);
+		$filtreRepo->hydrateSelectFilters($filterConfig);
 
 		$this->view(
 			'pages/dossiers',
@@ -152,66 +150,4 @@ class DossiersController extends Controller
 		];
 	}
 
-	private function getOptionQueries(): array
-	{
-		return [
-			'civilite'        => [
-				'sql'   => "SELECT DISTINCT candidat_civilite AS val FROM CANDIDAT WHERE candidat_civilite IS NOT NULL AND candidat_civilite <> '' ORDER BY candidat_civilite",
-				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-			],
-			'boursier'        => [
-				'sql'   => "SELECT DISTINCT candidat_boursier_code AS val FROM CANDIDAT WHERE candidat_boursier_code IS NOT NULL ORDER BY candidat_boursier_code",
-				'label' => static function (array $row): ?string
-				{
-					if (!isset($row['val'])) { return null; }
-					return match ((string) $row['val'])
-					{
-						'0' => 'Non boursier',
-						default => 'Boursier (' . $row['val'] . ')',
-					};
-				},
-			],
-			'type_bac'        => [
-				'sql'   => "SELECT DISTINCT diplome_type_libelle AS val FROM DIPLOME WHERE diplome_type_libelle IS NOT NULL AND diplome_type_libelle <> '' ORDER BY diplome_type_libelle",
-				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-			],
-			'serie_bac'       => [
-				'sql'   => "SELECT DISTINCT diplome_serie_code   AS val FROM DIPLOME WHERE diplome_serie_code IS NOT NULL AND diplome_serie_code    <> '' ORDER BY diplome_serie_code",
-				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-			],
-			'specialite_spe' => [
-				'sql'   => "SELECT DISTINCT TRIM(val) AS val FROM (SELECT specialite_spe1 AS val FROM SPECIALITE WHERE specialite_spe1 IS NOT NULL AND specialite_spe1 <> '' UNION ALL SELECT specialite_spe2 AS val FROM SPECIALITE WHERE specialite_spe2 IS NOT NULL AND specialite_spe2 <> '') AS all_specs WHERE TRIM(val) <> '' ORDER BY val",
-				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-			],
-			'departement'     => [
-				'sql'   => "SELECT DISTINCT localisation_departement AS val FROM LOCALISATION WHERE localisation_departement IS NOT NULL AND localisation_departement <> '' ORDER BY localisation_departement",
-				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-			],
-		];
-	}
-
-	private function hydrateSelectFilters(array &$config, array $optionQueries, \PDO $pdo): void
-	{
-		foreach ($config['sections'] as &$section)
-		{
-			foreach ($section['filters'] as &$filter)
-			{
-				if (($filter['type'] ?? '') !== 'select' && ($filter['type'] ?? '') !== 'multiselect') { continue; }
-				$name = $filter['name'] ?? null;
-				if (!$name || !isset($optionQueries[$name])) { continue; }
-				$query      = $optionQueries[$name];
-				$statement  = $pdo->query($query['sql']);
-				$options    = [];
-				while ($row = $statement->fetch(\PDO::FETCH_ASSOC))
-				{
-					$label = $query['label']($row);
-					if ($label === null || $label === '') { continue; }
-					$value           = $row['val'] ?? $label;
-					$options[$value] = $label;
-				}
-				if (!empty($options)) { $filter['options'] = $options; }
-			}
-		}
-		unset($section, $filter);
-	}
 }
