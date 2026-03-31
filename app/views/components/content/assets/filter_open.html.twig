@@ -16,6 +16,7 @@
 						<input type="text" class="form-control" id="filter_{{ filter.name }}" name="{{ filter.name }}" placeholder="{{ filter.placeholder | default('À compléter...') }}">
 					{% elseif filter.type == 'select' %}
 						<select class="form-control" id="filter_{{ filter.name }}" name="{{ filter.name }}">
+							<option value="">Sélectionnez...</option>
 							{% for value, label in filter.options %}
 								<option value="{{ value }}">{{ label }}</option>
 							{% endfor %}
