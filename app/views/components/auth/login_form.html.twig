@@ -4,37 +4,29 @@
 
 			<div id="bloc" class="card">
 				<div class="card-body body p-4">
-					<h2 id="text" class="card-title">Connexion</h3>
+					<h2 id="text" class="card-title">Connexion</h2>
 
-					<form method="POST" action="/login">
+					{% if withFailed|default(false) %}
+						<div class="alert alert-danger">
+							Identifiant ou mot de passe incorrect.
+						</div>
+					{% endif %}
+
+					<form method="POST" action="login.php">
 						<div id="espacement" class="mb-3">
 							<label id="text" for="identifier" class="form-label">Identifiant</label>
-							<input type="text" class="form-control" id="identifier" name="identifier" placeholder="Entrez votre identifiant" required>
+							<input type="text" class="form-control" id="identifier" name="compte_identifiant" placeholder="Entrez votre identifiant" required>
 						</div>
 
 						<div id="espacement" class="mb-3">
 							<label id="text" for="password" class="form-label">Mot de passe</label>
-							<input type="password" class="form-control" id="password" name="password" placeholder="Entrez votre mot de passe" required>
+							<input type="password" class="form-control" id="password" name="compte_mdp" placeholder="Entrez votre mot de passe" required>
 						</div>
 
-						<div id="espacement" class="form-check mb-3">
-							<label id="text"for="remember" class="form-check-label"> 
-								<input type="checkbox" class="form-check-input" id="remember" name="remember">
-								Se souvenir de moi
-							</label>
-						</div>
+						<hr id="separateur">
 
 						<button id="bouton" type="submit" class="btn btn-login w-100">Se connecter</button>
-
-						<a href="/register" id="text" class="forgot-password d-block mt-2">Mot de passe oublié?</a>
 					</form>
-
-					<hr id="separateur">
-
-					<label class="signup-link">
-						Pas encore inscrit? 
-						<a href="/register" id="text">Créer un compte</a>
-					</label>
 				</div>
 			</div>
 			
