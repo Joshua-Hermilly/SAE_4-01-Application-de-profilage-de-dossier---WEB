@@ -74,7 +74,8 @@ class DossiersController extends Controller
 					if ($label === null || $label === '') {
 						continue;
 					}
-					$options[$label] = $label;
+					$value = $row['val'] ?? $label;
+					$options[$value] = $label;
 				}
 				if (!empty($options)) {
 					$filter['options'] = $options;

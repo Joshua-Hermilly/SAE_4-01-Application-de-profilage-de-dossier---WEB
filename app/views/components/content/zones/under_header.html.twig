@@ -3,6 +3,9 @@
 {% block content %}
 	{% include 'components/content/assets/filter_close.html.twig' %}
 
-	{% include 'components/content/assets/filter_open.html.twig' %}
+	{% include 'components/content/assets/filter_open.html.twig' with {
+		title: filterConfig.title | default('Filtres'),
+		sections: filterConfig.sections | default([])
+	} %}
 
 {% endblock %}
