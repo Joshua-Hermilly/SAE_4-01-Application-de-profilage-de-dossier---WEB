@@ -3,6 +3,7 @@
 require_once '../app/core/Controller.php';
 require_once '../app/services/DossierCandidatService.php';
 require_once '../app/entities/DossierCandidat.php';
+require_once '../app/entities/Compte.php';
 
 
 class DossierGetController extends Controller
@@ -33,8 +34,9 @@ class DossierGetController extends Controller
 			return;
 		}
 
-		$page           = $_GET['page'] ?? null;
 		$serviceDossier = new DossierCandidatService();
+		$input          = json_decode(file_get_contents('php://input'), true);
+		$page           = $input['page'] ?? null;
 		$isAdmin        = false;
 
 		// Page définie ?
@@ -53,6 +55,10 @@ class DossierGetController extends Controller
 
 		// Il est admin ?
 		if (session_status() === PHP_SESSION_NONE)  session_start();
+		if ( !isset($_SESSION['compte']) )
+		{
+			$this->redirectTo('login.php');
+		}
 		if ( isset($_SESSION['compte']) && $_SESSION['compte']->getCompteIsAdmin())
 		{
 			$isAdmin = true;
@@ -72,8 +78,7 @@ class DossierGetController extends Controller
 	/*-------------------------------*/
 	private function validerToken()
 	{
-		$headers = getallheaders();
-		$token   = $headers['Token'] ?? '';
+		$token = $_SERVER['HTTP_TOKEN'] ?? '';
 		return $token === $this->TOKEN;
 	}
 

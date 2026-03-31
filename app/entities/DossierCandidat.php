@@ -26,7 +26,7 @@ class DossierCandidat implements JsonSerializable
 		private ?string $specicalite_spe2,
 
 		// Groupe
-		private ?string $groupe_couleur
+		private ?string $groupe_couleur = "#dedede"
 	) {}
 
 	/*-------------------------------*/
