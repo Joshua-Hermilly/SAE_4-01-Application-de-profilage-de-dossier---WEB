@@ -25,11 +25,11 @@ class CandidatRepository
 	{
 		$sql = "INSERT INTO CANDIDAT 
 				(candidat_code, candidat_nom, candidat_prenom, candidat_civilite, candidat_profil, candidat_boursier_code,
-				 candidat_note_lycee, candidat_note_fiche, candidat_note_globale, candidat_commentaire, 
+				 candidat_note_lycee, candidat_note_fiche, candidat_note_globale, candidat_commentaire, candidat_annee,
 				 etablissement_id, groupe_id, formation_id, diplome_id)
 				VALUES 
 				(:code, :nom, :prenom, :civilite, :profil, :boursier, 
-				 :note_lycee, :note_fiche, :note_globale, :commentaire, 
+				 :note_lycee, :note_fiche, :note_globale, :commentaire, :annne,
 				 :etablissement, :groupe, :formation, :diplome)";
 
 		$stmt = $this->pdo->prepare($sql);
@@ -43,6 +43,7 @@ class CandidatRepository
 		$stmt->bindValue(':note_fiche'   , $candidat->getCandidatNoteFiche   ());
 		$stmt->bindValue(':note_globale' , $candidat->getCandidatNoteGlobal  ());
 		$stmt->bindValue(':commentaire'  , $candidat->getCandidatCommentaire ());
+		$stmt->bindValue(':annee'        , $candidat->getCandidatAnnee       ());
 		$stmt->bindValue(':diplome'      , $candidat->getDiplomeId           ());
 		$stmt->bindValue(':etablissement', $candidat->getEtablissementId     ());
 		$stmt->bindValue(':groupe'       , $candidat->getGroupeId            ());
@@ -59,7 +60,7 @@ class CandidatRepository
 		for ($cpt = 0; $cpt < count($candidats); $cpt++)
 		{
 			$candidat     = $candidats[$cpt];
-			$valeurBind[] = "(:code{$cpt}, :nom{$cpt}, :prenom{$cpt}, :civilite{$cpt}, :profil{$cpt}, :boursier{$cpt}, :note_lycee{$cpt}, :note_fiche{$cpt}, :note_globale{$cpt}, :commentaire{$cpt}, :etablissement{$cpt},:groupe{$cpt}, :formation{$cpt}, :diplome{$cpt})";
+			$valeurBind[] = "(:code{$cpt}, :nom{$cpt}, :prenom{$cpt}, :civilite{$cpt}, :profil{$cpt}, :boursier{$cpt}, :note_lycee{$cpt}, :note_fiche{$cpt}, :note_globale{$cpt}, :commentaire{$cpt}, :annee{$cpt}, :etablissement{$cpt},:groupe{$cpt}, :formation{$cpt}, :diplome{$cpt})";
 
 			$valeurBrut[":code{$cpt}"         ] = $candidat->getCandidatCode        ();
 			$valeurBrut[":nom{$cpt}"          ] = $candidat->getCandidatNom         ();
@@ -71,6 +72,7 @@ class CandidatRepository
 			$valeurBrut[":note_fiche{$cpt}"   ] = $candidat->getCandidatNoteFiche   ();
 			$valeurBrut[":note_globale{$cpt}" ] = $candidat->getCandidatNoteGlobal  ();
 			$valeurBrut[":commentaire{$cpt}"  ] = $candidat->getCandidatCommentaire ();
+			$valeurBrut[":annee{$cpt}"        ] = $candidat->getCandidatAnnee       ();
 			$valeurBrut[":etablissement{$cpt}"] = $candidat->getEtablissementId     ();
 			$valeurBrut[":groupe{$cpt}"       ] = $candidat->getGroupeId            ();
 			$valeurBrut[":formation{$cpt}"    ] = $candidat->getFormationId         ();
@@ -79,7 +81,7 @@ class CandidatRepository
 
 		$sql = "INSERT INTO CANDIDAT
 				(candidat_code, candidat_nom, candidat_prenom, candidat_civilite, candidat_profil, candidat_boursier_code,
-				 candidat_note_lycee, candidat_note_fiche, candidat_note_globale, candidat_commentaire,
+				 candidat_note_lycee, candidat_note_fiche, candidat_note_globale, candidat_commentaire, candidat_annee,
 				 etablissement_id, groupe_id, formation_id, diplome_id)
 				VALUES " . implode(', ', $valeurBind);
 
@@ -97,6 +99,7 @@ class CandidatRepository
 			$stmt->bindValue(":note_fiche{$cpt}"   , $valeurBrut[":note_fiche{$cpt}"   ]);
 			$stmt->bindValue(":note_globale{$cpt}" , $valeurBrut[":note_globale{$cpt}" ]);
 			$stmt->bindValue(":commentaire{$cpt}"  , $valeurBrut[":commentaire{$cpt}"  ]);
+			$stmt->bindValue(":annee{$cpt}"        , $valeurBrut[":annee{$cpt}"        ]);
 			$stmt->bindValue(":etablissement{$cpt}", $valeurBrut[":etablissement{$cpt}"]);
 			$stmt->bindValue(":groupe{$cpt}"       , $valeurBrut[":groupe{$cpt}"       ]);
 			$stmt->bindValue(":formation{$cpt}"    , $valeurBrut[":formation{$cpt}"    ]);
@@ -117,6 +120,7 @@ class CandidatRepository
 				candidat_note_lycee    = :note_lycee,
 				candidat_note_fiche    = :note_fiche,
 				candidat_note_globale  = :note_globale,
+				candidat_annee         = :annee,
 				candidat_commentaire   = :commentaire,
 				etablissement_id       = :etablissement,
 				groupe_id              = :groupe,
@@ -134,6 +138,7 @@ class CandidatRepository
 		$stmt->bindValue(':note_fiche'   , $candidat->getCandidatNoteFiche   ());
 		$stmt->bindValue(':note_globale' , $candidat->getCandidatNoteGlobal  ());
 		$stmt->bindValue(':commentaire'  , $candidat->getCandidatCommentaire ());
+		$stmt->bindValue(':annee'        , $candidat->getCandidatAnnee       ());
 		$stmt->bindValue(':diplome'      , $candidat->getDiplomeId           ());
 		$stmt->bindValue(':etablissement', $candidat->getEtablissementId     ());
 		$stmt->bindValue(':groupe'       , $candidat->getGroupeId            ());
@@ -156,6 +161,7 @@ class CandidatRepository
 			$row['candidat_note_fiche'  ] !== null ? (float)$row['candidat_note_fiche'  ] : null,
 			$row['candidat_note_globale'] !== null ? (float)$row['candidat_note_globale'] : null,
 			$row['candidat_commentaire'],
+			(int)$row['candidat_annee'],
 			(int)$row['diplome_id'],
 			$row['etablissement_id'] !== null ? (int)$row['etablissement_id'] : null,
 			$row['groupe_id'       ] !== null ? (int)$row['groupe_id'       ] : null,
@@ -220,9 +226,25 @@ class CandidatRepository
 
 	public function findByEtablissementId(int $etablissement_id): array
 	{
-		$sql = "SELECT * FROM CANDIDAT WHERE etablissement_id = :etablissement_id LIMIT 1";
+		$sql = "SELECT * FROM CANDIDAT WHERE etablissement_id = :etablissement_id";
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':etablissement_id', $etablissement_id);
+		$stmt->execute();
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$result[] = $this->createCandidatFromRow($row);
+		}
+		return $result;
+
+	}
+
+	public function findByAnneeId(int $annee): array
+	{
+		$sql = "SELECT * FROM CANDIDAT WHERE candidat_annee = :annee";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':annee', $annee);
 		$stmt->execute();
 
 		$result = [];

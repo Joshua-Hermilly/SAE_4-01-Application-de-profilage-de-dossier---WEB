@@ -17,6 +17,7 @@ class Candidat
 		private ?float  $candidat_note_fiche,
 		private ?float  $candidat_note_global,
 		private ?string $candidat_commentaire,
+		private int     $candidat_annee,
 
 		// Relation exterieur
 		private ?int  $etablissement_id,
@@ -28,6 +29,11 @@ class Candidat
 	/*-------------------------------*/
 	/* Getters                       */
 	/*-------------------------------*/
+	public function getCandidatAnnee(): int
+	{
+		return $this->candidat_annee;
+	}
+
 	public function getCandidatCommentaire(): ?string
 	{
 		return $this->candidat_commentaire;
@@ -101,6 +107,11 @@ class Candidat
 	/*-------------------------------*/
 	/* Setters                       */
 	/*-------------------------------*/
+	public function setCandidatAnnee(int $annee): void
+	{
+		$this->candidat_annee = $annee;
+	}
+
 	public function setCandidatCode(int $candidat_code): void
 	{
 		$this->candidat_code = $candidat_code;
