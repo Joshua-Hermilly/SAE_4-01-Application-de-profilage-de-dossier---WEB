@@ -261,9 +261,9 @@ class ImportService
 		$combinaison = (string)($this->getCol($ligne, 'spe_combinaison') ?? '');
 		$parties = explode('/', $combinaison);
 
-		$spe1 = ($parties[0] ?? '') ?: null;
-		$spe2 = ($parties[1] ?? '') ?: null;
-		$spe3 = ($parties[3] ?? '') ?: null;
+		$spe1 = trim(($parties[0] ?? '')) ?: null;
+		$spe2 = trim(($parties[1] ?? '')) ?: null;
+		$spe3 = trim(($parties[3] ?? '')) ?: null;
 
 		$specialite = new Specialite
 		(
@@ -332,11 +332,10 @@ class ImportService
 	/*-------------------------------*/
 	private function getCol(array $ligne, string $key)
 	{
-	$val = $ligne[self::CLEES_COLONNES[$key]] ?? null;
+		$val = $ligne[self::CLEES_COLONNES[$key]] ?? null;
 
-	if ( isset($val) && trim($val) !== '' ) { return trim($val); }
-	return null;
-
+		if ( isset($val) && trim($val) !== '' ) { return trim($val); }
+		return null;
 	}
 
 	private function getNoteOrNull($value)
