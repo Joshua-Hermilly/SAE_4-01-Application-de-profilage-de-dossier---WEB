@@ -42,39 +42,6 @@ class DossiersController extends Controller
 						],
 					],
 				],
-				'notes' => [
-					'label' => 'Notes',
-					'join' => null,
-					'filters' => [
-						[
-							'name' => 'note_lycee_min',
-							'label' => 'Note Lycée (minimum)',
-							'column' => 'CANDIDAT.candidat_note_lycee',
-							'type' => 'number',
-							'operator' => '>=',
-							'min' => 0,
-							'max' => 20,
-						],
-						[
-							'name' => 'note_fiche_min',
-							'label' => 'Note Fiche Avenir (minimum)',
-							'column' => 'CANDIDAT.candidat_note_fiche',
-							'type' => 'number',
-							'operator' => '>=',
-							'min' => 0,
-							'max' => 20,
-						],
-						[
-							'name' => 'note_globale_min',
-							'label' => 'Note Globale (minimum)',
-							'column' => 'CANDIDAT.candidat_note_globale',
-							'type' => 'number',
-							'operator' => '>=',
-							'min' => 0,
-							'max' => 20,
-						],
-					],
-				],
 				'diplome' => [
 					'label' => 'Diplôme / Bac',
 					'join' => 'LEFT JOIN DIPLOME ON DIPLOME.diplome_id = CANDIDAT.diplome_id',
@@ -112,6 +79,39 @@ class DossiersController extends Controller
 							'column' => 'SPECIALITE.specialite_spe2',
 							'type' => 'select',
 							'options' => [],
+						],
+					],
+				],
+				'notes' => [
+					'label' => 'Notes',
+					'join' => null,
+					'filters' => [
+						[
+							'name' => 'note_lycee_min',
+							'label' => 'Note Lycée (minimum)',
+							'column' => 'CANDIDAT.candidat_note_lycee',
+							'type' => 'number',
+							'operator' => '>=',
+							'min' => 0,
+							'max' => 20,
+						],
+						[
+							'name' => 'note_fiche_min',
+							'label' => 'Note Fiche Avenir (minimum)',
+							'column' => 'CANDIDAT.candidat_note_fiche',
+							'type' => 'number',
+							'operator' => '>=',
+							'min' => 0,
+							'max' => 20,
+						],
+						[
+							'name' => 'note_globale_min',
+							'label' => 'Note Globale (minimum)',
+							'column' => 'CANDIDAT.candidat_note_globale',
+							'type' => 'number',
+							'operator' => '>=',
+							'min' => 0,
+							'max' => 20,
 						],
 					],
 				],
@@ -173,37 +173,34 @@ class DossiersController extends Controller
 			],
 		];
 
-		// Remplir dynamiquement les options des filtres select à partir de la BD
-		foreach ($config['sections'] as &$section) {
-			foreach ($section['filters'] as &$filter) {
-				if (($filter['type'] ?? '') !== 'select') {
-					continue;
-				}
+		foreach ($config['sections'] as &$section)
+		{
+			foreach ($section['filters'] as &$filter)
+			{
+				if (($filter['type'] ?? '') !== 'select') { continue; }
 				$name = $filter['name'] ?? null;
-				if (!$name || !isset($optionQueries[$name])) {
-					continue;
-				}
-				$query = $optionQueries[$name];
+
+				if (!$name || !isset($optionQueries[$name])) { continue; }
+				$query     = $optionQueries[$name];
 				$statement = $pdo->query($query['sql']);
-				$options = [];
-				while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
+				$options   = [];
+
+				while ($row = $statement->fetch(\PDO::FETCH_ASSOC))
+				{
 					$label = $query['label']($row);
-					if ($label === null || $label === '') {
-						continue;
-					}
-					$value = $row['val'] ?? $label;
+					if ($label === null || $label === '') { continue; }
+					
+					$value           = $row['val'] ?? $label;
 					$options[$value] = $label;
 				}
-				if (!empty($options)) {
-					$filter['options'] = $options;
-				}
+				if (!empty($options)) { $filter['options'] = $options; }
 			}
 		}
 		unset($section, $filter);
 
-		$this->view('pages/dossiers', 'Dossiers', [
-			'filterConfig' => $config,
-			'pages' => 'dossiers'
-		]);
+		$this->view( 'pages/dossiers', 'Dossiers', [
+				'filterConfig' => $config,
+				'pages'        => 'dossiers', ]
+		);
 	}
 }
