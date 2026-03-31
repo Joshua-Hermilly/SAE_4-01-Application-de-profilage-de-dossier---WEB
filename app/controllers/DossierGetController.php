@@ -62,6 +62,7 @@ class DossierGetController extends Controller
 		$this->json
 		([
 			'isAdmin'  => $isAdmin,
+			'header'   => $this->getHeader(),
 			'dossiers' => $this->dossierCandidats
 		]);
 	}
@@ -74,5 +75,23 @@ class DossierGetController extends Controller
 		$headers = getallheaders();
 		$token   = $headers['Token'] ?? '';
 		return $token === $this->TOKEN;
+	}
+
+	private function getHeader()
+	{
+		return
+		[
+			'Code'                 ,
+			'Civilite'             ,
+			'Code boursier'        ,
+			'Note de lycée'        ,
+			'Note de fiche avenir' ,
+			'Note de globale'      ,
+			'Etablissement'        ,
+			'Diplome'              ,
+			'Spécicalite 2'        ,
+			'Spécicalite 1'        ,
+			'Couleur'              ,
+		];
 	}
 }
