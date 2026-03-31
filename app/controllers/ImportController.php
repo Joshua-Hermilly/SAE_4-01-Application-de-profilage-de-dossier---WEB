@@ -11,8 +11,15 @@ class ImportController extends Controller
 {
 	public function import()
 	{
+		if (session_status() === PHP_SESSION_NONE)  session_start();
 		if ($_SERVER['REQUEST_METHOD'] === 'POST' )
 		{
+			if (empty($_SESSION['compte']))
+			{
+				$this->redirectTo('login.php');
+				return;
+			}
+
 			// Fichier présent
 			//if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK)
 			//{

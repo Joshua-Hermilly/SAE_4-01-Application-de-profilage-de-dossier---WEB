@@ -259,16 +259,20 @@ class ImportService
 	private function createSpt(array $ligne, $diplome): ?Specialite
 	{
 		$combinaison = (string)($this->getCol($ligne, 'spe_combinaison') ?? '');
-		$parties     = explode('/', $combinaison, 2);
-		$spe1        = isset($parties[0]) && $parties[0] !== '' ? trim($parties[0]) : null;
-		$spe2        = isset($parties[1]) && $parties[1] !== '' ? trim($parties[1]) : null;
+		$parties = explode('/', $combinaison);
 
-		$specialite = new Specialite(
+		$spe1 = ($parties[0] ?? '') ?: null;
+		$spe2 = ($parties[1] ?? '') ?: null;
+		$spe3 = ($parties[3] ?? '') ?: null;
+
+		$specialite = new Specialite
+		(
 			0,
 			$this->getCol($ligne, 'spe_libelle'   ),
 			$this->getCol($ligne, 'spe_mention'   ),
 			$spe1,
 			$spe2,
+			$spe3,
 			$this->getCol($ligne, 'spe_abandonnee'),
 			$diplome->getDiplomeId()
 		);
@@ -279,6 +283,7 @@ class ImportService
 				$spe->getSpecialiteOpt2  () === $specialite->getSpecialiteOpt2  () &&
 				$spe->getSpecialiteSpe1  () === $specialite->getSpecialiteSpe1  () &&
 				$spe->getSpecialiteSpe2  () === $specialite->getSpecialiteSpe2  () &&
+				$spe->getSpecialiteSpe3  () === $specialite->getSpecialiteSpe3  () &&
 				$spe->getSpecialiteSpeAbd() === $specialite->getSpecialiteSpeAbd() &&
 				$spe->getDiplomeId       () === $specialite->getDiplomeId       ()   )
 			{
@@ -327,10 +332,11 @@ class ImportService
 	/*-------------------------------*/
 	private function getCol(array $ligne, string $key)
 	{
-		$val = $ligne[self::CLEES_COLONNES[$key]] ?? null;
-		
-		if ( isset($val) ) { return trim($val);	}
-		return null;
+	$val = $ligne[self::CLEES_COLONNES[$key]] ?? null;
+
+	if ( isset($val) && trim($val) !== '' ) { return trim($val); }
+	return null;
+
 	}
 
 	private function getNoteOrNull($value)

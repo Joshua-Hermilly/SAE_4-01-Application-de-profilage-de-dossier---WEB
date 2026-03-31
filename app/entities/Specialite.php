@@ -12,7 +12,9 @@ class Specialite
 		private ?string $specialite_opt2,
 		private ?string $specialite_spe1,
 		private ?string $specialite_spe2,
+		private ?string $specialite_spe3,
 		private ?string $specialite_speAbd,
+
 		private int     $diplome_id
 	) {}
 
@@ -43,6 +45,11 @@ class Specialite
 	public function getSpecialiteSpe2(): ?string
 	{
 		return $this->specialite_spe2;
+	}
+
+	public function getSpecialiteSpe3(): ?string
+	{
+		return $this->specialite_spe3;
 	}
 
 	public function getSpecialiteSpeAbd(): ?string
@@ -82,6 +89,11 @@ class Specialite
 	public function setSpecialiteSpe2(?string $specialite_spe2): void
 	{
 		$this->specialite_spe2 = $specialite_spe2;
+	}
+
+	public function setSpecialiteSpe3(?string $specialite_spe3): void
+	{
+		$this->specialite_spe3 = $specialite_spe3;
 	}
 
 	public function setSpecialiteSpeAbd(?string $specialite_speAbd): void

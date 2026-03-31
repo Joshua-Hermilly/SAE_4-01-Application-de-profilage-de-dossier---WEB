@@ -8,7 +8,7 @@ class Etablissement
 	public function __construct
 	(
 		private int           $etablissement_id,
-		private string        $etablissement_nom,
+		private ?string       $etablissement_nom,
 
 		private Localisation  $localisation,
 		private array         $candidats  = []
@@ -17,12 +17,12 @@ class Etablissement
 	/*-------------------------------*/
 	/*  Getters                      */
 	/*-------------------------------*/
-	public function getEtablissementId(): int
+	public function getEtablissementId(): ?int
 	{
 		return $this->etablissement_id;
 	}
 
-	public function getEtablissementNom(): string
+	public function getEtablissementNom(): ?string
 	{
 		return $this->etablissement_nom;
 	}
