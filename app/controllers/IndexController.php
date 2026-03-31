@@ -16,6 +16,6 @@ class IndexController extends Controller
 			return;
 		}
 
-		$this->view('pages/dossiers', 'Dossiers');
+		$this->redirectTo('dossiers.php');
 	}
 }
