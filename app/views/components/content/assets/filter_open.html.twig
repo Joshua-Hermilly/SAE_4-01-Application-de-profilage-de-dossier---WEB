@@ -26,12 +26,20 @@
 							<select
 								class="form-control"
 								id="filter_{{ filter.name }}"
-									name="{{ filter.name }}">
-								<option
-										value="">Sélectionnez...</option>
+								name="{{ filter.name }}">
+								<option value="">Sélectionnez...</option>
 								{% for value, label in filter.options %}
-									<option
-											value="{{ value }}">{{ label }}</option>
+									<option value="{{ value }}">{{ label }}</option>
+								{% endfor %}
+							</select>
+						{% elseif filter.type == 'multiselect' %}
+							<select
+								class="form-control"
+								id="filter_{{ filter.name }}"
+								name="{{ filter.name }}[]"
+								multiple>
+								{% for value, label in filter.options %}
+									<option value="{{ value }}">{{ label }}</option>
 								{% endfor %}
 							</select>
 						{% elseif filter.type == 'checkbox' %}
@@ -40,10 +48,8 @@
 									class="form-check-input"
 									type="checkbox"
 									id="filter_{{ filter.name }}"
-										name="{{ filter.name }}" />
-								<label class="form-check-label" for="filter_{{ filter.name }}">
-									{{ filter.label }}
-								</label>
+									name="{{ filter.name }}" />
+								<label class="form-check-label" for="filter_{{ filter.name }}"> {{ filter.label }} </label>
 							</div>
 						{% elseif filter.type == 'number' %}
 							<div class="d-flex gap-2 align-items-center">

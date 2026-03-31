@@ -91,20 +91,13 @@ class DossiersController extends Controller
 				],
 				'specialites' => [
 					'label'   => 'Spécialités',
-					'join'    => 'LEFT JOIN SPECIALITE ON SPECIALITE.diplome_id = DIPLOME.diplome_id',
+					'join'    => 'LEFT JOIN SPECIALITE ON SPECIALITE.diplome_id = CANDIDAT.diplome_id',
 					'filters' => [
 						[
-							'name'     => 'specialite_spe1',
-							'label'    => 'Spécialité 1',
+							'name'     => 'specialite_spe',
+							'label'    => 'Spécialités',
 							'column'   => 'SPECIALITE.specialite_spe1',
-							'type'     => 'select',
-							'options'  => [],
-						],
-						[
-							'name'     => 'specialite_spe2',
-							'label'    => 'Spécialité 2',
-							'column'   => 'SPECIALITE.specialite_spe2',
-							'type'     => 'select',
+							'type'     => 'multiselect',
 							'options'  => [],
 						],
 					],
@@ -186,12 +179,8 @@ class DossiersController extends Controller
 				'sql'   => "SELECT DISTINCT diplome_serie_code   AS val FROM DIPLOME WHERE diplome_serie_code IS NOT NULL AND diplome_serie_code    <> '' ORDER BY diplome_serie_code",
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
-			'specialite_spe1' => [
-				'sql'   => "SELECT DISTINCT specialite_spe1 AS val FROM SPECIALITE WHERE specialite_spe1 IS NOT NULL AND specialite_spe1 <> '' ORDER BY specialite_spe1",
-				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-			],
-			'specialite_spe2' => [
-				'sql'   => "SELECT DISTINCT specialite_spe2 AS val FROM SPECIALITE WHERE specialite_spe2 IS NOT NULL AND specialite_spe2 <> '' ORDER BY specialite_spe2",
+			'specialite_spe' => [
+				'sql'   => "SELECT DISTINCT TRIM(val) AS val FROM (SELECT specialite_spe1 AS val FROM SPECIALITE WHERE specialite_spe1 IS NOT NULL AND specialite_spe1 <> '' UNION ALL SELECT specialite_spe2 AS val FROM SPECIALITE WHERE specialite_spe2 IS NOT NULL AND specialite_spe2 <> '') AS all_specs WHERE TRIM(val) <> '' ORDER BY val",
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
 			'departement'     => [
@@ -207,7 +196,7 @@ class DossiersController extends Controller
 		{
 			foreach ($section['filters'] as &$filter)
 			{
-				if (($filter['type'] ?? '') !== 'select') { continue; }
+				if (($filter['type'] ?? '') !== 'select' && ($filter['type'] ?? '') !== 'multiselect') { continue; }
 				$name = $filter['name'] ?? null;
 				if (!$name || !isset($optionQueries[$name])) { continue; }
 				$query      = $optionQueries[$name];

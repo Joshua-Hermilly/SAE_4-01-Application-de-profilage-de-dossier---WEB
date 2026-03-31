@@ -119,36 +119,15 @@ return [
 				'join' => 'LEFT JOIN SPECIALITE ON SPECIALITE.diplome_id = DIPLOME.diplome_id',
 				'filters' => [
 					[
-						'name' => 'specialite_spe1',
-						'label' => 'Spécialité 1',
-						'column' => 'SPECIALITE.specialite_spe1',
-						'type' => 'select',
-						'options' => [
-							'SVT' => 'SVT',
-							'Physique-Chimie' => 'Physique-Chimie',
-							'Mathématiques' => 'Mathématiques',
-							'NSI' => 'NSI',
-							'SES' => 'SES',
-							'HGGSP' => 'HGGSP',
-							'Philosophie' => 'Philosophie'
-						]
-					],
-					[
-						'name' => 'specialite_spe2',
-						'label' => 'Spécialité 2',
-						'column' => 'SPECIALITE.specialite_spe2',
-						'type' => 'select',
-						'options' => [
-							'SVT' => 'SVT',
-							'Physique-Chimie' => 'Physique-Chimie',
-							'Mathématiques' => 'Mathématiques',
-							'NSI' => 'NSI',
-							'SES' => 'SES',
-							'HGGSP' => 'HGGSP',
-							'Philosophie' => 'Philosophie'
-						]
-					]
-				]
+					'name' => 'specialite_spe',
+					'label' => 'Spécialités',
+					'columns' => ['SPECIALITE.specialite_spe1', 'SPECIALITE.specialite_spe2', 'SPECIALITE.specialite_spe3'],
+					'type' => 'multiselect',
+					'options' => [
+						'SVT' => 'SVT',
+						'Physique-Chimie' => 'Physique-Chimie',
+						'Mathématiques' => 'Mathématiques',
+						'NSI' => 'NSI',
 			],
 
 			// Section Établissement — Lycée et localisation
