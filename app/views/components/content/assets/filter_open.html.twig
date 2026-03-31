@@ -9,33 +9,35 @@
 	{% for section in sections %}
 		<div>
 			<label> {{section.label}} </label>
-			{%  for filter in section.filters %}
-				<label> {{filter.label}} </label>
-				{% if filter.type == 'text' %}
-					<input type="text" class="form-control" id="filter_{{ filter.name }}" name="{{ filter.name }}" placeholder="{{ filter.placeholder | default('À compléter...') }}">
-				{% elseif filter.type == 'select' %}
-					<select class="form-control" id="filter_{{ filter.name }}" name="{{ filter.name }}">
-						{% for value, label in filter.options %}
-							<option value="{{ value }}">{{ label }}</option>
-						{% endfor %}
-					</select>
-				{% elseif filter.type == 'checkbox' %}
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" id="filter_{{ filter.name }}" name="{{ filter.name }}">
-						<label class="form-check-label" for="filter_{{ filter.name }}">
-							{{ filter.label }}
-						</label>
-					</div>
-				{% elseif filter.type == 'number' %}
-					<div class="d-flex gap-2 align-items-center">
-						<input type="number" class="form-control" id="filter_{{ filter.name }}_min" placeholder="Min" 
-							min="{{ filter.min | default('0') }}" step="0.01" name="{{ filter.name }}_min">
-						<span class="fw-bold">{{ filter.operator | default('>=') }}</span>
-						<input type="number" class="form-control" id="filter_{{ filter.name }}_max" placeholder="Max" 
-							max="{{ filter.max | default('20') }}" step="0.01" name="{{ filter.name }}_max">
-					</div>
-				{% endif %}
-			{%  endfor %}		
+			<div>
+				{%  for filter in section.filters %}
+					<label> {{filter.label}} </label>
+					{% if filter.type == 'text' %}
+						<input type="text" class="form-control" id="filter_{{ filter.name }}" name="{{ filter.name }}" placeholder="{{ filter.placeholder | default('À compléter...') }}">
+					{% elseif filter.type == 'select' %}
+						<select class="form-control" id="filter_{{ filter.name }}" name="{{ filter.name }}">
+							{% for value, label in filter.options %}
+								<option value="{{ value }}">{{ label }}</option>
+							{% endfor %}
+						</select>
+					{% elseif filter.type == 'checkbox' %}
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" id="filter_{{ filter.name }}" name="{{ filter.name }}">
+							<label class="form-check-label" for="filter_{{ filter.name }}">
+								{{ filter.label }}
+							</label>
+						</div>
+					{% elseif filter.type == 'number' %}
+						<div class="d-flex gap-2 align-items-center">
+							<input type="number" class="form-control" id="filter_{{ filter.name }}_min" placeholder="Min" 
+								min="{{ filter.min | default('0') }}" step="0.01" name="{{ filter.name }}_min">
+							<span class="fw-bold">{{ filter.operator | default('>=') }}</span>
+							<input type="number" class="form-control" id="filter_{{ filter.name }}_max" placeholder="Max" 
+								max="{{ filter.max | default('20') }}" step="0.01" name="{{ filter.name }}_max">
+						</div>
+					{% endif %}
+				{%  endfor %}
+			</div>
 		</div>
 	{% endfor %}
 </aside>
