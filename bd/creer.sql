@@ -16,6 +16,9 @@ CREATE TABLE COMPTE (
   compte_mdp         VARCHAR(255) NOT NULL,
   compte_isAdmin     BOOLEAN      NOT NULL DEFAULT FALSE
 );
+INSERT INTO COMPTE (compte_identifiant, compte_mdp, compte_isAdmin)
+VALUES             ('admin', '$2y$12$rNJ8W0ubDoYEQHhhhdp7QOAuZlYLPqhu.903Qclctpg2damKaEVn6', TRUE);
+
 
 -- Table LOCALISATION
 CREATE TABLE LOCALISATION (
@@ -90,6 +93,7 @@ CREATE TABLE CANDIDAT (
   candidat_note_fiche    FLOAT DEFAULT 0,
   candidat_note_globale  FLOAT DEFAULT 0,
   candidat_commentaire   TEXT,
+  candidat_annee         INT,
   diplome_id             INT,
   etablissement_id       INT,
   formation_id           INT,

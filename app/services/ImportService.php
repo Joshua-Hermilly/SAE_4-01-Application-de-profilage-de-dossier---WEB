@@ -63,7 +63,7 @@ class ImportService
 	/*-------------------------------*/
 	/* Importer                      */
 	/*-------------------------------*/
-	public function importFile($file)
+	public function importFile($file, $annee)
 	{
 		$sheet = $file->getActiveSheet();
 		$data  = $sheet->toArray(null, true, true);
@@ -80,12 +80,12 @@ class ImportService
 
 		foreach ($lignes as $ligne)
 		{
-			$localisation  = $this->createLoc( $ligne                                         );
-			$etablissement = $this->createEtb( $ligne, $localisation                          );
-			$diplome       = $this->createDpm( $ligne                                         );
-			$formationSup  = $this->createFms( $ligne                                         );
-			$specialite    = $this->createSpt( $ligne, $diplome                               );
-			$candidat      = $this->createCdt( $ligne,$etablissement, $diplome, $formationSup );
+			$localisation  = $this->createLoc( $ligne                                                 );
+			$etablissement = $this->createEtb( $ligne, $localisation                                  );
+			$diplome       = $this->createDpm( $ligne                                                 );
+			$formationSup  = $this->createFms( $ligne                                                 );
+			$specialite    = $this->createSpt( $ligne, $diplome                                       );
+			$candidat      = $this->createCdt( $ligne,$etablissement, $diplome, $formationSup, $annee );
 
 			$specialiteRelations[] = [
 				'specialite' => $specialite,
@@ -277,7 +277,7 @@ class ImportService
 		return $specialite;
 	}
 
-	private function createCdt( $ligne, $etablissement, $diplome, $formationSup )
+	private function createCdt( $ligne, $etablissement, $diplome, $formationSup, $annee )
 	{
 		$candidat = new Candidat
 		(
@@ -291,6 +291,7 @@ class ImportService
 			$this->getNoteOrNull($ligne['Note Fiche Avenir'        ]),
 			$this->getNoteOrNull($ligne['Note Lycée calculée'      ]),
 			$ligne['Commentaire'              ],
+			$annee,
 			$etablissement?->getEtablissementId(),
 			null,
 			$formationSup ?->getFormationId    (),

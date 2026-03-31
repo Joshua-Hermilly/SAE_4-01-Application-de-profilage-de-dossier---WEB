@@ -19,6 +19,10 @@ class ImportController extends Controller
 			//	throw new \RuntimeException('Erreur lors de l\'upload');
 			//}
 
+			//année
+			$annee     = $_POST['annee_promotion'];
+
+			//fichier
 			$tmpPath   = $_FILES['file']['tmp_name'];
 			$origName  = $_FILES['file']['name'];
 
@@ -31,7 +35,7 @@ class ImportController extends Controller
 			}
 
 			$spreadsheet = IOFactory::load($tmpPath);
-			(new ImportService())->importFile($spreadsheet);
+			(new ImportService())->importFile($spreadsheet, $annee);
 
 			$this->redirectTo('index');
 		}
