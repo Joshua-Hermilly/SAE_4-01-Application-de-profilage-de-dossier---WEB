@@ -30,6 +30,27 @@ class DossierCandidat implements JsonSerializable
 	) {}
 
 	/*-------------------------------*/
+	/*  Header                      */
+	/*-------------------------------*/
+//	public function getHeader()
+//	{
+//		return
+//		[
+//			'Code'                 ,
+//			'Civilite'             ,
+//			'Code boursier'        ,
+//			'Note de lycée'        ,
+//			'Note de fiche avenir' ,
+//			'Note de globale'      ,
+//			'Etablissement'        ,
+//			'Diplome'              ,
+//			'Spécicalite 2'        ,
+//			'Spécicalite 1'        ,
+//			'Couleur'              ,
+//		];
+//	}
+
+	/*-------------------------------*/
 	/*  Serialize                    */
 	/*-------------------------------*/
 	public function jsonSerialize(): mixed { return $this->__serialize(); }
@@ -38,17 +59,17 @@ class DossierCandidat implements JsonSerializable
 	{
 		return
 		[
-			'candidat_code'          => $this->candidat_code         ,
-			'candidat_civilite'      => $this->candidat_civilite     ,
-			'candidat_boursier_code' => $this->candidat_boursier_code,
-			'candidat_note_lycee'    => $this->candidat_note_lycee   ,
-			'candidat_note_fiche'    => $this->candidat_note_fiche   ,
-			'candidat_note_globale'  => $this->candidat_note_globale ,
-			'etablissement_nom'      => $this->etablissement_nom     ,
-			'diplome_libelle'        => $this->diplome_libelle       ,
-			'specicalite_spe1'       => $this->specicalite_spe1      ,
-			'specicalite_spe2'       => $this->specicalite_spe2      ,
-			'groupe_couleur'         => $this->groupe_couleur        ,
+			'Code'                 => $this->candidat_code         ,
+			'Civilite'             => $this->candidat_civilite     ,
+			'Code boursier'        => $this->candidat_boursier_code,
+			'Note de lycée'        => $this->candidat_note_lycee   ,
+			'Note de fiche avenir' => $this->candidat_note_fiche   ,
+			'Note de globale'      => $this->candidat_note_globale ,
+			'Etablissement'        => $this->etablissement_nom     ,
+			'Diplome'              => $this->diplome_libelle       ,
+			'Spécicalite 2'        => $this->specicalite_spe1      ,
+			'Spécicalite 1'        => $this->specicalite_spe2      ,
+			'Couleur'              => $this->groupe_couleur        ,
 		];
 	}
 
