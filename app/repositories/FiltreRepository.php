@@ -39,7 +39,7 @@ class FiltreRepository
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
 			'specialite_spe' => [
-				'sql'   => $this->unionDistinct('SPECIALITE', ['specialite_spe1', 'specialite_spe2']),
+				'sql'   => $this->unionDistinctWithSerieCode(),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
 			'departement'     => [
@@ -65,6 +65,26 @@ class FiltreRepository
 		return "SELECT DISTINCT TRIM(val) AS val FROM ($union) AS all_specs WHERE TRIM(val) <> '' ORDER BY val";
 	}
 
+	private function unionDistinctWithSerieCode(): string
+	{
+		return "
+			SELECT DISTINCT 
+				TRIM(SPECIALITE.specialite_spe1) AS val,
+				DIPLOME.diplome_serie_code AS code
+			FROM SPECIALITE
+			JOIN DIPLOME ON SPECIALITE.diplome_id = DIPLOME.diplome_id
+			WHERE TRIM(SPECIALITE.specialite_spe1) IS NOT NULL AND TRIM(SPECIALITE.specialite_spe1) <> ''
+			UNION ALL
+			SELECT DISTINCT 
+				TRIM(SPECIALITE.specialite_spe2) AS val,
+				DIPLOME.diplome_serie_code AS code
+			FROM SPECIALITE
+			JOIN DIPLOME ON SPECIALITE.diplome_id = DIPLOME.diplome_id
+			WHERE TRIM(SPECIALITE.specialite_spe2) IS NOT NULL AND TRIM(SPECIALITE.specialite_spe2) <> ''
+			ORDER BY val, code
+		";
+	}
+
 	/**
 	 * Hydrate les filtres select/multiselect avec leurs options
 	 */
@@ -86,8 +106,23 @@ class FiltreRepository
 				{
 					$label = $query['label']($row);
 					if ($label === null || $label === '') { continue; }
-					$value           = $row['val'] ?? $label;
-					$options[$value] = $label;
+					$value = $row['val'] ?? $label;
+					
+					// Si la requête retourne un code (comme pour specialite_spe), créer un objet
+					if (isset($row['code']) && $name === 'specialite_spe')
+					{
+						// Utiliser une clé unique valeur-code pour éviter les doublons
+						$uniqueKey = $value . '|' . $row['code'];
+						$options[$uniqueKey] = [
+							'value' => $value,
+							'label' => $label,
+							'code'  => $row['code']
+						];
+					}
+					else
+					{
+						$options[$value] = $label;
+					}
 				}
 				if (!empty($options)) { $filter['options'] = $options; }
 			}

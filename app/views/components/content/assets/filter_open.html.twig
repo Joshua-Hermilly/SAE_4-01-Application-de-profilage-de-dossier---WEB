@@ -37,6 +37,23 @@
 												{% endfor %}
 											</select>
 										{% elseif filter.type == 'multiselect' %}
+											{% if filter.name == 'specialite_spe' %}
+											<div class="specialite-checkboxes" style="max-height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+												{% for option_key, option_data in filter.options %}
+													{% if option_data is iterable %}
+													<div class="form-check mb-2">
+														<input class="form-check-input specialite-checkbox" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_data.value }}" data-code="{{ option_data.code }}" />
+														<label class="form-check-label" for="filter_{{ filter.name }}_{{ loop.index }}">{{ option_data.label }}</label>
+													</div>
+													{% else %}
+													<div class="form-check mb-2">
+														<input class="form-check-input" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_key }}" />
+														<label class="form-check-label" for="filter_{{ filter.name }}_{{ loop.index }}">{{ option_data }}</label>
+													</div>
+													{% endif %}
+												{% endfor %}
+											</div>
+											{% else %}
 											<select
 												class="form-control"
 												id="filter_{{ filter.name }}"
@@ -46,6 +63,7 @@
 													<option value="{{ value }}">{{ label }}</option>
 												{% endfor %}
 											</select>
+											{% endif %}
 										{% elseif filter.type == 'checkbox' %}
 											<div class="form-check">
 												<input
@@ -106,7 +124,31 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+    // Filtrer les spécialités en fonction de la série de bac sélectionnée
+    const serieBacSelect = document.getElementById(\"filter_serie_bac\");
+    const specialiteCheckboxes = document.querySelectorAll(\".specialite-checkbox\");
 
+    function filterSpecialites() {
+        const selectedSerieCode = serieBacSelect ? serieBacSelect.value : '';
+        
+        specialiteCheckboxes.forEach(checkbox => {
+            const speCode = checkbox.getAttribute('data-code');
+            const checkboxContainer = checkbox.closest(\".form-check\");
+            
+            if (!selectedSerieCode) {
+                checkboxContainer.style.display = \"block\";
+            } else if (speCode === selectedSerieCode) {
+                checkboxContainer.style.display = \"block\";
+            } else {
+                checkboxContainer.style.display = \"none\";
+                checkbox.checked = false;
+            }
+        });
+    }
+
+    if (serieBacSelect) {
+        serieBacSelect.addEventListener(\"change\", filterSpecialites);
+    }
     select.addEventListener("change", function () {
         const selectedValue = this.value;
 
