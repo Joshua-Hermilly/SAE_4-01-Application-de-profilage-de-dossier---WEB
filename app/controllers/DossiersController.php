@@ -183,7 +183,7 @@ class DossiersController extends Controller
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
 			'serie_bac'       => [
-				'sql'   => "SELECT DISTINCT diplome_serie_libelle AS val FROM DIPLOME WHERE diplome_serie_libelle IS NOT NULL AND diplome_serie_libelle <> '' ORDER BY diplome_serie_libelle",
+				'sql'   => "SELECT DISTINCT diplome_serie_code   AS val FROM DIPLOME WHERE diplome_serie_code IS NOT NULL AND diplome_serie_code    <> '' ORDER BY diplome_serie_code",
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
 			'specialite_spe1' => [
