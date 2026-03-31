@@ -19,6 +19,40 @@ require_once '../app/repositories/SpecialiteRepository.php';
 class ImportService
 {
 	/*-------------------------------*/
+	/* Colonnes du tableurs          */
+	/*-------------------------------*/
+	private const CLEES_COLONNES = 
+	[
+		// clées                // numéro de colonne
+		'candidat_code'      =>                  0  ,  // Candidat - Code
+		'candidat_nom'       =>                  1  ,  // Candidat - Nom
+		'candidat_prenom'    =>                  2  ,  // Candidat - Prénom
+		'civilite'           =>                  3  ,  // Civilité
+		'profil'             =>                  4  ,  // Profil Candidat - Libellé
+		'boursier'           =>                  5  ,  // Candidat boursier - Code
+		'filiere'            =>                  6  ,  // Filiere (pour scolarité du supérieur)- Libellé 2024/2025
+		'formation'          =>                  7  ,  // Formation - Libellé (Saisie manuelle) 2024/2025
+		'spe_mention'        =>                  8  ,  // Spécialité / Mention - Libellé  2024/2025
+		'etab_nom'           =>                  9  ,  // Nom Etablissement origine 2024/2025
+		'commune_libelle'    =>                 10  ,  // Commune Etablissement origine - Libellé 2024/2025
+		'commune_cp'         =>                 11  ,  // Commune Etablissement origine - CodePostal 2024/2025
+		'departement'        =>                 12  ,  // Département Etablissement origine - Libellé 2024/2025
+		'pays'               =>                 13  ,  // Pays Etablissement origine - Libellé 2024/2025
+		'diplome_type_code'  =>                 14  ,  // Type Diplôme - Code
+		'diplome_type_lib'   =>                 15  ,  // Type Diplôme - Libellé
+		'diplome_serie_code' =>                 16  ,  // Série Diplôme - Code
+		'diplome_serie_lib'  =>                 17  ,  // Série Diplôme - Libellé
+		'spe_libelle'        =>                 18  ,  // Spécialité - Libellé
+		'spe_combinaison'    =>                 19  ,  // Combinaison des enseignements de spécialité en Terminale
+		'spe_abandonnee'     =>                 20  ,  // Enseignement De spécialité abandonné en Première
+		'note_globale'       =>                 21  ,  // Note Globale Calculée
+		'note_avenir'        =>                 22  ,  // Note Fiche Avenir
+		'note_lycee'         =>                 23  ,  // Note Lycée calculée
+		'note_dossier'       =>                 24  ,  // Note Dossier
+		'commentaire'        =>                 25  ,  // Commentaire
+	];
+
+	/*-------------------------------*/
 	/* Repository                    */
 	/*-------------------------------*/
 	private $localisationRepository;
@@ -51,7 +85,6 @@ class ImportService
 		$this->specialiteRepository    = new SpecialiteRepository   ();
 		$this->candidatRepository      = new CandidatRepository     ();
 
-
 		$this->localisations  = $this->localisationRepository ->findAll();
 		$this->etablissements = $this->etablissementRepository->findAll();
 		$this->diplomes       = $this->diplomeRepository      ->findAll();
@@ -67,25 +100,21 @@ class ImportService
 	{
 		$sheet = $file->getActiveSheet();
 		$data  = $sheet->toArray(null, true, true);
+		array_shift($data); 
 
-		$headers = array_shift($data);
-		$lignes  = array_map
-		(
-			fn($ligne) => array_combine($headers, $ligne),
-			$data
-		);
+		$specialiteRelations = [];
+		$candidatRelations   = [];
 
-		$specialiteRelations   = [];
-		$candidatRelations     = [];
-
-		foreach ($lignes as $ligne)
+		foreach ($data as $ligne)
 		{
-			$localisation  = $this->createLoc( $ligne                                                 );
-			$etablissement = $this->createEtb( $ligne, $localisation                                  );
-			$diplome       = $this->createDpm( $ligne                                                 );
-			$formationSup  = $this->createFms( $ligne                                                 );
-			$specialite    = $this->createSpt( $ligne, $diplome                                       );
-			$candidat      = $this->createCdt( $ligne,$etablissement, $diplome, $formationSup, $annee );
+			if (count($ligne) < count(self::CLEES_COLONNES)) { continue; } //skip les lignes problematiques
+
+			$localisation  = $this->createLoc( $ligne                                                  );
+			$etablissement = $this->createEtb( $ligne, $localisation                                   );
+			$diplome       = $this->createDpm( $ligne                                                  );
+			$formationSup  = $this->createFms( $ligne                                                  );
+			$specialite    = $this->createSpt( $ligne, $diplome                                        );
+			$candidat      = $this->createCdt( $ligne, $etablissement, $diplome, $formationSup, $annee );
 
 			$specialiteRelations[] = [
 				'specialite' => $specialite,
@@ -100,8 +129,7 @@ class ImportService
 			];
 		}
 
-		// Insertion  en base :
-		// - - - - - - - - - - -
+		// Insertion en base
 		$this->localisationRepository ->creates($this->localisations );
 		$this->etablissementRepository->creates($this->etablissements);
 		$this->formationsSupRepository->creates($this->formationsSup );
@@ -110,7 +138,7 @@ class ImportService
 		for ($cpt = 0; $cpt < count($specialiteRelations); $cpt++)
 		{
 			$specialite = $specialiteRelations[$cpt]['specialite'];
-			$diplome    = $specialiteRelations[$cpt]['diplome'];
+			$diplome    = $specialiteRelations[$cpt]['diplome'   ];
 
 			$specialite->setDiplomeId($diplome->getDiplomeId());
 		}
@@ -126,7 +154,6 @@ class ImportService
 			$candidat->setEtablissementId($etablissement?->getEtablissementId());
 			$candidat->setFormationId    ($formationSup ?->getFormationId    ());
 			$candidat->setDiplomeId      ($diplome       ->getDiplomeId      ());
-
 		}
 		$this->candidatRepository->creates($this->candidats);
 	}
@@ -135,15 +162,14 @@ class ImportService
 	/*-------------------------------*/
 	/* Create                        */
 	/*-------------------------------*/
-	private function createLoc( $ligne ): ?Localisation
+	private function createLoc(array $ligne): ?Localisation
 	{
-		$localisation = new Localisation
-		(
+		$localisation = new Localisation(
 			0,
-			trim($ligne['Pays Etablissement origine - Libellé 2024/2025'       ]),
-			trim($ligne['Commune Etablissement origine - CodePostal 2024/2025' ]),
-			trim($ligne['Commune Etablissement origine - Libellé 2024/2025'    ]),
-			trim($ligne['Département Etablissement origine - Libellé 2024/2025']),
+			$this->getCol($ligne, 'pays'           ),
+			$this->getCol($ligne, 'commune_cp'     ),
+			$this->getCol($ligne, 'commune_libelle'),
+			$this->getCol($ligne, 'departement'    ),
 		);
 
 		foreach ($this->localisations as $loc)
@@ -155,46 +181,42 @@ class ImportService
 			{
 				return $loc;
 			}
-
 		}
 
-		//$this->localisationRepository->create($localisation);
 		$this->localisations[] = $localisation;
 		return $localisation;
 	}
 
-	private function createEtb( $ligne, $localisation ): ?Etablissement
+	private function createEtb(array $ligne, $localisation): ?Etablissement
 	{
-		$etablissement = new Etablissement
-		(
+		$etablissement = new Etablissement(
 			0,
-			trim($ligne['Nom Etablissement origine 2024/2025']),
+			$this->getCol($ligne, 'etab_nom'),
 			$localisation,
 		);
 
 		foreach ($this->etablissements as $etab)
 		{
-			if ( $etablissement->getEtablissementNom()                      === $etab->getEtablissementNom()                     &&
-				 $etablissement->getLocalisation    ()->getLocalisationId() === $etab->getLocalisation    ()->getLocalisationId()  )
+			if ( $etablissement->getEtablissementNom()                             === $etab->getEtablissementNom()                              &&
+				 $etablissement->getLocalisation    ()->getLocalisationCommune   () === $etab->getLocalisation   ()->getLocalisationCommune   () &&
+				 $etablissement->getLocalisation    ()->getLocalisationCodePostal() === $etab->getLocalisation   ()->getLocalisationCodePostal()    )
 			{
 				return $etab;
 			}
 		}
 
-		//$this->etablissementRepository->create($etablissement);
 		$this->etablissements[] = $etablissement;
 		return $etablissement;
 	}
 
-	private function createDpm( $ligne ): ?Diplome
+	private function createDpm(array $ligne): ?Diplome
 	{
-		$diplome = new Diplome
-		(
+		$diplome = new Diplome(
 			0,
-			trim($ligne['Type Diplôme - Code'    ]),
-			trim($ligne['Type Diplôme - Libellé' ]),
-			trim($ligne['Série Diplôme - Code'   ]),
-			trim($ligne['Série Diplôme - Libellé'])
+			$this->getCol($ligne, 'diplome_type_code' ),
+			$this->getCol($ligne, 'diplome_type_lib'  ),
+			$this->getCol($ligne, 'diplome_serie_code'),
+			$this->getCol($ligne, 'diplome_serie_lib' ),
 		);
 
 		foreach ($this->diplomes as $dip)
@@ -208,25 +230,19 @@ class ImportService
 			}
 		}
 
-		//$this->diplomeRepository->create($diplome);
 		$this->diplomes[] = $diplome;
 		return $diplome;
 	}
 
-	private function createFms( $ligne ): ?FormationSup
+	private function createFms(array $ligne): ?FormationSup
 	{
-		$f1 = $ligne ['Filiere (pour scolarité du supérieur)- Libellé 2024/2025' ];
-		$f2 = $ligne ['Formation - Libellé (Saisie manuelle) 2024/2025'          ];
+		$f1 = (string)($this->getCol($ligne, 'filiere'  ) ?? '');
+		$f2 = (string)($this->getCol($ligne, 'formation') ?? '');
 
-		if ( $f1 === $f2 ) { return null;    }
-		if ( isset($f1)  ) { $filiere = $f1; }
-		else               { $filiere = $f2; }
+		$filiere = $f1 !== '' ? $f1 : ($f2 !== '' ? $f2 : null);
+		if ($filiere === null) return null;
 
-		$formationSup = new FormationSup
-		(
-			0,
-			$filiere,
-		);
+		$formationSup = new FormationSup(0, $filiere);
 
 		foreach ($this->formationsSup as $fms)
 		{
@@ -236,26 +252,24 @@ class ImportService
 			}
 		}
 
-		//$this->formationsSupRepository->create($formationSup);
 		$this->formationsSup[] = $formationSup;
 		return $formationSup;
 	}
 
-	private function createSpt( $ligne, $diplome )
+	private function createSpt(array $ligne, $diplome): ?Specialite
 	{
-		$combinaison = trim((string)($ligne['Combinaison des enseignements de spécialité en Terminale'] ?? ''));
+		$combinaison = (string)($this->getCol($ligne, 'spe_combinaison') ?? '');
 		$parties     = explode('/', $combinaison, 2);
 		$spe1        = isset($parties[0]) && $parties[0] !== '' ? trim($parties[0]) : null;
 		$spe2        = isset($parties[1]) && $parties[1] !== '' ? trim($parties[1]) : null;
 
-		$specialite = new Specialite
-		(
+		$specialite = new Specialite(
 			0,
-			trim($ligne['Spécialité - Libellé'                             ]),
-			$ligne['Spécialité / Mention - Libellé  2024/2025'        ],
+			$this->getCol($ligne, 'spe_libelle'   ),
+			$this->getCol($ligne, 'spe_mention'   ),
 			$spe1,
 			$spe2,
-			$ligne['Enseignement De spécialité abandonné en Première' ],
+			$this->getCol($ligne, 'spe_abandonnee'),
 			$diplome->getDiplomeId()
 		);
 
@@ -272,34 +286,31 @@ class ImportService
 			}
 		}
 
-		//$this->specialiteRepository->create($specialite);
 		$this->specialites[] = $specialite;
 		return $specialite;
 	}
 
-	private function createCdt( $ligne, $etablissement, $diplome, $formationSup, $annee )
+	private function createCdt(array $ligne, $etablissement, $diplome, $formationSup, $annee): Candidat
 	{
-		$candidat = new Candidat
-		(
-			trim(                $ligne['Candidat - Code'          ]),
-			trim(                $ligne['Candidat - Nom'           ]),
-			trim(                $ligne['Candidat - Prénom'        ]),
-			trim(                $ligne['Civilité'                 ]),
-			trim(                $ligne['Profil Candidat - Libellé']),
-			trim(                $ligne['Candidat boursier - Code' ]),
-			$this->getNoteOrNull($ligne['Note Globale Calculée'    ]),
-			$this->getNoteOrNull($ligne['Note Fiche Avenir'        ]),
-			$this->getNoteOrNull($ligne['Note Lycée calculée'      ]),
-			$ligne['Commentaire'              ],
+		$candidat = new Candidat(
+			$this->getCol($ligne, 'candidat_code'  ),
+			$this->getCol($ligne, 'candidat_nom'   ),
+			$this->getCol($ligne, 'candidat_prenom'),
+			$this->getCol($ligne, 'civilite'       ),
+			$this->getCol($ligne, 'profil'         ),
+			$this->getCol($ligne, 'boursier'       ),
+			$this->getNoteOrNull($this->getCol($ligne, 'note_globale')),
+			$this->getNoteOrNull($this->getCol($ligne, 'note_avenir' )),
+			$this->getNoteOrNull($this->getCol($ligne, 'note_lycee'  )),
+			$this->getCol($ligne, 'commentaire'),
 			$annee,
 			$etablissement?->getEtablissementId(),
 			null,
-			$formationSup ?->getFormationId    (),
-			$diplome       ->getDiplomeId      (),
-
+			$formationSup?->getFormationId(),
+			$diplome->getDiplomeId(),
 		);
 
-		foreach ( $this->candidats as $cdt)
+		foreach ($this->candidats as $cdt)
 		{
 			if ( $candidat->getCandidatCode() === $cdt->getCandidatCode() )
 			{
@@ -307,7 +318,6 @@ class ImportService
 			}
 		}
 
-		//$this->candidatRepository->create($candidat);
 		$this->candidats[] = $candidat;
 		return $candidat;
 	}
@@ -315,13 +325,21 @@ class ImportService
 	/*-------------------------------*/
 	/* Fonctions privées             */
 	/*-------------------------------*/
+	private function getCol(array $ligne, string $key)
+	{
+		$val = $ligne[self::CLEES_COLONNES[$key]] ?? null;
+		
+		if ( isset($val) ) { return trim($val);	}
+		return null;
+	}
+
 	private function getNoteOrNull($value)
 	{
-		$raw = trim((string)($value ?? ''));
+		$raw = (string)($value ?? '');
 
 		if (preg_match('/^\d/', $raw) === 1)
 		{
-			return (float) $raw; //str_replace(',', '.', $raw);
+			return (float) $raw;
 		}
 
 		return null;
