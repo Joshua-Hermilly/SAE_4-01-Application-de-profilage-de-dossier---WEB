@@ -11,8 +11,125 @@ class DossiersController extends Controller
 	 */
 	public function dossiers(): void
 	{
-		$filterConfigAll = require '../config/filterConfig.php';
-		$config = $filterConfigAll['dossiers'] ?? ['sections' => []];
+		// Configuration locale des filtres (même structure que l'ancienne filterConfig)
+		$config = [
+			'title' => 'Filtres des dossiers',
+			'sections' => [
+				'candidat' => [
+					'label' => 'Candidat',
+					'join' => null,
+					'filters' => [
+						[
+							'name' => 'civilite',
+							'label' => 'Civilité',
+							'column' => 'CANDIDAT.candidat_civilite',
+							'type' => 'select',
+							'options' => [],
+						],
+						[
+							'name' => 'boursier',
+							'label' => 'Statut Boursier',
+							'column' => 'CANDIDAT.candidat_boursier_code',
+							'type' => 'select',
+							'options' => [],
+						],
+						[
+							'name' => 'profil',
+							'label' => 'Profil',
+							'column' => 'CANDIDAT.candidat_profil',
+							'type' => 'text',
+							'placeholder' => 'Ex: En terminale',
+						],
+					],
+				],
+				'notes' => [
+					'label' => 'Notes',
+					'join' => null,
+					'filters' => [
+						[
+							'name' => 'note_lycee_min',
+							'label' => 'Note Lycée (minimum)',
+							'column' => 'CANDIDAT.candidat_note_lycee',
+							'type' => 'number',
+							'operator' => '>=',
+							'min' => 0,
+							'max' => 20,
+						],
+						[
+							'name' => 'note_fiche_min',
+							'label' => 'Note Fiche Avenir (minimum)',
+							'column' => 'CANDIDAT.candidat_note_fiche',
+							'type' => 'number',
+							'operator' => '>=',
+							'min' => 0,
+							'max' => 20,
+						],
+						[
+							'name' => 'note_globale_min',
+							'label' => 'Note Globale (minimum)',
+							'column' => 'CANDIDAT.candidat_note_globale',
+							'type' => 'number',
+							'operator' => '>=',
+							'min' => 0,
+							'max' => 20,
+						],
+					],
+				],
+				'diplome' => [
+					'label' => 'Diplôme / Bac',
+					'join' => 'LEFT JOIN DIPLOME ON DIPLOME.diplome_id = CANDIDAT.diplome_id',
+					'filters' => [
+						[
+							'name' => 'type_bac',
+							'label' => 'Type de Bac',
+							'column' => 'DIPLOME.diplome_type_libelle',
+							'type' => 'select',
+							'options' => [],
+						],
+						[
+							'name' => 'serie_bac',
+							'label' => 'Série',
+							'column' => 'DIPLOME.diplome_serie_libelle',
+							'type' => 'select',
+							'options' => [],
+						],
+					],
+				],
+				'specialites' => [
+					'label' => 'Spécialités',
+					'join' => 'LEFT JOIN SPECIALITE ON SPECIALITE.diplome_id = DIPLOME.diplome_id',
+					'filters' => [
+						[
+							'name' => 'specialite_spe1',
+							'label' => 'Spécialité 1',
+							'column' => 'SPECIALITE.specialite_spe1',
+							'type' => 'select',
+							'options' => [],
+						],
+						[
+							'name' => 'specialite_spe2',
+							'label' => 'Spécialité 2',
+							'column' => 'SPECIALITE.specialite_spe2',
+							'type' => 'select',
+							'options' => [],
+						],
+					],
+				],
+				'etablissement' => [
+					'label' => 'Établissement',
+					'join' => 'LEFT JOIN ETABLISSEMENT ON ETABLISSEMENT.etablissement_id = CANDIDAT.etablissement_id LEFT JOIN LOCALISATION ON LOCALISATION.localisation_id = ETABLISSEMENT.localisation_id',
+					'filters' => [
+						[
+							'name' => 'departement',
+							'label' => 'Département',
+							'column' => 'LOCALISATION.localisation_departement',
+							'type' => 'select',
+							'options' => [],
+						],
+					],
+				],
+			],
+		];
 
 		$pdo = Repository::getInstance()->getPDO();
 
