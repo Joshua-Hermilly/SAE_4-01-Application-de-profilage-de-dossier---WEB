@@ -5,26 +5,40 @@
     <div class="card table-responsive">
         <table class="table">
             <thead class="table-dark" id="tHead">
-            <tr id="trHead"> {# TITRE #}
-                <th scope="col" class="border-end">Nom Col</th>
-                <th scope="col" class="border-end">Nom Etudiants</th>
-                <th scope="col" class="border-end">Prénom Etudiants</th>
-                <th scope="col" class="border-end"></th>
+            <tr class="trHead" id="trHead"> {# TITRE #}
+{#                <th scope="col" class="border-end">Nom Col</th>#}
+{#                <th scope="col" class="border-end">Nom Etudiants</th>#}
+{#                <th scope="col" class="border-end">Prénom Etudiants</th>#}
+{#                <th scope="col" class="border-end">Selection</th>#}
             </tr>
             </thead>
             <tbody class="table-group-divider" id="tBody">
-            <tr> {# Contenu #}
-                <th scope="row">
-                    <span class="badge border border-dark text-dark rounded-2 p-2" style="background-color: #ffffff ">1</span>
-                </th>
-                <th>NOM .. </th>
-                <th>Prenom .. </th>
-                <th>
-                    <input class="form-check-input border-dark rounded-1" type="checkbox"/>
-                </th>
-            </tr>
+{#            <tr class="ligne"> #}{# Contenu #}
+{#                <th>#}
+{#                    <span class="badge border border-dark text-dark rounded-2 p-2" style="background-color: #ffffff ">1</span>#}
+{#                </th>#}
+{#                <th>NOM .. </th>#}
+{#                <th>Prenom .. </th>#}
+{#                <th>#}
+{#                    <input class="form-check-input border-dark rounded-1" type="checkbox"/>#}
+{#                </th>#}
+{#            </tr>#}
             </tbody>
         </table>
     </div>
+
+    <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+        <span class="text-muted small" id="pagination-info">Affichage de 1 à 25 sur 25 résultats</span>
+        <nav aria-label="Navigation des pages">
+            <div class="d-flex align-items-center pagination pagination-sm mb-0">
+                <button id="btn-prev" class="page-link text-dark border rounded-start disabled">Précédent</button>
+                <div id="page-numbers" class="d-flex">
+                    {# <button class="page-link bg-dark text-white border-dark">1</button> #}
+                </div>
+                <button id="btn-next" class="page-link text-dark border rounded-end">Suivant</button>
+            </div>
+        </nav>
+    </div>
+
 </div>
 <script src="/js/tableau.js"></script>
