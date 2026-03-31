@@ -70,6 +70,7 @@ CREATE TABLE SPECIALITE (
   specialite_opt2   VARCHAR(255),
   specialite_spe1   VARCHAR(255),
   specialite_spe2   VARCHAR(255),
+  specialite_spe3   VARCHAR(255),
   specialite_speAbd VARCHAR(255),
   diplome_id        INT NOT NULL,
   FOREIGN KEY (diplome_id) REFERENCES DIPLOME(diplome_id)
