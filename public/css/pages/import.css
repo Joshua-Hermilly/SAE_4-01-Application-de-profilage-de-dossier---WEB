@@ -23,7 +23,7 @@
 	margin: 20px 0;
 }
 
-#bouton {
+#btnChargement {
 	background-color: var(--gris-select-assets);
 	color: var(--blanc);
 	border-radius: 15px;
@@ -31,13 +31,9 @@
 	display: block;
 	margin: 0 auto;
 	cursor: pointer;
-	transition: all 0.2s ease;
-	padding: 10px 20px;
-	font-size: 16px;
-	font-weight: 500;
 }
 
-#bouton:hover {
+#btnChargement:hover {
 	background-color: var(--gris-text-fond-foncé);
 	border: 2px solid var(--gris-text-fond-foncé);
 	color: var(--noir-text-fond-claire);
