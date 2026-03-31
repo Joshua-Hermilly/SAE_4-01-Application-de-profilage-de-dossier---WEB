@@ -104,9 +104,6 @@ return [
 						'column' => 'DIPLOME.diplome_serie_libelle',
 						'type' => 'select',
 						'options' => [
-							'S' => 'Scientifique',
-							'ES' => 'Économique et social',
-							'L' => 'Littéraire',
 							'STI2D' => 'STI2D',
 							'STMG' => 'STMG',
 							'ST2S' => 'ST2S',
@@ -161,13 +158,6 @@ return [
 				           LEFT JOIN LOCALISATION ON LOCALISATION.localisation_id = ETABLISSEMENT.localisation_id',
 				'filters' => [
 					[
-						'name' => 'etablissement_nom',
-						'label' => 'Nom établissement',
-						'column' => 'ETABLISSEMENT.etablissement_nom',
-						'type' => 'text',
-						'placeholder' => 'Nom du lycée'
-					],
-					[
 						'name' => 'departement',
 						'label' => 'Département',
 						'column' => 'LOCALISATION.localisation_departement',
@@ -179,13 +169,6 @@ return [
 							'92' => 'Hauts-de-Seine (92)',
 							'13' => 'Bouches-du-Rhône (13)'
 						]
-					],
-					[
-						'name' => 'commune',
-						'label' => 'Commune',
-						'column' => 'LOCALISATION.localisation_commune',
-						'type' => 'text',
-						'placeholder' => 'Nom de la commune'
 					]
 				]
 			]

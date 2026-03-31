@@ -1,0 +1,79 @@
+<aside class="filter-sidebar js-filter-sidebar" id="filterSidebar">
+	<div class="filter-header d-flex align-items-center justify-content-between mb-4">
+		<span class="fw-bold d-flex align-items-center gap-2">
+			<i class="bi bi-funnel"></i>
+			{{ title | default('Filtres') }}
+		</span>
+	</div>
+
+	{% for section in sections %}
+		<div>
+			<label> {{section.label}} </label>
+			{%  for filter in section.filters %}
+				<label> {{filter.label}} </label>
+				{% if filter.type == 'text' %}
+					<input type="text" class="form-control" placeholder="{{ filter.placeholder | default('À compléter...') }}">
+				{% elseif filter.type == 'select' %}
+					<select class="form-control">
+						{% for value, label in filter.options %}
+							<option value="{{ value }}">{{ label }}</option>
+						{% endfor %}
+					</select>
+				{% elseif filter.type == 'checkbox' %}
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" id="filter_{{ filter.name }}" name="{{ filter.name }}">
+						<label class="form-check-label" for="filter_{{ filter.name }}">
+							{{ filter.label }}
+						</label>
+					</div>
+				{% elseif filter.type == 'number' %}
+					<div class="d-flex gap-2 align-items-center">
+						<input type="number" class="form-control" placeholder="Min" 
+							min="{{ filter.min | default('0') }}" step="0.01" name="{{ filter.name }}_min">
+						<span class="fw-bold">{{ filter.operator | default('>=') }}</span>
+						<input type="number" class="form-control" placeholder="Max" 
+							max="{{ filter.max | default('20') }}" step="0.01" name="{{ filter.name }}_max">
+					</div>
+				{% endif %}
+			{%  endfor %}		
+		</div>
+	{% endfor %}
+</aside>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const select = document.getElementById("filter_typeBac");
+    const blocs = document.querySelectorAll(".bac-filter");
+
+    function resetBloc(bloc) {
+        const inputs = bloc.querySelectorAll("input, select, textarea");
+
+        inputs.forEach(input => {
+            if (input.type === "checkbox" || input.type === "radio") {
+                input.checked = false;
+            } else {
+                input.value = "";
+            }
+        });
+    }
+
+    select.addEventListener("change", function () {
+        const selectedValue = this.value;
+
+        // cacher et reset tous les blocs
+        blocs.forEach(bloc => {
+            bloc.style.display = "none";
+            resetBloc(bloc);
+        });
+
+        // afficher seulement le bloc correspondant
+        if (selectedValue) {
+            const blocToShow = document.querySelector(`[data-bac-type="${selectedValue}"]`);
+            if (blocToShow) {
+                blocToShow.style.display = "block";
+            }
+        }
+    });
+});
+</script>
