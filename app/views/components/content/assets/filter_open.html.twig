@@ -85,7 +85,7 @@
 													min="{{ filter.min is not null ? filter.min : 0 }}"
 													max="{{ filter.max is not null ? filter.max : 20 }}"
 													step="1" />
-												<span class="fw-bold text-muted">{{ filter.operator | default('>=') }}</span>
+												<span class="filter-operator fw-semibold">{{ filter.operator | default('>=') }}</span>
 												<input
 													class="form-control form-control-sm"
 													type="number"

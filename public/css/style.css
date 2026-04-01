@@ -183,6 +183,10 @@ body, html {
 	background: var(--bleu-fond-faide);
 }
 
+.filter-operator {
+	color: var(--filter-text);
+}
+
 .filter-closed {
 	background: var(--filter-bg);
 	border: 1px solid var(--filter-border);
