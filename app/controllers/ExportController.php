@@ -27,14 +27,8 @@ class ExportController extends Controller
 				return;
 			}
 
-			try                  { (new ExportService())->exportXLSX((int)$annee); }
-			catch (Throwable $e)
-			{
-				error_log("Erreur lors de l'export : " . $e->getMessage());
-				$errors[] = "Une erreur est survenue lors de l'export. Veuillez réessayer plus tard.";
-				$this->view('export', 'Export', ['errors' => $errors]);
-				return;
-			}
+			 (new ExportService())->exportXLSX((int)$annee);
+
 		}
 
 		$this->view('export', 'Exportation', ['errors' => $errors]);
