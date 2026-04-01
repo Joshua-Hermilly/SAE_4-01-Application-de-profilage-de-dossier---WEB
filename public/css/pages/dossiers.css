@@ -48,6 +48,15 @@
     border: none;
     border-top: 1px solid var(--gris-text-fond-foncé);
     margin: 20px 0;
+
+#text {
+	text-align: left;
+}
+
+#under-title {
+	color: var(--bleu-icon);
+	text-align: left;
+}
 }
 
 #bouton {
@@ -69,6 +78,12 @@
 #text {
 	color: var(--gris-text-fond-foncé);
 	text-decoration: none;
+	text-align: left;
+}
+
+#under-title {
+	color: var(--bleu-icon);
+	text-align: left;
 }
 
 a#text:hover {

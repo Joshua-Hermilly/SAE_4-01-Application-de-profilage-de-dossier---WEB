@@ -20,11 +20,11 @@
 
 							{% for section in sections %}
 								<div class="filter-section mb-4">
-									<div class="text-uppercase small fw-semibold mb-2 text-primary">{{ section.label }}</div>
+									<label id="under-title" class="text-uppercase small">{{ section.label }}</label>
 									<div class="d-flex flex-column gap-3">
 										{% for filter in section.filters %}
 											<div class="d-flex flex-column gap-1">
-												<label class="small text-white-50">{{ filter.label }}</label>
+												<label id="text" class="small text-white-50">{{ filter.label }}</label>
 												{% if filter.type == 'text' %}
 													<input
 														class="form-control form-control-sm"
