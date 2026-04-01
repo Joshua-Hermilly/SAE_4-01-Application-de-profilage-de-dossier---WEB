@@ -68,8 +68,9 @@ class ExportRepository extends Repository
 					C.candidat_civilite     , 
 					C.candidat_profil       , 
 					C.candidat_boursier_code, 
-					F.formation_filliere    AS formation_filiere, 
-					F.formation_libelle     AS formation_libelle,
+					F.formation_filiere     ,
+					F.formation_libelle     ,
+					string_agg(DISTINCT NULLIF(S.specialite_opt2,  ''), ' / ')  AS specialite_mention,
 					E.etablissement_nom       ,
 					L.localisation_commune    ,
 					L.localisation_code_postal,
@@ -79,16 +80,16 @@ class ExportRepository extends Repository
 					D.diplome_type_libelle  ,
 					D.diplome_serie_code    ,
 					D.diplome_serie_libelle ,
-					string_agg(DISTINCT NULLIF(S.specialite_opt1,  ''), ' / ')  AS specialite_libelle,
+					string_agg(DISTINCT NULLIF(S.specialite_opt1,  ''), ' / ')  AS specialite_opt1,
 					string_agg(DISTINCT NULLIF(S.specialite_spe1,  ''), ' / ')  AS specialite_spe1   ,
 					string_agg(DISTINCT NULLIF(S.specialite_spe2,  ''), ' / ')  AS specialite_spe2   ,
 					string_agg(DISTINCT NULLIF(S.specialite_spe3,  ''), ' / ')  AS specialite_spe3   ,
 					string_agg(DISTINCT NULLIF(S.specialite_speabd,''), ' / ')  AS specialite_speabd ,
-					C.candidat_note_globale ,				
+					C.candidat_note_globale ,
 					C.candidat_note_fiche   ,
 					C.candidat_note_lycee   ,
 					G.groupe_note_dossier   ,
-					C.candidat_commentaire  ,
+					C.candidat_commentaire
 					
 				FROM
 					CANDIDAT C
@@ -100,16 +101,16 @@ class ExportRepository extends Repository
 					LEFT JOIN GROUPE        G ON G.groupe_id        = C.groupe_id
 					
 				WHERE 
-				    C.candidat_annee = :annee
-				    
+					C.candidat_annee = :annee
 				GROUP BY
-				    C.candidat_code            ,
+					C.candidat_code            ,
 					C.candidat_nom             ,
 					C.candidat_prenom          ,
 					C.candidat_civilite        ,
 					C.candidat_profil          ,
 					C.candidat_boursier_code   ,
-					F.formation_nom            ,
+					F.formation_filiere        ,
+					F.formation_libelle        ,
 					E.etablissement_nom        ,
 					L.localisation_commune     ,
 					L.localisation_code_postal ,
@@ -132,10 +133,7 @@ class ExportRepository extends Repository
 		$stmt->execute();
 
 		$result = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
-		{
-			$result[] = $this->createFromRow($row);
-		}
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $result[] = $this->createFromRow($row); }
 
 		return $result;
 	}

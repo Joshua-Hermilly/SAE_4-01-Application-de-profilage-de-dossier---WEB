@@ -30,10 +30,7 @@ class ExportService
 		$donnees = $this->exportRepository->findAll($annee);
 
 		$tableau = [];
-		foreach ($donnees as $donnee)
-		{
-			$donnee->getDonnees();
-		}
+		foreach ($donnees as $donnee) { $tableau[] = $donnee->getDonnees(); }
 
 		$spreadsheet = new Spreadsheet();
 
@@ -53,7 +50,7 @@ class ExportService
 		exit();
 	}
 
-	public function getHeader( $annee )
+	private function getHeader( $annee )
 	{
 		return
 		[
