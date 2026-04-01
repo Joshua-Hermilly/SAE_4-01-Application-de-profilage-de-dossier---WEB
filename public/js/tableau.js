@@ -45,7 +45,7 @@ function creerHeader( headers, isAdmin )
 		input.type        = "checkbox";
 		th   .textContent = "Tout sélectionner";
 
-		if ( sessionStorage.getItem( input.id ) ) { input.checked = true; }
+		if ( sessionStorage.getItem( input.id ) === "selectionner") { input.checked = true; }
 
 		th      .appendChild( input );
 		trHeader.appendChild( th    );
@@ -100,8 +100,8 @@ function creerTableau( headers, dossiers, isAdmin )
 			input.type        = "checkbox";
 
 			//console.log(input.id)
-			if ( sessionStorage.getItem( input.id         ) === "selectionner"                                        ) { input.checked = true; }
-			if ( sessionStorage.getItem( "cbTous"    ) && !sessionStorage.getItem( input.id ) !== "désélectionner") { input.checked = true; }
+			if ( sessionStorage.getItem( input.id         ) === "selectionner"                                         ) { input.checked = true; }
+			if ( sessionStorage.getItem( "cbTous"    ) &&  sessionStorage.getItem( input.id ) !== "désélectionner") { input.checked = true; }
 
 			th.appendChild( input );
 			tr.appendChild( th    );
@@ -142,22 +142,41 @@ function selectionFaite(event)
 		if ( event.target.id === "cbTous" )
 		{
 			const lstCb = document.getElementsByClassName( "cb" );
+			sessionStorage.clear();
+
 			if ( event.target.checked )
 			{
-				sessionStorage.clear();
-				sessionStorage.setItem( event.target.id, 'selectionner' );
-				for ( let cpt = 0; cpt < lstCb.length; cpt++ ) { lstCb[cpt].checked = true; }
+				sessionStorage.setItem( "cbTous" , 'selectionner' );
+
+				for ( let cpt = 0; cpt < lstCb.length; cpt++ )
+				{
+					lstCb[cpt].checked = true;
+				}
 			}
 			else
 			{
 				sessionStorage.removeItem( event.target.id );
-				for ( let cpt = 0; cpt < lstCb.length; cpt++ ) { lstCb[cpt].checked = false; }
+				for ( let cpt = 0; cpt < lstCb.length; cpt++ )
+				{
+					lstCb[cpt].checked = false;
+				}
 			}
 		}
-		else if ( sessionStorage.getItem( "cbTous" ) )
+		else if ( sessionStorage.getItem( "cbTous" ) === 'selectionner' )
 		{
-			if ( event.target.checked ) { sessionStorage.setItem   ( event.target.id, 'désélectionner' ); }
-			else                        { sessionStorage.removeItem( event.target.id                   ); }
+			if ( event.target.checked )
+			{
+				sessionStorage.setItem( event.target.id, 'selectionnner' );
+				event.target.checked = true;
+			}
+			else
+			{
+				sessionStorage.setItem( event.target.id, 'désélectionner' );
+				sessionStorage.setItem( "cbTous"       , 'désélectionner' );
+
+				document.getElementById( "cbTous" ).checked = false;
+				event.target.checked                                 = false;
+			}
 		}
 		else
 		{
