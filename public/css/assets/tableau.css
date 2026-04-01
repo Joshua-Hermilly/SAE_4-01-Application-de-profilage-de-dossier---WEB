@@ -1,0 +1,57 @@
+.background
+{
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+.footer
+{
+    margin-top: auto;
+}
+/* Garde la hauteur dynamique en fonction de la taille de l'écran */
+.card {
+    max-height: 650px;
+}
+
+/* Header de la table fixe pendant le scroll */
+#tableau-body thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.ligne th, .ligne td {
+    background-color: #dedede;
+    color: black;
+    border: none;
+    border-top: 10px solid transparent;
+    background-clip: padding-box;
+}
+
+.ligne th:first-child, .ligne td:first-child
+{
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.ligne th:last-child, .ligne td:last-child
+{
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+input[type="checkbox"]
+{
+    width: 30px;
+    height: 30px;
+    background-color: #dedede;
+    display: block;
+    margin: 0 auto;
+}
+
