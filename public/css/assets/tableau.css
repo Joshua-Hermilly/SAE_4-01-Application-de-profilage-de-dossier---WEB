@@ -1,3 +1,26 @@
+.background
+{
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+.footer
+{
+    margin-top: auto;
+}
+/* Garde la hauteur dynamique en fonction de la taille de l'écran */
+.card {
+    max-height: 650px;
+}
+
+/* Header de la table fixe pendant le scroll */
+#tableau-body thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+
 table {
     border-collapse: separate;
     border-spacing: 0;
