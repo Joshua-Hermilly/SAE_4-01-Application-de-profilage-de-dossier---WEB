@@ -16,8 +16,8 @@ class ExportService
 
 	public function exportXLSX(int $annee): void
 	{
-		$headers = $this->exportRepository->getHeader ($annee);
-		$donnees = $this->exportRepository->getDonnees($annee);
+		$headers = $this->exportRepository->getHeader($annee);
+		$donnees = $this->exportRepository->getDonnee($annee);
 
 		$spreadsheet = new Spreadsheet();
 
