@@ -6,24 +6,14 @@ require_once '../app/repositories/FiltreRepository.php';
 
 class DossiersController extends Controller
 {
-	/**
-	 * Page Dossiers — Liste des candidats avec filtres & table dynamique
-	 */
 	public function dossiers(): void
 	{
 		$filterConfig = $this->buildFilterConfig();
-		$filtreRepo = new FiltreRepository();
+		$filtreRepo   = new FiltreRepository();
 
 		$filtreRepo->hydrateSelectFilters($filterConfig);
 
-		$this->view(
-			'pages/dossiers',
-			'Dossiers',
-			[
-				'filterConfig' => $filterConfig,
-				'pages'        => 'dossiers',
-			]
-		);
+		$this->view('pages/dossiers', 'Dossiers', ['filterConfig' => $filterConfig]);
 	}
 
 	private function buildFilterConfig(): array
