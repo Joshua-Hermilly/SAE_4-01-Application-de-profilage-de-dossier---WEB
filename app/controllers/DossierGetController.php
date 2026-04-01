@@ -49,7 +49,7 @@ class DossierGetController extends Controller
 		// Page valide ?
 		if ( $page < 1 || $page > $serviceDossier->maxPage() )
 		{
-			$this->json(['erreur' => 'Page invalide'], 401);
+			$this->json(['erreur' => "Aucune données disponible. Merci d'insérer des données ou de contacter un administrateur."]);
 			return;
 		}
 

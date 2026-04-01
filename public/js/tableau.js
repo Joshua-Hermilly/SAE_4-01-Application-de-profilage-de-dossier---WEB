@@ -2,6 +2,7 @@
 /* CONSTANTES             */
 /*------------------------*/
 // Tableau
+const dvErreur = document.getElementById( "erreur"          );
 const page     = document.getElementById( "page"            );
 const trHeader = document.getElementById( "trHead"          );
 const tBody    = document.getElementById( "tBody"           );
@@ -9,7 +10,7 @@ const tBody    = document.getElementById( "tBody"           );
 // Bouton
 const btnPrc   = document.getElementById( "btnPrc"          );
 const btnSvt   = document.getElementById( "btnSvt"          );
-const btnAct   = document.getElementById( "btnAct"          );
+const pageAct  = document.getElementById( "pageAct"          );
 const btnDeb   = document.getElementById( "btnDeb"          );
 const btnFin   = document.getElementById( "btnFin"          );
 
@@ -65,23 +66,27 @@ function creerTableau( headers, dossiers )
 	}
 }
 
-
 function creerBtnPage( maxPage, actPage )
 {
 	infos.textContent = `Affichage de la page ${actPage} sur ${maxPage}`;
 
-	btnAct.textContent = '...';
-	btnAct.value       = actPage;
-	btnFin.value       = maxPage;
-	btnSvt.disabled    = false;
-	btnPrc.disabled    = false;
-	btnFin.disabled    = false;
-	btnDeb.disabled    = false;
+	pageAct.textContent = actPage;
+	pageAct.value       = actPage;
+	btnFin.value        = maxPage;
+	btnSvt.disabled     = false;
+	btnPrc.disabled     = false;
+	btnFin.disabled     = false;
+	btnDeb.disabled     = false;
 
 	if ( maxPage === actPage ) {btnSvt.disabled = true;}
 	if ( actPage ===       1 ) {btnPrc.disabled = true;}
 }
 
+function afficherErreur( erreur )
+{
+	dvErreur.textContent   = erreur;
+	dvErreur.style.display = "block";
+}
 
 /*------------------------*/
 /* Fetch                  */
@@ -101,10 +106,24 @@ async function getDossierCandidat( indexPage )
 		});
 
 		const donnees = await response.json();
-		//console.log(donnees)
+		console.log(donnees)
 
 		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
 
+		if ( donnees['erreur'] )
+		{
+			afficherErreur( donnees['erreur'] );
+			return;
+		}
+
+		if ( donnees['dossiers'] !== null )
+		{
+			document.getElementById("tableau").style.display = "";
+		}
+		else
+		{
+			document.getElementById( "vide"    ).style.display = "block";
+		}
 		creerHeader ( donnees['headers' ], donnees['dossiers'] );
 		creerBtnPage( donnees['maxPage' ], donnees['actPage' ] );
 
@@ -117,8 +136,7 @@ getDossierCandidat(1);
 /* Event                  */
 /*------------------------*/
 // tBody.addEventListener ( "click", () => getDossierCandidat(             1) );
-btnPrc.addEventListener( "click", () => getDossierCandidat(+btnAct.value - 1) );
-btnSvt.addEventListener( "click", () => getDossierCandidat(+btnAct.value + 1) );
-btnAct.addEventListener( "click", () => getDossierCandidat(+btnAct.value + 1) );
+btnPrc.addEventListener( "click", () => getDossierCandidat(+pageAct.value - 1) );
+btnSvt.addEventListener( "click", () => getDossierCandidat(+pageAct.value + 1) );
 btnDeb.addEventListener( "click", () => getDossierCandidat(   1) );
 btnFin.addEventListener( "click", () => getDossierCandidat(   btnFin.value) );

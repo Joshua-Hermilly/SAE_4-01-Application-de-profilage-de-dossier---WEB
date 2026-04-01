@@ -197,9 +197,9 @@ class ImportService
 
 		foreach ($this->etablissements as $etab)
 		{
-			if ( $etablissement->getEtablissementNom()                             === $etab->getEtablissementNom()                              &&
-				 $etablissement->getLocalisation    ()->getLocalisationCommune   () === $etab->getLocalisation   ()->getLocalisationCommune   () &&
-				 $etablissement->getLocalisation    ()->getLocalisationCodePostal() === $etab->getLocalisation   ()->getLocalisationCodePostal()    )
+			if ( $etablissement->getEtablissementNom()                              === $etab->getEtablissementNom()                              &&
+				 $etablissement->getLocalisation    ()->getLocalisationCommune   () === $etab->getLocalisation    ()->getLocalisationCommune   () &&
+				 $etablissement->getLocalisation    ()->getLocalisationCodePostal() === $etab->getLocalisation    ()->getLocalisationCodePostal()    )
 			{
 				return $etab;
 			}
