@@ -25,8 +25,6 @@ body, html {
 }
 
 #background {
-	margin: 0;
-	padding: 0;
 	background: linear-gradient(to bottom, var(--bleu-fond-faide) 0%, var(--gris-fond-assets) 93%);
 	display: flex;
 	flex-direction: column;
@@ -43,11 +41,9 @@ body, html {
 #header-left {
 	display: flex;
 	align-items: center;
-	gap: 12px;
 	background-color: var(--gris-fond-assets);
-	border: 2px solid var(--gris-select-assets);
+	border: 1px solid var(--gris-select-assets);
 	border-radius: 22px;
-	padding: 10px 20px;
 	flex: 1;
 	height: 54px;
 }
@@ -78,8 +74,7 @@ body, html {
 #header-right button {
 	background: var(--gris-fond-assets);
 	color: var(--gris-text-fond-foncé);
-	border: none;
-	padding: 12px 20px;
+	border: 1px solid var(--gris-select-assets);
 	border-radius: 22px;
 	font-size: 16px;
 	cursor: pointer;
@@ -111,4 +106,46 @@ body, html {
 	font-size: 14px;
 	left: 0;
 	right: 0;
+}
+
+/* ============================================================
+   SCROLLBAR CUSTOMIZATION
+============================================================ */
+
+#filter-scroll {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	box-sizing: border-box;
+}
+
+#filter-scroll-inner {
+	height: calc(100% - 30px);
+	overflow-y: auto;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	padding-right: 8px;
+}
+
+#filter-scroll-inner::-webkit-scrollbar {
+	width: 10px;
+}
+
+#filter-scroll-inner::-webkit-scrollbar-track {
+	background: var(--gris-fond-assets);
+	border-radius: 6px;
+}
+
+#filter-scroll-inner::-webkit-scrollbar-thumb {
+	background: var(--gris-select-assets);
+	border-radius: 6px;
+	border: 2px solid transparent;
+	background-clip: content-box;
+}
+
+#filter-scroll-inner::-webkit-scrollbar-thumb:hover {
+	background: var(--gris-text-fond-foncé);
+}
+
+.filter-scroll::-webkit-scrollbar-thumb:hover {
+	background: var(--gris-text-fond-foncé);
 }

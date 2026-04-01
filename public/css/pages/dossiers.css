@@ -26,17 +26,6 @@
 	position: relative;
 }
 
-.dossiers-wrapper {
-	display: flex;
-	flex-direction: column;
-	min-height: calc(100vh - 260px); /* Header (68px) + Footer (60px) */
-}
-
-.dossiers-content {
-	flex: 1;
-	background: var(--light-bg);
-	padding-bottom: 2rem;
-}
 #transparent{
 	background-color: transparent;
 	border: none;
@@ -45,8 +34,8 @@
 #bloc {
 	background-color: var(--gris-fond-assets);
 	color: var(--blanc);
+	border: 1px solid var(--gris-select-assets);
 	border-radius: 15px;
-	border: none;
 	text-align: center;
 	padding: 0 20px;
 }
