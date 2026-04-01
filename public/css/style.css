@@ -121,22 +121,119 @@ body, html {
    UTILITAIRES GLOBAUX
 ============================================================ */
 
-/* Scroll bar personnalisée pour le filtre */
-.filter-sidebar::-webkit-scrollbar {
+.filter-sidebar {
+	background: transparent;
+	max-height: 100vh;
+	overflow-y: auto;
+	scrollbar-width: none; /* Firefox */
+}
+
+.filter-panel {
+	background: var(--filter-bg);
+	border: 1px solid var(--filter-border);
+	color: var(--filter-text);
+	max-height: calc(100vh - 120px);
+	overflow-y: auto;
+	scrollbar-width: none; /* Firefox */
+}
+
+.filter-panel .form-control,
+.filter-panel .form-select,
+.filter-panel .form-check-input,
+.filter-panel .list-group-item {
+	background-color: var(--filter-button-bg);
+	color: var(--filter-text);
+	border-color: var(--filter-border);
+}
+
+.filter-panel .form-control:focus,
+.filter-panel .form-select:focus {
+	background-color: var(--filter-button-bg);
+	color: var(--filter-text);
+	border-color: var(--bleu-icon);
+	box-shadow: 0 0 0 0.15rem rgba(105, 158, 255, 0.25);
+}
+
+.filter-panel .list-group-item {
+	border: 1px solid var(--filter-border);
+	padding: 8px 10px;
+}
+
+.specialite-checkboxes {
+	max-height: 320px;
+	overflow-y: auto;
+	border: 1px solid var(--filter-border);
+	border-radius: 6px;
+}
+
+.specialite-checkboxes::-webkit-scrollbar {
 	width: 8px;
 }
 
-.filter-sidebar::-webkit-scrollbar-track {
+.specialite-checkboxes::-webkit-scrollbar-track {
 	background: var(--filter-button-bg);
 }
 
-.filter-sidebar::-webkit-scrollbar-thumb {
+.specialite-checkboxes::-webkit-scrollbar-thumb {
 	background: var(--filter-border);
 	border-radius: 4px;
 }
 
-.filter-sidebar::-webkit-scrollbar-thumb:hover {
+.specialite-checkboxes::-webkit-scrollbar-thumb:hover {
 	background: var(--bleu-fond-faide);
+}
+
+.filter-closed {
+	background: var(--filter-bg);
+	border: 1px solid var(--filter-border);
+	border-radius: 12px;
+	box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+	padding: 8px;
+}
+
+.filter-panel .btn-outline-light {
+	border-color: var(--filter-border);
+	color: var(--filter-text);
+}
+
+.filter-panel .btn-outline-light:hover {
+	background: var(--filter-button-hover);
+	color: var(--blanc);
+}
+
+/* Scroll bar personnalisée pour le filtre */
+.filter-sidebar::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}
+
+.filter-sidebar::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb {
+	background: transparent;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb:hover {
+	background: transparent;
+}
+
+.filter-panel::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}
+
+.filter-panel::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.filter-panel::-webkit-scrollbar-thumb {
+	background: transparent;
+}
+
+.filter-panel .form-check-input {
+	border-radius: 2px;
 }
 
 /* Animations de collapse */
