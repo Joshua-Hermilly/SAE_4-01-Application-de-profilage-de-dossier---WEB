@@ -63,7 +63,7 @@ class Export
 			$this->diplome_serie_code       ,
 			$this->diplome_serie_libelle    ,
 			$this->specialite_opt1          ,
-			$this->specialite_spe1 +"/"+ $this->specialite_spe2 + "/"+$this->specialite_spe3 ,
+			$this->specialite_spe1 . "/" . $this->specialite_spe2 . "/" . $this->specialite_spe3,
 			$this->specialite_speabd        ,
 			$this->candidat_note_globale    ,
 			$this->candidat_note_fiche      ,

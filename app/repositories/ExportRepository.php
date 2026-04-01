@@ -59,7 +59,86 @@ class ExportRepository extends Repository
 		);
 	}
 
-	public function findAll( $annee): array
+	public function findAll($annee): array
+	{
+		$sql = "SELECT
+					C.candidat_code         , 
+					C.candidat_nom          , 
+					C.candidat_prenom       , 
+					C.candidat_civilite     , 
+					C.candidat_profil       , 
+					C.candidat_boursier_code, 
+					F.formation_nom            AS formation_filiere,
+					F.formation_nom            AS formation_libelle,
+					string_agg(DISTINCT NULLIF(S.specialite_opt2,  ''), ' / ')  AS specialite_mention,
+					E.etablissement_nom       ,
+					L.localisation_commune    ,
+					L.localisation_code_postal,
+					L.localisation_departement,
+					L.localisation_pays       ,
+					D.diplome_type_code     ,
+					D.diplome_type_libelle  ,
+					D.diplome_serie_code    ,
+					D.diplome_serie_libelle ,
+					string_agg(DISTINCT NULLIF(S.specialite_opt1,  ''), ' / ')  AS specialite_opt1,
+					string_agg(DISTINCT NULLIF(S.specialite_spe1,  ''), ' / ')  AS specialite_spe1   ,
+					string_agg(DISTINCT NULLIF(S.specialite_spe2,  ''), ' / ')  AS specialite_spe2   ,
+					string_agg(DISTINCT NULLIF(S.specialite_spe3,  ''), ' / ')  AS specialite_spe3   ,
+					string_agg(DISTINCT NULLIF(S.specialite_speabd,''), ' / ')  AS specialite_speabd ,
+					C.candidat_note_globale ,
+					C.candidat_note_fiche   ,
+					C.candidat_note_lycee   ,
+					G.groupe_note_dossier   ,
+					C.candidat_commentaire
+				FROM 
+					          CANDIDAT      AS C
+					LEFT JOIN FORMATION_SUP AS F ON F.formation_id     = C.formation_id
+					LEFT JOIN ETABLISSEMENT AS E ON E.etablissement_id = C.etablissement_id
+					LEFT JOIN LOCALISATION  AS L ON L.localisation_id  = E.localisation_id
+					LEFT JOIN DIPLOME       AS D ON D.diplome_id       = C.diplome_id
+					LEFT JOIN SPECIALITE    AS S ON S.specialite_id    = D.specialite_id
+					LEFT JOIN GROUPE        AS G ON G.groupe_id        = C.groupe_id
+					
+				WHERE 
+					C.candidat_annee = :annee
+				GROUP BY
+					C.candidat_code            ,
+					C.candidat_nom             ,
+					C.candidat_prenom          ,
+					C.candidat_civilite        ,
+					C.candidat_profil          ,
+					C.candidat_boursier_code   ,
+					F.formation_nom            ,
+					E.etablissement_nom        ,
+					L.localisation_commune     ,
+					L.localisation_code_postal ,
+					L.localisation_departement ,
+					L.localisation_pays        ,
+					D.diplome_type_code        ,
+					D.diplome_type_libelle     ,
+					D.diplome_serie_code       ,
+					D.diplome_serie_libelle    ,
+					C.candidat_note_globale    ,
+					C.candidat_note_fiche      ,
+					C.candidat_note_lycee      ,
+					G.groupe_note_dossier      ,
+					C.candidat_commentaire
+				
+				ORDER BY C.candidat_code";
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':annee', $annee);
+		$stmt->execute();
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$result[] = $this->createFromRow($row);
+		}
+
+		return $result;
+	}
+
+	/*public function findAll( $annee): array
 	{
 		$sql = "SELECT
 					C.candidat_code         , 
@@ -136,5 +215,5 @@ class ExportRepository extends Repository
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $result[] = $this->createFromRow($row); }
 
 		return $result;
-	}
+	}*/
 }
