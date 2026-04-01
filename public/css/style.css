@@ -24,9 +24,7 @@ body, html {
 	width: 100%;
 }
 
-.background {
-	width: 100%;
-	min-height: 100vh;
+#background {
 	margin: 0;
 	padding: 0;
 	background: linear-gradient(to bottom, var(--bleu-fond-faide) 0%, var(--gris-fond-assets) 93%);
@@ -89,8 +87,6 @@ body, html {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	white-space: nowrap;
-	transition: all 0.2s ease;
 }
 
 #header-right button:hover {
@@ -115,31 +111,4 @@ body, html {
 	font-size: 14px;
 	left: 0;
 	right: 0;
-}
-
-/* ============================================================
-   UTILITAIRES GLOBAUX
-============================================================ */
-
-/* Animations de collapse */
-@keyframes slideInFromLeft {
-	from {
-		transform: translateX(-100%);
-		opacity: 0;
-	}
-	to {
-		transform: translateX(0);
-		opacity: 1;
-	}
-}
-
-@keyframes slideOutToLeft {
-	from {
-		transform: translateX(0);
-		opacity: 1;
-	}
-	to {
-		transform: translateX(-100%);
-		opacity: 0;
-	}
 }

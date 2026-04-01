@@ -1,17 +1,16 @@
 <header class="main-header py-3">
-  	<div class="container-fluid">
-  		<div class="row w-100">
+	<div class="row w-100 m-0">
 
 		<!-- LEFT (responsif) -->
 		<div class="col-12 col-lg-8 pb-3">
-			<div id="header-left" class="d-flex align-items-center">
+			<div id="header-left" class="align-items-center">
 				<div id="avatar"></div>
 				<span id="bar-menu-text" class="ms-3">{{ project_name | default('Nom de l\'application') }}</span>
 			</div>
 		</div>
 
 		<!-- RIGHT (responsif) -->
-		<div class="col-12 col-lg-4">
+		<div class="col-12 col-lg-4 justify-content-end">
 			<div id="header-right" class="d-flex gap-2">
 				<button id="btnDossier"    class="active   flex-grow-1">Dossiers  </button>
 				<button id="btnGroupes"    class="menu-btn flex-grow-1">Groupes   </button>

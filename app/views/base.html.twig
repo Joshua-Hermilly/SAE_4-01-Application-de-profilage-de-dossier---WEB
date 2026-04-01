@@ -6,18 +6,16 @@
 <body>
 
 <div id="background" >
-	<div class="container">
-		{# Header #}
-		{% if show_header is not defined or show_header %}
-			{% include 'components/struct/header.html.twig' %}
-		{% endif %}
-		
-		{% block content %}
-		{# Le contenu des pages s'insère ici #}
-		{% endblock %}
+	{# Header #}
+	{% if show_header is not defined or show_header %}
+		{% include 'components/struct/header.html.twig' %}
+	{% endif %}
+	
+	{% block content %}
+	{# Le contenu des pages s'insère ici #}
+	{% endblock %}
 
-		{% include 'components/struct/footer.html.twig' %}
-	</div>
+	{% include 'components/struct/footer.html.twig' %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
