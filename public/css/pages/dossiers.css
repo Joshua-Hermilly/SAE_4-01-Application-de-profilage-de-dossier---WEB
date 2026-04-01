@@ -1,3 +1,42 @@
+/* ============================================================
+   DOSSIERS PAGE - CSS MINIMAL (Bootstrap-first)
+============================================================ */
+
+:root {
+	--primary-color: #2158BD;
+	--dark-bg: #242423;
+	--light-bg: #f8f9fa;
+	--border-color: #dee2e6;
+	--header-dark: #2b2b2b;
+	--filter-width: 320px;
+	--map-width: 350px;
+}
+
+/* ============================================================
+   CONTENEUR PRINCIPAL
+============================================================ */
+
+.under-header {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	min-height: calc(100vh - 68px - 100px); /* 100vh - header height - footer height */
+	display: flex;
+	flex-direction: row;
+	position: relative;
+}
+
+.dossiers-wrapper {
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - 260px); /* Header (68px) + Footer (60px) */
+}
+
+.dossiers-content {
+	flex: 1;
+	background: var(--light-bg);
+	padding-bottom: 2rem;
+}
 #transparent{
 	background-color: transparent;
 	border: none;

@@ -6,24 +6,26 @@ require_once '../app/repositories/FiltreRepository.php';
 
 class DossiersController extends Controller
 {
-	/**
-	 * Page Dossiers — Liste des candidats avec filtres & table dynamique
-	 */
 	public function dossiers(): void
 	{
-		$filterConfig = $this->buildFilterConfig();
-		$filtreRepo = new FiltreRepository();
+		if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
-		$filtreRepo->hydrateSelectFilters($filterConfig);
+		$filtreRepo    = new FiltreRepository();
+		$dataVersion   = $_SESSION['data_version'] ?? '0';
+		$filtreCache   = $_SESSION['filter_cache'] ?? null;
 
-		$this->view(
-			'pages/dossiers',
-			'Dossiers',
-			[
-				'filterConfig' => $filterConfig,
-				'pages'        => 'dossiers',
-			]
-		);
+		if (is_array($filtreCache) && ($filtreCache['version'] ?? '') === $dataVersion) { $filterConfig = $filtreCache['data']; }
+		else
+		{
+			$filterConfig = $this->buildFilterConfig();
+			$filtreRepo->hydrateSelectFilters($filterConfig);
+			$_SESSION['filter_cache'] = [
+				'version' => $dataVersion,
+				'data'    => $filterConfig,
+			];
+		}
+
+		$this->view('pages/dossiers', 'Dossiers', ['filterConfig' => $filterConfig]);
 	}
 
 	private function buildFilterConfig(): array
