@@ -1,21 +1,21 @@
-<header class="main-header py-3">
+<header id="main-header" class="py-3">
   	<div class="container">
   		<div class="row justify-content-center w-100">
 
 		<!-- LEFT (responsif) -->
 		<div class="col-12 col-lg-8 pb-3">
-			<div class="header-left d-flex align-items-center">
-				<div class="avatar"></div>
-				<span class="bar-menu-text ms-3">{{ project_name | default('Nom de l\'application') }}</span>
+			<div id="header-left" class="d-flex align-items-center">
+				<div id="avatar"></div>
+				<span id="bar-menu-text" class="ms-3">{{ project_name | default('Nom de l\'application') }}</span>
 			</div>
 		</div>
 
 		<!-- RIGHT (responsif) -->
 		<div class="col-12 col-lg-4">
-			<div class="header-right d-flex gap-2">
-				<button id="btnDossier"    class="menu-btn active flex-grow-1">Dossiers  </button>
-				<button id="btnGroupes"    class="menu-btn flex-grow-1"       >Groupes   </button>
-				<button id="btnFormations" class="menu-btn flex-grow-1"       >Formations</button>
+			<div id="header-right" class="d-flex gap-2">
+				<button id="btnDossier"    class="active   flex-grow-1">Dossiers  </button>
+				<button id="btnGroupes"    class="menu-btn flex-grow-1">Groupes   </button>
+				<button id="btnFormations" class="menu-btn flex-grow-1">Formations</button>
 			</div>
 		</div>
 	</div>

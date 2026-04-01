@@ -23,7 +23,7 @@ body, html {
 	font-family: 'IBM Plex Sans', sans-serif;
 }
 
-.background {
+#background {
 	min-height: 100vh;
 	background: linear-gradient(to bottom, var(--bleu-fond-faide) 0%, var(--gris-fond-assets) 93%);
 }
@@ -31,12 +31,12 @@ body, html {
    HEADER
 ============================================================ */
 
-.main-header {
+#main-header {
 	display: flex;
 	align-items: center;
 }
 
-.header-left {
+#header-left {
 	display: flex;
 	align-items: center;
 	gap: 12px;
@@ -48,13 +48,13 @@ body, html {
 	height: 54px;
 }
 
-.bar-menu-text {
+#bar-menu-text {
 	color: var(--gris-text-fond-foncé);
 	font-weight: bold;
 	font-size: 18px;
 }
 
-.avatar {
+#avatar {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
@@ -65,13 +65,13 @@ body, html {
 	flex-shrink: 0;
 }
 
-.header-right {
+#header-right {
 	display: flex;
 	gap: 12px;
 	flex: 1;
 }
 
-.menu-btn {
+#header-right button {
 	background: var(--gris-fond-assets);
 	color: var(--gris-text-fond-foncé);
 	border: none;
@@ -87,12 +87,12 @@ body, html {
 	transition: all 0.2s ease;
 }
 
-.menu-btn:hover {
+#header-right button:hover {
 	color: var(--gris-text-fond-foncé);
 	background: var(--gris-select-assets);
 }
 
-.menu-btn.active {
+#header-right button.active {
 	color: var(--blanc);
 	font-weight: bold;
 	background: var(--gris-select-assets);
@@ -103,55 +103,10 @@ body, html {
    FOOTER
 ============================================================ */
 
-.footer {
+#footer {
 	background-color: var(--gris-fond-assets);
 	color: var(--blanc);
 	font-size: 14px;
 	left: 0;
 	right: 0;
-}
-
-/* ============================================================
-   UTILITAIRES GLOBAUX
-============================================================ */
-
-/* Scroll bar personnalisée pour le filtre */
-.filter-sidebar::-webkit-scrollbar {
-	width: 8px;
-}
-
-.filter-sidebar::-webkit-scrollbar-track {
-	background: var(--filter-button-bg);
-}
-
-.filter-sidebar::-webkit-scrollbar-thumb {
-	background: var(--filter-border);
-	border-radius: 4px;
-}
-
-.filter-sidebar::-webkit-scrollbar-thumb:hover {
-	background: var(--bleu-fond-faide);
-}
-
-/* Animations de collapse */
-@keyframes slideInFromLeft {
-	from {
-		transform: translateX(-100%);
-		opacity: 0;
-	}
-	to {
-		transform: translateX(0);
-		opacity: 1;
-	}
-}
-
-@keyframes slideOutToLeft {
-	from {
-		transform: translateX(0);
-		opacity: 1;
-	}
-	to {
-		transform: translateX(-100%);
-		opacity: 0;
-	}
 }

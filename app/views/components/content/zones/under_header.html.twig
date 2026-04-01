@@ -1,16 +1,14 @@
 {% set css_page = '/css/pages/dossiers.css' %}
 
 {% block content %}
-	<div class="under-header py-3">
-  		<div class="container">
-  			<div class="row justify-content-center w-100">
-				{% include 'components/content/assets/filter_close.html.twig' %}
+	<div class="under-header">
+		<div class="row justify-content-center w-100">
+			{% include 'components/content/assets/filter_close.html.twig' %}
 
-				{% include 'components/content/assets/filter_open.html.twig' with {
-					title: filterConfig.title | default('Filtres'),
-					sections: filterConfig.sections | default([])
-				} %}
-			</div>
+			{% include 'components/content/assets/filter_open.html.twig' with {
+				title: filterConfig.title | default('Filtres'),
+				sections: filterConfig.sections | default([])
+			} %}
 		</div>
 	</div>
 {% endblock %}
