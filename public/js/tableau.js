@@ -1,51 +1,124 @@
 /*------------------------*/
 /* CONSTANTES             */
 /*------------------------*/
-const page     = document.getElementById( "page"   );
-const trHeader = document.getElementById( "trHead" );
-const tBody    = document.getElementById( "tBody"  );
+// Tableau
+const page     = document.getElementById( "page"            );
+const trHeader = document.getElementById( "trHead"          );
+const tBody    = document.getElementById( "tBody"           );
 
-const thHeader = document.createElement( 'th' );
-thHeader.setAttribute ( 'scope', "col" );
-thHeader.classList.add( "border-end"                     );
+// Bouton
+const btnPrc   = document.getElementById( "btnPrc"          );
+const btnSvt   = document.getElementById( "btnSvt"          );
+const btnAct   = document.getElementById( "btnAct"          );
+const btnDeb   = document.getElementById( "btnDeb"          );
+const btnFin   = document.getElementById( "btnFin"          );
 
-const thBody = document.createElement( 'th' );
+// Infos page
+const infos    = document.getElementById( "pagination-info" );
 
-const color = document.createElement( 'span' );
-color.className = 'badge border border-dark text-dark rounded-2 p-2';
+
+/*------------------------*/
+/* Fonctions              */
+/*------------------------*/
+function creerHeader( headers, dossiers )
+{
+	trHeader.innerHTML = "";
+
+	for ( let cpt = 0; cpt < headers.length-1; cpt++ )
+	{
+		th = `<th scope="col" class="border-end">${headers[cpt]}</th>`;
+
+		trHeader.innerHTML+= th;
+	}
+
+	creerTableau( headers, dossiers );
+}
+
+function creerTableau( headers, dossiers )
+{
+	tBody.innerHTML = "";
+	for ( let cptD = 0; cptD < dossiers.length; cptD++ )
+	{
+		const tr = document.createElement( 'tr' );
+		tr.classList.add( 'ligne' );
+
+		for ( let cptH = 0; cptH < headers.length-1; cptH++ )
+		{
+			const valeur = dossiers[cptD][ headers[cptH] ];
+			let th;
+
+			if ( cptH === 0 )
+			{
+				th = `<th>
+					      <span class="badge border border-dark text-dark rounded-2 p-2">${valeur}</span>
+				      </th>`;
+			}
+			else
+			{
+				th = `<th>${valeur}</th>`;
+			}
+
+			tr.innerHTML += th;
+		}
+
+		tBody.appendChild( tr );
+	}
+}
+
+
+function creerBtnPage( maxPage, actPage )
+{
+	infos.textContent = `Affichage de la page ${actPage} sur ${maxPage}`;
+
+	btnAct.textContent = '...';
+	btnAct.value       = actPage;
+	btnFin.value       = maxPage;
+	btnSvt.disabled    = false;
+	btnPrc.disabled    = false;
+	btnFin.disabled    = false;
+	btnDeb.disabled    = false;
+
+	if ( maxPage === actPage ) {btnSvt.disabled = true;}
+	if ( actPage ===       1 ) {btnPrc.disabled = true;}
+}
 
 
 /*------------------------*/
 /* Fetch                  */
 /*------------------------*/
-async function getDossierCandidat()
+async function getDossierCandidat( indexPage )
 {
-    try
-    {
-        const response = await fetch('./dossierGet.php', {
-            method : 'POST',
-            headers: {
-                'Token': 'SAE-4.01_WEB_TOKEN',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ page: 1 }),
-        });
+	try
+	{
+		const response = await fetch('./dossierGet.php', {
+			method : 'POST',
+			headers:
+			{
+				'Token'       : 'SAE-4.01_WEB_TOKEN',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ page:indexPage })
+		});
 
-        // Récupérer la réponse en texte d'abord
-        const text = await response.text();
-        console.log('Réponse brute du serveur:', text);
+		const donnees = await response.json();
+		//console.log(donnees)
 
-        if (!response.ok) {
-            throw new Error(`Erreur ${response.status}: ${text}`);
-        }
+		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
 
-        // Ensuite la parser en JSON
-        const data = JSON.parse(text);
-        console.log('Données JSON:', data);
+		creerHeader ( donnees['headers' ], donnees['dossiers'] );
+		creerBtnPage( donnees['maxPage' ], donnees['actPage' ] );
 
-    } catch (error) {
-        console.error('Erreur :', error);
-    }
+	} catch (error) { console.error('Erreur :', error); }
 }
+getDossierCandidat(1);
 
-getDossierCandidat();
+
+/*------------------------*/
+/* Event                  */
+/*------------------------*/
+// tBody.addEventListener ( "click", () => getDossierCandidat(             1) );
+btnPrc.addEventListener( "click", () => getDossierCandidat(+btnAct.value - 1) );
+btnSvt.addEventListener( "click", () => getDossierCandidat(+btnAct.value + 1) );
+btnAct.addEventListener( "click", () => getDossierCandidat(+btnAct.value + 1) );
+btnDeb.addEventListener( "click", () => getDossierCandidat(   1) );
+btnFin.addEventListener( "click", () => getDossierCandidat(   btnFin.value) );

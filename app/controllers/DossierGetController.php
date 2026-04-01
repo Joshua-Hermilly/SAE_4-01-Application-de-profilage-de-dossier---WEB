@@ -35,8 +35,8 @@ class DossierGetController extends Controller
 		}
 
 		$serviceDossier = new DossierCandidatService();
-		$input          = json_decode(file_get_contents('php://input'), true);
-		$page           = $input['page'] ?? null;
+		$data = json_decode(file_get_contents('php://input'), true);
+		$page = $data['page'] ?? null;
 		$isAdmin        = false;
 
 		// Page définie ?
@@ -55,10 +55,6 @@ class DossierGetController extends Controller
 
 		// Il est admin ?
 		if (session_status() === PHP_SESSION_NONE)  session_start();
-		if ( !isset($_SESSION['compte']) )
-		{
-			$this->redirectTo('login.php');
-		}
 		if ( isset($_SESSION['compte']) && $_SESSION['compte']->getCompteIsAdmin())
 		{
 			$isAdmin = true;
@@ -68,8 +64,10 @@ class DossierGetController extends Controller
 		$this->json
 		([
 			'isAdmin'  => $isAdmin,
-			'header'   => $this->getHeader(),
-			'dossiers' => $this->dossierCandidats
+			'headers'  => $this         ->getHeader(),
+			'dossiers' => $this         ->dossierCandidats,
+			'maxPage' => $serviceDossier->maxPage(),
+			'actPage' => $page
 		]);
 	}
 
@@ -94,9 +92,9 @@ class DossierGetController extends Controller
 			'Note de globale'      ,
 			'Etablissement'        ,
 			'Diplome'              ,
-			'Spécicalite 2'        ,
 			'Spécicalite 1'        ,
-			'Couleur'              ,
+			'Spécicalite 2'        ,
+			'Couleur'
 		];
 	}
 }

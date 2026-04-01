@@ -28,14 +28,16 @@
     </div>
 
     <div class="card-footer d-flex justify-content-between align-items-center bg-white">
-        <span class="text-muted small" id="pagination-info">Affichage de 1 à 25 sur 25 résultats</span>
+        <span class="text-muted small" id="pagination-info"></span>
         <nav aria-label="Navigation des pages">
             <div class="d-flex align-items-center pagination pagination-sm mb-0">
-                <button id="btn-prev" class="page-link text-dark border rounded-start disabled">Précédent</button>
+                <button id="btnDeb" class="page-link text-dark border rounded-start" disabled>Début</button>
+                <button id="btnPrc" class="page-link text-dark border rounded-start" disabled>Précédent</button>
                 <div id="page-numbers" class="d-flex">
-                    {# <button class="page-link bg-dark text-white border-dark">1</button> #}
+                    <button id="btnAct" class="page-link bg-gray text-black " disabled></button>
                 </div>
-                <button id="btn-next" class="page-link text-dark border rounded-end">Suivant</button>
+                <button id="btnSvt" class="page-link text-dark border rounded-end" disabled>Suivant</button>
+                <button id="btnFin" class="page-link text-dark border rounded-end" disabled>Fin</button>
             </div>
         </nav>
     </div>

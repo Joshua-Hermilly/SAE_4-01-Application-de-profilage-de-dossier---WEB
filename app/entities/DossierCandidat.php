@@ -32,23 +32,23 @@ class DossierCandidat implements JsonSerializable
 	/*-------------------------------*/
 	/*  Header                      */
 	/*-------------------------------*/
-//	public function getHeader()
-//	{
-//		return
-//		[
-//			'Code'                 ,
-//			'Civilite'             ,
-//			'Code boursier'        ,
-//			'Note de lycée'        ,
-//			'Note de fiche avenir' ,
-//			'Note de globale'      ,
-//			'Etablissement'        ,
-//			'Diplome'              ,
-//			'Spécicalite 2'        ,
-//			'Spécicalite 1'        ,
-//			'Couleur'              ,
-//		];
-//	}
+	public function getHeader()
+	{
+		return
+		[
+			'Code'                 ,
+			'Civilite'             ,
+			'Code boursier'        ,
+			'Note de lycée'        ,
+			'Note de fiche avenir' ,
+			'Note de globale'      ,
+			'Etablissement'        ,
+			'Diplome'              ,
+			'Spécicalite 1'        ,
+			'Spécicalite 2'        ,
+			'Couleur'
+		];
+	}
 
 	/*-------------------------------*/
 	/*  Serialize                    */
@@ -67,8 +67,8 @@ class DossierCandidat implements JsonSerializable
 			'Note de globale'      => $this->candidat_note_globale ,
 			'Etablissement'        => $this->etablissement_nom     ,
 			'Diplome'              => $this->diplome_libelle       ,
-			'Spécicalite 2'        => $this->specicalite_spe1      ,
-			'Spécicalite 1'        => $this->specicalite_spe2      ,
+			'Spécicalite 1'        => $this->specicalite_spe1      ,
+			'Spécicalite 2'        => $this->specicalite_spe2      ,
 			'Couleur'              => $this->groupe_couleur        ,
 		];
 	}
