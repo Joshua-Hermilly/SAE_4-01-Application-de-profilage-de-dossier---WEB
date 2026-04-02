@@ -100,9 +100,9 @@ class DossiersController extends Controller
 							'operator' => '>=',
 							'min'      => 0,
 							'max'      => 20,
-							],
-							[
-								'name'     => 'note_fiche',
+						],
+						[
+							'name'     => 'note_fiche',
 							'label'    => 'Note Fiche Avenir',
 							'column'   => 'CANDIDAT.candidat_note_fiche',
 							'type'     => 'number',
