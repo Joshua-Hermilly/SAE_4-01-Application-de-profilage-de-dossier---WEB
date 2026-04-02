@@ -1,6 +1,7 @@
 <?php
 
 require_once '../app/core/Controller.php';
+require_once '../app/services/GroupeFiltreService.php';
 
 class GroupeController extends Controller
 {
@@ -14,6 +15,9 @@ class GroupeController extends Controller
 			return;
 		}
 
-		$this->view('pages/groupes', 'Groupes');
+		$filtreService = new GroupeFiltreService();
+		$filterConfig  = $filtreService->buildFilterConfig();
+
+		$this->view('pages/groupes', 'Groupes', ['filterConfig' => $filterConfig]);
 	}
 }

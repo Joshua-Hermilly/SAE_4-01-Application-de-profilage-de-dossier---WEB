@@ -27,27 +27,24 @@ class GroupeGetController extends Controller
 	/*-------------------------------*/
 	public function getGroupes():void
 	{
-		// Token valide et saisie ?
-//		if ( $this->validerToken() )
-//		{
-//			$this->json(['erreur' => 'Token invalide'], 401);
-//			return;
-//		}
-
 		$GroupeService = new GroupeService();
-		$data           = json_decode(file_get_contents('php://input'), true);
-		$page           = 1;//$data['page'] ?? null;
-		$isAdmin        = false;
+		$contentType   = $_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '';
+		$isJson        = stripos($contentType, 'application/json') !== false;
+		$data          = $isJson ? (json_decode(file_get_contents('php://input'), true) ?? []) : $_POST;
+		$page          = isset($data['page']) ? (int) $data['page'] : 1;
+		$filters       = $this->extractFilters($data);
+		$isAdmin       = false;
 
-		// Page définie ?
-		if ( !$page )
+		if ($isJson && !$this->validerToken())
 		{
-			$this->json(['erreur' => 'La clée page doit être indiquée'], 401);
+			$this->json(['erreur' => 'Token invalide'], 401);
 			return;
 		}
 
-		// Page valide ?
-		if ( $page < 1 || $page > $GroupeService->maxPage() )
+		if ($page < 1) { $page = 1; }
+
+		$maxPage = $GroupeService->maxPage($filters);
+		if ($page > $maxPage)
 		{
 			$this->json(['erreur' => "Aucune données disponible. Merci d'insérer des données ou de contacter un administrateur."]);
 			return;
@@ -60,13 +57,13 @@ class GroupeGetController extends Controller
 			$isAdmin = true;
 		}
 
-		$this->groupes = $GroupeService->findAtPageDossierCandidat( $page );
+		$this->groupes = $GroupeService->findAtPageDossierCandidat($page, $filters);
 		$this->json
 		([
 			'isAdmin'  => $isAdmin,
 			'headers'  => $this          ->getHeader(),
 			'groupes' => $this          ->groupes,
-			'maxPage'  => $GroupeService->maxPage(),
+			'maxPage'  => $maxPage,
 			'actPage'  => $page
 		]);
 	}
@@ -78,6 +75,13 @@ class GroupeGetController extends Controller
 	{
 		$token = $_SERVER['HTTP_TOKEN'] ?? '';
 		return $token === $this->TOKEN;
+	}
+
+	private function extractFilters(array $data): array
+	{
+		unset($data['page']);
+		unset($data['_token']);
+		return $data;
 	}
 
 	private function getHeader():array

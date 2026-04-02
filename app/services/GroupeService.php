@@ -27,14 +27,14 @@ class GroupeService
 		return $this->GroupeRepository->findAll();
 	}
 
-	public function findAtPageDossierCandidat(int $page): array
+	public function findAtPageDossierCandidat(int $page, array $filters = []): array
 	{
-		return $this->GroupeRepository->findByPage($page);
+		return $this->GroupeRepository->findByPage($page, $filters);
 	}
 
-	public function maxPage(): int
+	public function maxPage(array $filters = []): int
 	{
-		return (int) ($this->GroupeRepository->nbMaxDossier() / 25) +1;
+		return max(1, (int) ceil($this->GroupeRepository->nbMaxDossier($filters) / 25));
 	}
 
 }

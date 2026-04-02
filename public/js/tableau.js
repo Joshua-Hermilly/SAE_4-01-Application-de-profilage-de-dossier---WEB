@@ -22,6 +22,11 @@ const infos    = document.getElementById( "pagination-info" );
 
 let filtresCourant = {};
 
+// Type de page courante
+const currentPath    = window.location.pathname.toLowerCase();
+const isGroupePage   = currentPath.includes("groupes.php");
+const isFormationPage= currentPath.includes("formations.php");
+
 
 /*------------------------*/
 /* Fonctions              */
@@ -177,19 +182,12 @@ function selectionFaite(event)
 			if ( event.target.checked )
 			{
 				sessionStorage.setItem( "cbTous" , 'selectionner' );
-
-				for ( let cpt = 0; cpt < lstCb.length; cpt++ )
-				{
-					lstCb[cpt].checked = true;
-				}
+				for ( let cpt = 0; cpt < lstCb.length; cpt++ ) { lstCb[cpt].checked = true; }
 			}
 			else
 			{
 				sessionStorage.removeItem( event.target.id );
-				for ( let cpt = 0; cpt < lstCb.length; cpt++ )
-				{
-					lstCb[cpt].checked = false;
-				}
+				for ( let cpt = 0; cpt < lstCb.length; cpt++ ) { lstCb[cpt].checked = false; }
 			}
 		}
 		else if ( sessionStorage.getItem( "cbTous" ) === 'selectionner' )
@@ -255,7 +253,7 @@ async function getDossierCandidat( indexPage, filters = filtresCourant )
 }
 
 
-async function getGroupes( indexPage )
+async function getGroupes( indexPage, filters = filtresCourant )
 {
 	try
 	{
@@ -266,7 +264,7 @@ async function getGroupes( indexPage )
 					'Token'       : "SAE-4.01_WEB_TOKEN",
 					'Content-Type': 'application/json'
 				},
-			body: JSON.stringify({ page:indexPage })
+			body: JSON.stringify({ page:indexPage, ...filters })
 		});
 
 		const donnees = await response.json();
@@ -281,63 +279,87 @@ async function getGroupes( indexPage )
 			return;
 		}
 
-		if ( donnees['groupes'] !== null )
-		{
-			tableau.style.display = "";
-		}
-		else
-		{
-			document.getElementById( "vide"    ).style.display = "block";
-		}
+		if ( donnees['groupes'] !== null ) { tableau.style.display = "";                                }
+		else                               { document.getElementById( "vide" ).style.display = "block"; }
 		creerHeader ( donnees['headers' ], donnees['isAdmin' ]                     );
 		creerTableau( donnees['headers' ], donnees['groupes' ], donnees['isAdmin'] );
 		creerBtnPage( donnees['maxPage' ], donnees['actPage' ]                     );
 
 	} catch (error) { console.error('Erreur :', error); }
 }
-
-
-
-const isGroupePage = window.location.pathname.toLowerCase().includes("groupe");
-
-if (isGroupePage)
+async function getFormations( indexPage, filters = filtresCourant )
 {
-	getGroupes(1);
-	btnPrc.addEventListener( "click", ()    => getGroupes(+pageAct.value - 1) );
-	btnSvt.addEventListener( "click", ()    => getGroupes(+pageAct.value + 1) );
-	btnDeb.addEventListener( "click", ()    => getGroupes(   1) );
-	btnFin.addEventListener( "click", ()    => getGroupes(   btnFin.value) );
+	try
+	{
+		const response = await fetch('./FormationGet.php', {
+			method : 'POST',
+			headers:
+				{
+					'Token'       : "SAE-4.01_WEB_TOKEN",
+					'Content-Type': 'application/json'
+				},
+			body: JSON.stringify({ page:indexPage, ...filters })
+		});
+
+		const donnees = await response.json();
+
+		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
+
+		if ( donnees['erreur'] )
+		{
+			afficherErreur( donnees['erreur'] );
+			return;
+		}
+
+		if ( donnees['formations'] !== null ) { tableau.style.display = "";                                }
+		else                                  { document.getElementById( "vide" ).style.display = "block"; }
+		creerHeader ( donnees['headers'    ], donnees['isAdmin'   ] );
+		creerTableau( donnees['headers'    ], donnees['formations'], donnees['isAdmin'] );
+		creerBtnPage( donnees['maxPage'    ], donnees['actPage'   ] );
+
+	} catch (error) { console.error('Erreur :', error); }
 }
-else
+
+function initialiserTableau()
 {
-	getDossierCandidat(1);
-	btnPrc.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value - 1) );
-	btnSvt.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value + 1) );
-	btnDeb.addEventListener( "click", ()    => getDossierCandidat(   1) );
-	btnFin.addEventListener( "click", ()    => getDossierCandidat(   btnFin.value) );
+	if      (isGroupePage   ) { getGroupes        (1); }
+	else if (isFormationPage) { getFormations     (1); }
+	else                      { getDossierCandidat(1); }
 }
+
+function attacherPagination(callback)
+{
+	if (!btnPrc || !btnSvt || !btnDeb || !btnFin || !pageAct) { return; }
+
+	btnPrc.addEventListener( "click", () => callback(+pageAct.value - 1) );
+	btnSvt.addEventListener( "click", () => callback(+pageAct.value + 1) );
+	btnDeb.addEventListener( "click", () => callback(1) );
+	btnFin.addEventListener( "click", () => callback(+btnFin.value) );
+}
+
+initialiserTableau();
+
+if      (isGroupePage   ) { attacherPagination((page) => getGroupes        (page, filtresCourant)); }
+else if (isFormationPage) { attacherPagination((page) => getFormations     (page, filtresCourant)); }
+else                      { attacherPagination((page) => getDossierCandidat(page, filtresCourant)); }
 
 /*------------------------*/
 /* Event                  */
 /*------------------------*/
 // tBody.addEventListener ( "click", () => getDossierCandidat(             1) );
 tableau.addEventListener( "click", (event) => selectionFaite    (event                             ) );
-btnPrc .addEventListener( "click", ()      => getDossierCandidat(+pageAct.value - 1, filtresCourant) );
-btnSvt .addEventListener( "click", ()      => getDossierCandidat(+pageAct.value + 1, filtresCourant) );
-btnDeb .addEventListener( "click", ()      => getDossierCandidat(   1, filtresCourant              ) );
-btnFin .addEventListener( "click", ()      => getDossierCandidat(   btnFin.value, filtresCourant   ) );
 
 if (filterForm)
 {
 	filterForm.addEventListener('submit', function (event) {
 		const bouton = event.submitter;
-		if (bouton && bouton.dataset && bouton.dataset.action === 'creer-groupe')
-		{
-			return;
-		}
+		if (bouton && bouton.dataset && bouton.dataset.action === 'creer-groupe') { return; }
 
 		event.preventDefault();
 		filtresCourant = serialiserFiltres();
-		getDossierCandidat(1, filtresCourant);
+
+		if      (isGroupePage   ) { getGroupes        (1, filtresCourant); }
+		else if (isFormationPage) { getFormations     (1, filtresCourant); }
+		else                      { getDossierCandidat(1, filtresCourant); }
 	});
 }
