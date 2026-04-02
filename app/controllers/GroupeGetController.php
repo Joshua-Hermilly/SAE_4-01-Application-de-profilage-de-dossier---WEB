@@ -43,8 +43,9 @@ class GroupeGetController extends Controller
 
 		if ($page < 1) { $page = 1; }
 
+		$this->groupes = $GroupeService->findAtPageDossierCandidat($page, $filters);
 		$maxPage = $GroupeService->maxPage($filters);
-		if ($page > $maxPage)
+		if ($page > $maxPage || empty($this->groupes))
 		{
 			$this->json(['erreur' => "Aucune données disponible. Merci d'insérer des données ou de contacter un administrateur."]);
 			return;
@@ -52,12 +53,8 @@ class GroupeGetController extends Controller
 
 		// Il est admin ?
 		if (session_status() === PHP_SESSION_NONE)  session_start();
-		if ( isset($_SESSION['compte']) && $_SESSION['compte']->getCompteIsAdmin())
-		{
-			$isAdmin = true;
-		}
+		if ( isset($_SESSION['compte']) && $_SESSION['compte']->getCompteIsAdmin()) { $isAdmin = true; }
 
-		$this->groupes = $GroupeService->findAtPageDossierCandidat($page, $filters);
 		$this->json
 		([
 			'isAdmin'  => $isAdmin,

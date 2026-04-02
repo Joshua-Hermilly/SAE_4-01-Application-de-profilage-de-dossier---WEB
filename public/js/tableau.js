@@ -114,7 +114,6 @@ function creerTableau( headers, dossiers, isAdmin )
 			input.id          =  "cb"+dossiers[cptD][headers[0]];
 			input.type        = "checkbox";
 
-			//console.log(input.id)
 			if ( sessionStorage.getItem( input.id         ) === "selectionner"                                         ) { input.checked = true; }
 			if ( sessionStorage.getItem( "cbTous"    ) &&  sessionStorage.getItem( input.id ) !== "désélectionner") { input.checked = true; }
 
@@ -232,9 +231,6 @@ async function getDossierCandidat( indexPage, filters = filtresCourant )
 		});
 
 		const donnees = await response.json();
-		//console.log(donnees       )
-		//console.log(sessionStorage)
-
 		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
 
 		if ( donnees['erreur'] )
@@ -252,7 +248,6 @@ async function getDossierCandidat( indexPage, filters = filtresCourant )
 	} catch (error) { console.error('Erreur :', error); }
 }
 
-
 async function getGroupes( indexPage, filters = filtresCourant )
 {
 	try
@@ -268,8 +263,6 @@ async function getGroupes( indexPage, filters = filtresCourant )
 		});
 
 		const donnees = await response.json();
-		console.log(donnees       )
-		//console.log(sessionStorage)
 
 		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
 
