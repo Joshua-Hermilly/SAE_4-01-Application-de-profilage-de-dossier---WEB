@@ -23,7 +23,7 @@ class Candidat
 		private ?int  $etablissement_id,
 		private ?int  $groupe_id,
 		private ?int  $formation_id,
-		private int   $diplome_id
+		private ?int  $diplome_id
 	) {}
 
 	/*-------------------------------*/

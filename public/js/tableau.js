@@ -71,8 +71,9 @@ function creerTableau( headers, dossiers, isAdmin )
 
 			if ( cptH === 0 )
 			{
+				let color = dossiers[cptD]['Couleur'] || dossiers[cptD]['groupe_couleur'];
 				th = `<th>
-					      <span class="badge border border-dark text-dark rounded-2 p-2">${valeur}</span>
+					      <span class="badge border border-dark text-dark rounded-2 p-2" style="background-color: ${color}" >${valeur}</span>
 				     </th>`;
 			}
 			else if ( valeur === "NaN" || valeur === "Non définie" )
@@ -196,10 +197,10 @@ async function getDossierCandidat( indexPage )
 		const response = await fetch('./dossierGet.php', {
 			method : 'POST',
 			headers:
-			{
-				'Token'       : 'SAE-4.01_WEB_TOKEN',
-				'Content-Type': 'application/json'
-			},
+				{
+					'Token'       : 'SAE-4.01_WEB_TOKEN',
+					'Content-Type': 'application/json'
+				},
 			body: JSON.stringify({ page:indexPage })
 		});
 
@@ -229,15 +230,71 @@ async function getDossierCandidat( indexPage )
 
 	} catch (error) { console.error('Erreur :', error); }
 }
-getDossierCandidat(1);
 
+
+async function getGroupes( indexPage )
+{
+	try
+	{
+		const response = await fetch('./GroupeGet.php', {
+			method : 'POST',
+			headers:
+				{
+					'Token'       : "SAE-4.01_WEB_TOKEN",
+					'Content-Type': 'application/json'
+				},
+			body: JSON.stringify({ page:indexPage })
+		});
+
+		const donnees = await response.json();
+		console.log(donnees       )
+		//console.log(sessionStorage)
+
+		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
+
+		if ( donnees['erreur'] )
+		{
+			afficherErreur( donnees['erreur'] );
+			return;
+		}
+
+		if ( donnees['groupes'] !== null )
+		{
+			tableau.style.display = "";
+		}
+		else
+		{
+			document.getElementById( "vide"    ).style.display = "block";
+		}
+		creerHeader ( donnees['headers' ], donnees['isAdmin' ]                     );
+		creerTableau( donnees['headers' ], donnees['groupes' ], donnees['isAdmin'] );
+		creerBtnPage( donnees['maxPage' ], donnees['actPage' ]                     );
+
+	} catch (error) { console.error('Erreur :', error); }
+}
+
+
+
+const isGroupePage = window.location.pathname.toLowerCase().includes("groupe");
+
+if (isGroupePage)
+{
+	getGroupes(1);
+	btnPrc.addEventListener( "click", ()    => getGroupes(+pageAct.value - 1) );
+	btnSvt.addEventListener( "click", ()    => getGroupes(+pageAct.value + 1) );
+	btnDeb.addEventListener( "click", ()    => getGroupes(   1) );
+	btnFin.addEventListener( "click", ()    => getGroupes(   btnFin.value) );
+}
+else
+{
+	getDossierCandidat(1);
+	btnPrc.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value - 1) );
+	btnSvt.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value + 1) );
+	btnDeb.addEventListener( "click", ()    => getDossierCandidat(   1) );
+	btnFin.addEventListener( "click", ()    => getDossierCandidat(   btnFin.value) );
+}
 
 /*------------------------*/
 /* Event                  */
 /*------------------------*/
-// tBody.addEventListener ( "click", () => getDossierCandidat(             1) );
-tableau.addEventListener( "click",(event) => selectionFaite    (event)  );
-btnPrc.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value - 1) );
-btnSvt.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value + 1) );
-btnDeb.addEventListener( "click", ()    => getDossierCandidat(   1) );
-btnFin.addEventListener( "click", ()    => getDossierCandidat(   btnFin.value) );
+tableau.addEventListener( "click",(event) => selectionFaite(event) );
