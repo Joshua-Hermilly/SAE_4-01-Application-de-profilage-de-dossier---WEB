@@ -38,6 +38,18 @@
 	border-radius: 15px;
 	text-align: center;
 	padding: 0 20px;
+	min-height: 70px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#bloc .card-body {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 0 !important;
 }
 
 #espacement {
@@ -48,15 +60,6 @@
     border: none;
     border-top: 1px solid var(--gris-text-fond-foncé);
     margin: 20px 0;
-
-#text {
-	text-align: left;
-}
-
-#under-title {
-	color: var(--bleu-icon);
-	text-align: left;
-}
 }
 
 #bouton {
@@ -83,11 +86,75 @@
 
 #under-title {
 	color: var(--bleu-icon);
-	text-align: left;
+	text-align: center;
+	display: block;
+}
+
+#specialite-checkboxes-specialite_spe,
+#specialite-checkboxes-specialite_opt,
+.specialite-checkboxes {
+	max-height: 220px;
+	overflow-y: auto;
+	padding-right: 0.25rem;
+}
+
+#specialite-checkboxes-specialite_spe #list-group-item,
+#specialite-checkboxes-specialite_spe .specialite-checkbox-item,
+#specialite-checkboxes-specialite_opt #list-group-item,
+#specialite-checkboxes-specialite_opt .specialite-checkbox-item,
+.specialite-checkboxes #list-group-item,
+.specialite-checkboxes .specialite-checkbox-item {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.5rem;
+	width: 100%;
+	min-width: 0;
+	white-space: normal;
+	padding-top: 0.35rem;
+	padding-bottom: 0.35rem;
+}
+
+#specialite-checkboxes-specialite_spe input[type="checkbox"],
+#specialite-checkboxes-specialite_opt input[type="checkbox"],
+.specialite-checkboxes input[type="checkbox"],
+.form-check input[type="checkbox"] {
+	flex: 0 0 auto;
+	min-width: 20px;
+	min-height: 20px;
+	width: auto !important;
+	height: auto !important;
+}
+
+#specialite-checkboxes-specialite_spe #list-group-item span,
+#specialite-checkboxes-specialite_spe #list-group-item label,
+#specialite-checkboxes-specialite_spe .specialite-checkbox-item span,
+#specialite-checkboxes-specialite_opt #list-group-item span,
+#specialite-checkboxes-specialite_opt #list-group-item label,
+#specialite-checkboxes-specialite_opt .specialite-checkbox-item span,
+.specialite-checkboxes #list-group-item span,
+.specialite-checkboxes #list-group-item label,
+.specialite-checkboxes .specialite-checkbox-item span {
+	flex: 1 1 auto;
+	min-width: 0;
+	word-break: break-word;
 }
 
 a#text:hover {
 	color: var(--bleu-icon);
 	text-decoration: underline;
+}
+
+/* ============================================================
+   FILTER CLOSE HEADER - Styles
+============================================================ */
+
+#filter_close_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 20px;
+	margin: 0;
+	width: 100%;
 }
 

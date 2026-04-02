@@ -1,6 +1,15 @@
-<div id="filter_close_bar" class="col-12">
-	<button type="button" class="btn d-flex align-items-center gap-2" id="filter_expand_btn" aria-label="Déplier les filtres">
-    	<i class="bi bi-chevron-down text-light"></i>
-		<span class="text-light fw-semibold">Filtres</span>
-	</button>
+<div id="filter_close_bar" class="col-12 col-md-3 p-0">
+	<div id="bloc" class="card w-100 overflow-hidden filter-close">
+		<div class="card-body body p-0">
+			<div id="filter_close_header" class="d-flex align-items-center justify-content-between">
+				<div id="filter_close_title" class="d-flex align-items-center gap-2">
+					<i class="bi bi-funnel-fill text-primary fs-4"></i>
+					<h5 id="filter_close_text" class="mb-0 text-light">{{ title | default('Filtrer') }}</h5>
+				</div>
+				<button type="button" id="filter_expand_btn" class="btn btn-sm btn-outline-light" aria-label="Déplier les filtres">
+					<i class="bi bi-chevron-down"></i>
+				</button>
+			</div>
+		</div>
+	</div>
 </div>
