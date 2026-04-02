@@ -21,13 +21,14 @@ class FormationSupRepository
 	public function create(FormationSup $formationSup)
 	{
 		$sql = "INSERT INTO FORMATION_SUP 
-				(formation_nom)
+				(formation_nom, formation_lib)
 				VALUES 
-				(:nom)
+				(:nom, :lib)
 				RETURNING formation_id;";
 
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':nom', $formationSup->getFormationNom());
+		$stmt->bindValue(':lib', $formationSup->getFormationLib());
 
 		$stmt->execute();
 
@@ -43,13 +44,14 @@ class FormationSupRepository
 		for ($cpt = 0; $cpt < count($formationSups); $cpt++)
 		{
 			$formationSup = $formationSups[$cpt];
-			$valeurBind[]  = "(:nom{$cpt})";
+			$valeurBind[] = "(:nom{$cpt}, :lib{$cpt})";
 
 			$valeurBrut[":nom{$cpt}"] = $formationSup->getFormationNom();
+			$valeurBrut[":lib{$cpt}"] = $formationSup->getFormationLib();
 		}
 
 		$sql = "INSERT INTO FORMATION_SUP 
-				(formation_nom)
+				(formation_nom, formation_lib)
 				VALUES " . implode(', ', $valeurBind) . "
 				RETURNING formation_id";
 
@@ -58,6 +60,7 @@ class FormationSupRepository
 		for ($cpt = 0; $cpt < count($formationSups); $cpt++)
 		{
 			$stmt->bindValue(":nom{$cpt}", $valeurBrut[":nom{$cpt}"]);
+			$stmt->bindValue(":lib{$cpt}", $valeurBrut[":lib{$cpt}"]);
 		}
 
 		$stmt->execute();
@@ -78,6 +81,7 @@ class FormationSupRepository
 		(
 			$row['formation_id' ],
 			$row['formation_nom'],
+			$row['formation_lib'],
 		);
 	}
 

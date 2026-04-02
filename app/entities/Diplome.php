@@ -14,8 +14,8 @@ class Diplome
 		private string $diplome_serie_libelle,
 
 		// Relation
+		private Specialite $specialite,
 		private ?array     $candidats  = [],
-		private Specialite $specialite
 	) {}
 
 	/*---------------------------------*/
