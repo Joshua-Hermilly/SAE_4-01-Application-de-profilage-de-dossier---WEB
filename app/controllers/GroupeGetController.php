@@ -47,7 +47,8 @@ class GroupeGetController extends Controller
 		}
 
 		// Page valide ?
-		if ( $page < 1 || $page > $GroupeService->maxPage() -1)
+		$this->groupes = $GroupeService->findAtPageDossierCandidat( $page );
+		if ( $page < 1 || $page > $GroupeService->maxPage() || empty($this->groupes) )
 		{
 			$this->json(['erreur' => "Aucune données disponible. Merci d'insérer des données ou de contacter un administrateur."]);
 			return;
@@ -60,7 +61,6 @@ class GroupeGetController extends Controller
 			$isAdmin = true;
 		}
 
-		$this->groupes = $GroupeService->findAtPageDossierCandidat( $page );
 		$this->json
 		([
 			'isAdmin'  => $isAdmin,
