@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% set css_page = '/css/pages/dossiers.css' %}
+{% set is_admin = true %}
+{% set pages = 'dossiers' %}
+{% set title = 'Dossiers' %}
+
+{% block content %}
+	<div class="dossiers-page">
+
+		<div class="dossiers-toolbar container-fluid">
+			<div class="toolbar-inner d-flex align-items-center gap-2">
+				<button class="toolbar-pill js-toggle-filter" type="button" aria-label="Basculer le panneau filtres">
+					<i class="bi bi-funnel"></i>
+					<span>Filtrer</span>
+				</button>
+
+				<div class="search-stack flex-grow-1">
+					<i class="bi bi-search"></i>
+					<input type="search" class="form-control" placeholder="Rechercher un dossier">
+					<div class="search-actions">
+						<button class="ghost" type="button" aria-label="Importer"><i class="bi bi-upload"></i></button>
+						<button class="ghost" type="button" aria-label="Exporter"><i class="bi bi-download"></i></button>
+						<button class="ghost" type="button" aria-label="Géolocaliser"><i class="bi bi-geo-alt"></i></button>
+						<button class="ghost" type="button" aria-label="Plein écran"><i class="bi bi-arrows-fullscreen"></i></button>
+					</div>
+				</div>
+
+				<div class="tab-switch">
+					<button class="menu-btn active">Dossiers</button>
+					<button class="menu-btn">Groupes</button>
+					<button class="menu-btn">Formations</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="dossiers-shell container-fluid">
+			<aside class="filter-wrapper">
+				{% include 'components/content/assets/filter_dossiers.html.twig' %}
+			</aside>
+
+			<main class="board">
+				<div class="board-card">
+					<div class="table-header">
+						<div class="cell checkbox"><i class="bi bi-list"></i></div>
+						<div class="cell">N°</div>
+						<div class="cell">Ville</div>
+						<div class="cell">Filtre1</div>
+						<div class="cell">Filtre2</div>
+						<div class="cell">Filtre3</div>
+						<div class="cell">Notes</div>
+					</div>
+
+					<div class="table-body">
+						{% set rows = [
+							{ numero: 'A-001', ville: 'Paris', filtre1: 'NSI', filtre2: 'Math', filtre3: 'Dossier complet', note: '15.2 / 20', checked: true, accent: true },
+							{ numero: 'A-002', ville: 'Lyon', filtre1: 'SVT', filtre2: 'Physique', filtre3: 'Partiel', note: '12.4 / 20', checked: false },
+							{ numero: 'A-003', ville: 'Nantes', filtre1: 'STMG', filtre2: 'Eco', filtre3: 'En attente', note: '11.0 / 20', checked: false },
+							{ numero: 'A-004', ville: 'Marseille', filtre1: 'STI2D', filtre2: 'SI', filtre3: 'Nouveau', note: '13.7 / 20', checked: false }
+						] %}
+
+						{% for row in rows %}
+							<div class="table-row {{ loop.index is odd ? 'alt' : '' }}">
+								<div class="cell checkbox">
+									<div class="drag"></div>
+								</div>
+								<div class="cell numero">{{ row.numero }}</div>
+								<div class="cell ville">{{ row.ville }}</div>
+								<div class="cell">{{ row.filtre1 }}</div>
+								<div class="cell">{{ row.filtre2 }}</div>
+								<div class="cell">{{ row.filtre3 }}</div>
+								<div class="cell note">{{ row.note }}</div>
+								<div class="cell select">
+									<input class="form-check-input" type="checkbox" {% if row.checked %}checked{% endif %}>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</main>
+
+			<aside class="map-panel">
+				<div class="map-header d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center gap-2">
+						<i class="bi bi-geo-alt"></i>
+						<span>Carte</span>
+					</div>
+					<div class="map-actions d-flex gap-2">
+						<button class="ghost" type="button" aria-label="Zoom"><i class="bi bi-zoom-in"></i></button>
+						<button class="ghost" type="button" aria-label="Zoom out"><i class="bi bi-zoom-out"></i></button>
+						<button class="ghost" type="button" aria-label="Plein écran"><i class="bi bi-arrows-fullscreen"></i></button>
+					</div>
+				</div>
+				<div class="map-frame">
+					<iframe title="Carte des groupes" src="https://www.openstreetmap.org/export/embed.html?bbox=-5.1%2C41.2%2C9.7%2C51.5&amp;layer=mapnik" allowfullscreen loading="lazy"></iframe>
+				</div>
+				<div class="map-legend">
+					<div class="legend-title">Légende des groupes</div>
+					<div class="legend-list">
+						<div class="legend-item"><span class="dot dot-green"></span><span>Groupe validé</span></div>
+						<div class="legend-item"><span class="dot dot-yellow"></span><span>Groupe en attente</span></div>
+						<div class="legend-item"><span class="dot dot-red"></span><span>Groupe à compléter</span></div>
+					</div>
+				</div>
+			</aside>
+		</div>
+
+		<div class="bottom-meta text-center text-muted small">©2026 Groupe 5 S4.01</div>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const toggleFilter = document.querySelector('.js-toggle-filter');
+			const sidebar = document.getElementById('filterSidebar');
+			const shell = document.querySelector('.dossiers-shell');
+
+			toggleFilter?.addEventListener('click', () => {
+				sidebar?.classList.toggle('is-collapsed');
+				document.body.classList.toggle('filter-collapsed');
+				shell?.classList.toggle('filter-collapsed');
+			});
+		});
+	</script>
+{% endblock %}

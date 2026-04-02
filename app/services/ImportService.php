@@ -143,6 +143,10 @@ class ImportService
 			$candidat->setDiplomeId      ($diplome       ->getDiplomeId      ());
 		}
 		$this->candidatRepository->creates($this->candidats);
+
+		if (session_status() === PHP_SESSION_NONE) { session_start(); }
+		$_SESSION['data_version'] = (string)microtime(true);
+		unset($_SESSION['filter_cache']);
 	}
 
 

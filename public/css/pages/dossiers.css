@@ -1,225 +1,93 @@
 /* ============================================================
-   ZONE SOUS-HEADER & BOUTON FILTRER
+   DOSSIERS PAGE - CSS MINIMAL (Bootstrap-first)
 ============================================================ */
-.under-header-zone {
-	margin-top: 68px;
-	border-bottom: 1px solid var(--filter-border);
-	min-height: 56px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-	position: relative;
-	background: var(--gris-fond-assets);
-}
 
-.filter-toggle-btn {
-	background: var(--filter-button-bg) !important;
-	color: var(--bleu-fond-faide) !important;
-	border: none;
-	font-weight: 500;
-	font-size: 1rem;
-	padding: 8px 20px;
-	border-radius: 22px;
-	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-	text-decoration: none;
-}
-
-.filter-toggle-btn:hover,
-.filter-toggle-btn:focus {
-	background: var(--filter-button-hover) !important;
-	color: var(--blanc) !important;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-}
-
-.filter-toggle-btn:not(.collapsed) {
-	color: var(--blanc) !important;
-	background: var(--filter-button-hover) !important;
-}
-
-.filter-toggle-btn i {
-	font-size: 1.2em;
+:root {
+	--primary-color: #2158BD;
+	--dark-bg: #242423;
+	--light-bg: #f8f9fa;
+	--border-color: #dee2e6;
+	--header-dark: #2b2b2b;
+	--filter-width: 320px;
+	--map-width: 350px;
 }
 
 /* ============================================================
-   FILTRE SIDEBAR
+   CONTENEUR PRINCIPAL
 ============================================================ */
-.filter-collapse-wrapper {
-	position: relative;
-}
 
-.filter-sidebar {
-	position: fixed;
-	top: 124px;
-	left: 0;
-	width: 320px;
-	max-width: 90vw;
-	height: calc(100vh - 124px);
-	background: var(--filter-bg);
-	color: var(--filter-text);
-	box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
-	z-index: 1050;
-	padding: 2rem 1.5rem 1.5rem 1.5rem;
-	border-top-right-radius: 12px;
-	border-bottom-right-radius: 12px;
-	transform: translateX(-100%);
-	opacity: 0;
-	pointer-events: none;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	overflow-y: auto;
-}
-
-.filter-sidebar.show {
-	transform: translateX(0);
-	opacity: 1;
-	pointer-events: auto;
-}
-
-.filter-header {
-	font-size: 1.1rem;
-	color: var(--blanc);
-	margin-bottom: 2rem;
-	padding-bottom: 1rem;
-	border-bottom: 1px solid var(--filter-border);
-}
-
-.filter-header i {
-	color: var(--bleu-fond-faide);
-	font-size: 1.3em;
-}
-
-.filter-header .btn-close {
-	background: none;
-	border: none;
-	color: var(--filter-text);
-	font-size: 1.5rem;
-	cursor: pointer;
-	opacity: 0.7;
-	transition: opacity 0.2s;
-	padding: 0;
-	width: auto;
-	height: auto;
-}
-
-.filter-header .btn-close:hover {
-	opacity: 1;
-}
-
-.filter-sidebar .form-label {
-	color: var(--filter-text);
-	font-size: 0.95rem;
-	font-weight: 500;
-	margin-bottom: 0.5rem;
-	display: block;
-}
-
-.filter-sidebar .form-control {
-	background: var(--filter-button-bg);
-	border: 1px solid var(--filter-border);
-	color: var(--filter-text);
-	font-size: 0.95rem;
-	padding: 0.5rem 0.75rem;
-	border-radius: 6px;
-	transition: all 0.2s;
-}
-
-.filter-sidebar .form-control:focus {
-	background: var(--filter-button-bg);
-	border-color: var(--bleu-fond-faide);
-	color: var(--blanc);
-	box-shadow: 0 0 0 0.2rem rgba(33, 88, 189, 0.25);
-}
-
-.filter-sidebar .form-control:disabled {
-	background: var(--gris-select-assets);
-	border-color: var(--filter-border);
-	color: var(--filter-text);
-	opacity: 0.6;
-	cursor: not-allowed;
-}
-
-.filter-sidebar .filter-input {
-	color: var(--filter-text);
-}
-
-.filter-sidebar .btn {
-	font-weight: 600;
-	padding: 0.75rem 1rem;
-	border-radius: 8px;
-	transition: all 0.2s;
-	margin-top: 1rem;
-}
-
-.filter-sidebar .btn-danger {
-	background: #dc3545;
-	border-color: #dc3545;
-	color: var(--blanc);
-}
-
-.filter-sidebar .btn-danger:hover:not(:disabled) {
-	background: #c82333;
-	border-color: #c82333;
-}
-
-.filter-sidebar .btn:disabled,
-.filter-sidebar .btn[disabled] {
-	background: var(--filter-button-hover);
-	border-color: var(--filter-border);
-	color: var(--filter-text);
-	opacity: 0.5;
-	cursor: not-allowed;
-}
-
-.filter-sidebar .alert {
-	background: var(--gris-select-assets);
-	border: 1px solid var(--filter-border);
-	color: var(--filter-text);
-	padding: 1rem;
-	border-radius: 6px;
-	margin-bottom: 0;
-}
-
-/* ============================================================
-   OVERLAY/BACKDROP POUR LE FILTRE (optionnel)
-============================================================ */
-.filter-sidebar::before {
-	content: '';
-	position: fixed;
-	top: 0;
-	left: 0;
+#under-header {
 	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.4);
-	z-index: -1;
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity 0.3s;
+	margin: 0;
+	padding: 0;
+	min-height: calc(100vh - 68px - 100px); /* 100vh - header height - footer height */
+	display: flex;
+	flex-direction: row;
+	position: relative;
 }
 
-.filter-sidebar.show::before {
-	opacity: 1;
-	pointer-events: auto;
+#transparent{
+	background-color: transparent;
+	border: none;
 }
 
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-@media (max-width: 768px) {
-	.under-header-zone {
-		padding: 0.5rem 1rem;
-	}
-
-	.filter-toggle-btn {
-		padding: 6px 16px;
-		font-size: 0.9rem;
-	}
-
-	.filter-sidebar {
-		width: 100vw;
-		border-radius: 0;
-		padding: 1.5rem 1rem 1rem 1rem;
-		max-height: 100vh;
-	}
-
-	.filter-header {
-		margin-bottom: 1.5rem;
-	}
+#bloc {
+	background-color: var(--gris-fond-assets);
+	color: var(--blanc);
+	border: 1px solid var(--gris-select-assets);
+	border-radius: 15px;
+	text-align: center;
+	padding: 0 20px;
 }
+
+#espacement {
+	margin: 20px 0;
+}
+
+#separateur {
+    border: none;
+    border-top: 1px solid var(--gris-text-fond-foncé);
+    margin: 20px 0;
+
+#text {
+	text-align: left;
+}
+
+#under-title {
+	color: var(--bleu-icon);
+	text-align: left;
+}
+}
+
+#bouton {
+	background-color: var(--gris-select-assets);
+	color: var(--blanc);
+	border-radius: 15px;
+	border: none;
+	display: block;
+	margin: 0 auto;
+	cursor: pointer;
+}
+
+#bouton:hover {
+	background-color: var(--gris-text-fond-foncé);
+	border: 2px solid var(--gris-text-fond-foncé);
+	color: var(--noir-text-fond-claire);
+}
+
+#text {
+	color: var(--gris-text-fond-foncé);
+	text-decoration: none;
+	text-align: left;
+}
+
+#under-title {
+	color: var(--bleu-icon);
+	text-align: left;
+}
+
+a#text:hover {
+	color: var(--bleu-icon);
+	text-decoration: underline;
+}
+

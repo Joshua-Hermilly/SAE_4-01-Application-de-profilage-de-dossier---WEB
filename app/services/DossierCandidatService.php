@@ -27,14 +27,14 @@ class DossierCandidatService
 		return $this->dossierCandidatRepository->findAll();
 	}
 
-	public function findAtPageDossierCandidat(int $page): array
+	public function findAtPageDossierCandidat(int $page, array $filters = []): array
 	{
-		return $this->dossierCandidatRepository->findByPage($page);
+		return $this->dossierCandidatRepository->findByPage($page, $filters);
 	}
 
-	public function maxPage(): int
+	public function maxPage(array $filters = []): int
 	{
-		return (int) ($this->dossierCandidatRepository->nbMaxDossier() / 25) +1;
+		return max(1, (int) ceil($this->dossierCandidatRepository->nbMaxDossier($filters) / 25));
 	}
 
 }

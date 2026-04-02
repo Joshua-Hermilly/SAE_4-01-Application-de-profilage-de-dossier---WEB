@@ -9,8 +9,4 @@ btnFormations.addEventListener("click", () => changerPage("formations.php") );
 function changerPage(page)
 {
 	this.window.location.href = page;
-
-
 }
-
-

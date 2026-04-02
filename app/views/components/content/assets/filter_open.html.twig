@@ -1,0 +1,234 @@
+<aside id="filter_sidebar" class="h-100 d-flex w-100 overflow-hidden">
+	<div class="d-flex justify-content-left w-100 h-100 pb-5">
+		<div class="row w-100 m-0 h-100">
+			<div class="col-12 col-md-3 p-0 h-100">
+
+				<div id="bloc" class="card h-100 w-100 overflow-hidden">
+					<div class="card-body body p-0 h-100 overflow-hidden">
+						<div id="filter-scroll" class="h-100 overflow-hidden">
+							<div id="filter-scroll-inner" class="h-100 overflow-auto pt-3 pb-3 px-3">
+								<form id="filterForm" class="filter-panel shadow-sm rounded-4" method="POST" action="dossierGet.php">
+							<div class="d-flex align-items-center justify-content-between mb-4">
+								<div class="d-flex align-items-center gap-2">
+									<i class="bi bi-funnel-fill text-primary fs-4"></i>
+									<h5 class="mb-0 text-light">{{ title | default('Filtrer') }}</h5>
+								</div>
+								<button type="button" class="btn btn-sm btn-outline-light" id="filter_collapse_btn" aria-label="Replier les filtres">
+									<i class="bi bi-chevron-up"></i>
+								</button>
+							</div>
+
+							{% for section in sections %}
+								<div class="filter-section mb-4">
+									<label id="under-title" class="text-uppercase small">{{ section.label }}</label>
+									<div class="d-flex flex-column gap-3">
+										{% for filter in section.filters %}
+											<div class="d-flex flex-column gap-1">
+												<label id="text" class="small text-white-50">{{ filter.label }}</label>
+												{% if filter.type == 'text' %}
+													<input
+														class="form-control form-control-sm"
+														type="text"
+														id="filter_{{ filter.name }}"
+														name="{{ filter.name }}"
+														placeholder="{{ filter.placeholder | default('À compléter...') }}" />
+												{% elseif filter.type == 'select' %}
+													<select
+														class="form-select form-select-sm"
+														id="filter_{{ filter.name }}"
+														name="{{ filter.name }}">
+														<option value="">Sélectionnez...</option>
+														{% for value, label in filter.options %}
+															<option value="{{ value }}">{{ label }}</option>
+														{% endfor %}
+													</select>
+												{% elseif filter.type == 'multiselect' %}
+													{% if filter.name == 'specialite_spe' %}
+													<div class="specialite-checkboxes list-group list-group-flush">
+														{% for option_key, option_data in filter.options %}
+															{% if option_data is iterable %}
+															<label class="list-group-item bg-transparent text-light d-flex align-items-center gap-2">
+																<input class="form-check-input me-2 specialite-checkbox" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_data.value }}" data-code="{{ option_data.code }}" />
+																<span>{{ option_data.label }}</span>
+															</label>
+															{% else %}
+															<label class="list-group-item bg-transparent text-light d-flex align-items-center gap-2">
+																<input class="form-check-input me-2" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_key }}" />
+																<span>{{ option_data }}</span>
+															</label>
+															{% endif %}
+														{% endfor %}
+													</div>
+													{% else %}
+													<select
+														class="form-select form-select-sm"
+														id="filter_{{ filter.name }}"
+														name="{{ filter.name }}[]"
+														multiple>
+														{% for value, label in filter.options %}
+															<option value="{{ value }}">{{ label }}</option>
+														{% endfor %}
+													</select>
+													{% endif %}
+												{% elseif filter.type == 'checkbox' %}
+													<div class="form-check">
+														<input
+															class="form-check-input"
+															type="checkbox"
+															id="filter_{{ filter.name }}"
+															name="{{ filter.name }}" />
+														<label class="form-check-label text-light" for="filter_{{ filter.name }}"> {{ filter.label }} </label>
+													</div>
+												{% elseif filter.type == 'number' %}
+													<div class="d-flex gap-2 align-items-center">
+														<input
+															class="form-control form-control-sm"
+															type="number"
+															id="filter_{{ filter.name }}_min"
+															name="{{ filter.name }}_min"
+															placeholder="Min"
+															min="{{ filter.min is not null ? filter.min : 0 }}"
+															max="{{ filter.max is not null ? filter.max : 20 }}"
+															step="1" />
+														<span class="filter-operator fw-semibold">{{ filter.operator | default('>=') }}</span>
+														<input
+															class="form-control form-control-sm"
+															type="number"
+															id="filter_{{ filter.name }}_max"
+															name="{{ filter.name }}_max"
+															placeholder="Max"
+															min="{{ filter.min is not null ? filter.min : 0 }}"
+															max="{{ filter.max is not null ? filter.max : 20 }}"
+															step="1" />
+													</div>
+												{% endif %}
+											</div>
+										{% endfor %}
+									</div>
+								</div>
+							{% endfor %}
+
+							<div class="d-grid gap-2 mt-3">
+								<button
+									type="submit"
+									class="btn btn-primary"
+									data-action="appliquer-filtres">
+									Appliquer
+								</button>
+								<button
+									type="submit"
+									class="btn btn-outline-light"
+									data-action="creer-groupe"
+									formaction="creerGroupe.php"
+									formmethod="POST"
+									formnovalidate>
+									Créer un groupe
+								</button>
+							</div>
+
+						</form>
+					</div>
+				</div>
+		</div>
+	</div>
+</aside>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+	const select = document.getElementById("filter_typeBac");
+	const blocs = document.querySelectorAll(".bac-filter");
+	const collapseBtn = document.getElementById('filter_collapse_btn');
+	const expandBtn = document.getElementById('filter_expand_btn');
+	const sidebar = document.getElementById('filter_sidebar');
+	const closeBar = document.getElementById('filter_close_bar');
+	const chevronUp = collapseBtn ? collapseBtn.querySelector('i') : null;
+	const chevronDown = expandBtn ? expandBtn.querySelector('i') : null;
+
+	function resetBloc(bloc) {
+		const inputs = bloc.querySelectorAll("input, select, textarea");
+
+		inputs.forEach(input => {
+			if (input.type === "checkbox" || input.type === "radio") {
+				input.checked = false;
+			} else {
+				input.value = "";
+			}
+		});
+	}
+	// Filtrer les spécialités en fonction de la série de bac sélectionnée
+	const serieBacSelect = document.getElementById("filter_serie_bac");
+	const specialiteCheckboxes = document.querySelectorAll(".specialite-checkbox");
+
+	function filterSpecialites() {
+		const selectedSerieCode = serieBacSelect ? serieBacSelect.value : '';
+		
+		specialiteCheckboxes.forEach(checkbox => {
+			const speCode = checkbox.getAttribute('data-code');
+			const checkboxContainer = checkbox.closest(".form-check, label") || checkbox.parentElement;
+			if (!checkboxContainer) { return; }
+			
+			if (!selectedSerieCode) {
+				checkboxContainer.style.display = "block";
+			} else if (speCode === selectedSerieCode) {
+				checkboxContainer.style.display = "block";
+			} else {
+				checkboxContainer.style.display = "none";
+				checkbox.checked = false;
+			}
+		});
+	}
+
+	if (serieBacSelect) {
+		serieBacSelect.addEventListener("change", filterSpecialites);
+	}
+	if (select) {
+		select.addEventListener("change", function () {
+	const selectedValue = this.value;
+
+	// cacher et reset tous les blocs
+	blocs.forEach(bloc => {
+		bloc.style.display = "none";
+		resetBloc(bloc);
+	});
+
+	// afficher seulement le bloc correspondant
+	if (selectedValue) {
+		const blocToShow = document.querySelector(`[data-bac-type="${selectedValue}"]`);
+		if (blocToShow) {
+			blocToShow.style.display = "block";
+		}
+	}
+		});
+	}
+
+	function collapseFilters() {
+		if (sidebar) {
+			sidebar.classList.add('d-none');
+		}
+		if (closeBar) {
+			closeBar.classList.remove('d-none');
+		}
+		if (chevronDown) {
+			chevronDown.classList.remove('bi-chevron-down');
+			chevronDown.classList.add('bi-chevron-up');
+		}
+	}
+
+	function expandFilters() {
+		if (sidebar) {
+			sidebar.classList.remove('d-none');
+		}
+		if (closeBar) {
+			closeBar.classList.add('d-none');
+		}
+		if (chevronDown) {
+			chevronDown.classList.remove('bi-chevron-up');
+			chevronDown.classList.add('bi-chevron-down');
+		}
+	}
+
+	if (collapseBtn) { collapseBtn.addEventListener('click', collapseFilters); }
+	if (expandBtn) { expandBtn.addEventListener('click', expandFilters); }
+});
+</script>
