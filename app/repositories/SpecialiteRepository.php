@@ -21,9 +21,9 @@ class SpecialiteRepository
 	public function create(Specialite $specialite)
 	{
 		$sql = "INSERT INTO SPECIALITE 
-    				(specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_spe3, specialite_speabd, diplome_id)
+    				(specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_spe3, specialite_speabd)
 		        VALUES 
-		            (:opt1, :opt2, :spe1, :spe2,:spe3, :speAbd, :diplome_id )
+		            (:opt1, :opt2, :spe1, :spe2,:spe3, :speAbd )
 		        RETURNING specialite_id;";
 
 		$stmt = $this->pdo->prepare($sql);
@@ -33,7 +33,6 @@ class SpecialiteRepository
 		$stmt->bindValue(':spe2'      , $specialite->getSpecialiteSpe2  ());
 		$stmt->bindValue(':spe3'      , $specialite->getSpecialiteSpe3  ());
 		$stmt->bindValue(':speAbd'    , $specialite->getSpecialiteSpeAbd());
-		$stmt->bindValue(':diplome_id', $specialite->getDiplomeId       ());
 		$stmt->execute();
 
 		$stmt->execute();
@@ -51,7 +50,7 @@ class SpecialiteRepository
 		for ($cpt = 0; $cpt < count($specialites); $cpt++)
 		{
 			$specialite = $specialites[$cpt];
-			$valeurBind[] = "(:opt1_{$cpt}, :opt2_{$cpt}, :spe1_{$cpt}, :spe2_{$cpt}, :spe3_{$cpt}, :speAbd_{$cpt}, :diplome_id_{$cpt})";
+			$valeurBind[] = "(:opt1_{$cpt}, :opt2_{$cpt}, :spe1_{$cpt}, :spe2_{$cpt}, :spe3_{$cpt}, :speAbd_{$cpt})";
 
 			$valeurBrut[":opt1_{$cpt}"      ] = $specialite->getSpecialiteOpt1  ();
 			$valeurBrut[":opt2_{$cpt}"      ] = $specialite->getSpecialiteOpt2  ();
@@ -59,11 +58,10 @@ class SpecialiteRepository
 			$valeurBrut[":spe2_{$cpt}"      ] = $specialite->getSpecialiteSpe2  ();
 			$valeurBrut[":spe3_{$cpt}"      ] = $specialite->getSpecialiteSpe3  ();
 			$valeurBrut[":speAbd_{$cpt}"    ] = $specialite->getSpecialiteSpeAbd();
-			$valeurBrut[":diplome_id_{$cpt}"] = $specialite->getDiplomeId       ();
 		}
 
 		$sql = "INSERT INTO SPECIALITE 
-				(specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_spe3, specialite_speabd, diplome_id)
+				(specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_spe3, specialite_speabd)
 				VALUES " . implode(', ', $valeurBind) . "
 				RETURNING specialite_id";
 
@@ -77,7 +75,6 @@ class SpecialiteRepository
 			$stmt->bindValue(":spe2_{$cpt}"      , $valeurBrut[":spe2_{$cpt}"      ]);
 			$stmt->bindValue(":spe3_{$cpt}"      , $valeurBrut[":spe3_{$cpt}"      ]);
 			$stmt->bindValue(":speAbd_{$cpt}"    , $valeurBrut[":speAbd_{$cpt}"    ]);
-			$stmt->bindValue(":diplome_id_{$cpt}", $valeurBrut[":diplome_id_{$cpt}"]);
 		}
 
 		$stmt->execute();
@@ -101,8 +98,7 @@ class SpecialiteRepository
 			$row['specialite_spe1'  ],
 			$row['specialite_spe2'  ],
 			$row['specialite_spe3'  ],
-			$row['specialite_speabd'],
-			$row['diplome_id'       ]
+			$row['specialite_speabd']
 		);
 	}
 

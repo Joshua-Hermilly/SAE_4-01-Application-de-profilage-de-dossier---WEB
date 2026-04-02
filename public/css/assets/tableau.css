@@ -8,13 +8,12 @@
 {
     margin-top: auto;
 }
-/* Garde la hauteur dynamique en fonction de la taille de l'écran */
+
 .card {
     max-height: 650px;
 }
 
-/* Header de la table fixe pendant le scroll */
-#tableau-body thead {
+#tableau thead {
     position: sticky;
     top: 0;
     z-index: 2;

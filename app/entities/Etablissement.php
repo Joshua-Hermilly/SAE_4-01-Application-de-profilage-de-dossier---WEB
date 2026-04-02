@@ -11,7 +11,7 @@ class Etablissement
 		private ?string       $etablissement_nom,
 
 		private Localisation  $localisation,
-		private array         $candidats  = []
+		private ?array        $candidats  = []
 	) {}
 
 	/*-------------------------------*/
@@ -32,7 +32,7 @@ class Etablissement
 		return $this->localisation;
 	}
 
-	public function getCandidats(): array
+	public function getCandidats(): ?array
 	{
 		return $this->candidats;
 	}

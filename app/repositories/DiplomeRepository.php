@@ -24,16 +24,17 @@ class DiplomeRepository
 	public function create(Diplome $diplome)
 	{
 		$sql = "INSERT INTO DIPLOME 
-				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle)
+				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle, specialite_id)
 				VALUES 
-				(:type_code, :type_libelle, :serie_code, :serie_libelle)
+				(:type_code, :type_libelle, :serie_code, :serie_libelle, :specialite_id)
 				RETURNING diplome_id";
 
 		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':type_code'    , $diplome->getDiplomeTypeCode    ());
-		$stmt->bindValue(':type_libelle' , $diplome->getDiplomeTypeLibelle ());
-		$stmt->bindValue(':serie_code'   , $diplome->getDiplomeSerieCode   ());
-		$stmt->bindValue(':serie_libelle', $diplome->getDiplomeSerieLibelle());
+		$stmt->bindValue(':type_code'     , $diplome->getDiplomeTypeCode    ()                   );
+		$stmt->bindValue(':type_libelle'  , $diplome->getDiplomeTypeLibelle ()                   );
+		$stmt->bindValue(':serie_code'    , $diplome->getDiplomeSerieCode   ()                   );
+		$stmt->bindValue(':serie_libelle' , $diplome->getDiplomeSerieLibelle()                   );
+		$stmt->bindValue( ':specialite_id', $diplome->getSpecialite         ()->getSpecialiteId());
 
 		$stmt->execute();
 
@@ -49,16 +50,17 @@ class DiplomeRepository
 		for ($cpt = 0; $cpt < count($diplomes); $cpt++) 
 		{
 			$diplome      = $diplomes[$cpt];
-			$valeurBind[] = "(:type_code{$cpt}, :type_libelle{$cpt}, :serie_code{$cpt}, :serie_libelle{$cpt})";
+			$valeurBind[] = "(:type_code{$cpt}, :type_libelle{$cpt}, :serie_code{$cpt}, :serie_libelle{$cpt}, :specialite_id{$cpt} )";
 			
-			$valeurBrut[":type_code{$cpt}"]    = $diplome->getDiplomeTypeCode    ();
-			$valeurBrut[":type_libelle{$cpt}"] = $diplome->getDiplomeTypeLibelle ();
-			$valeurBrut[":serie_code{$cpt}"]   = $diplome->getDiplomeSerieCode   ();
-			$valeurBrut[":serie_libelle{$cpt}"]= $diplome->getDiplomeSerieLibelle();
+			$valeurBrut[":type_code{$cpt}"    ] = $diplome->getDiplomeTypeCode    ();
+			$valeurBrut[":type_libelle{$cpt}" ] = $diplome->getDiplomeTypeLibelle ();
+			$valeurBrut[":serie_code{$cpt}"   ] = $diplome->getDiplomeSerieCode   ();
+			$valeurBrut[":serie_libelle{$cpt}"] = $diplome->getDiplomeSerieLibelle();
+			$valeurBrut[":specialite_id{$cpt}"] = $diplome->getSpecialite         ()->getSpecialiteId();
 		}
 
 		$sql = "INSERT INTO DIPLOME 
-				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle)
+				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle, specialite_id)
 				VALUES " . implode(', ', $valeurBind) . "
 				RETURNING diplome_id";
 
@@ -70,6 +72,7 @@ class DiplomeRepository
 			$stmt->bindValue(":type_libelle{$cpt}" , $valeurBrut[":type_libelle{$cpt}" ]);
 			$stmt->bindValue(":serie_code{$cpt}"   , $valeurBrut[":serie_code{$cpt}"   ]);
 			$stmt->bindValue(":serie_libelle{$cpt}", $valeurBrut[":serie_libelle{$cpt}"]);
+			$stmt->bindValue(":specialite_id{$cpt}", $valeurBrut[":specialite_id{$cpt}"]);
 		}
 
 		$stmt->execute();
@@ -86,13 +89,17 @@ class DiplomeRepository
 
 	public function createDiplomeFromRow(array $row): Diplome
 	{
+		$candidats = (new CandidatRepository())->findByEtablissementId((int) $row['diplome_id']);
+
 		return new Diplome
 		(
 			$row['diplome_id'           ],
 			$row['diplome_type_code'    ],
 			$row['diplome_type_libelle' ],
 			$row['diplome_serie_code'   ],
-			$row['diplome_serie_libelle']
+			$row['diplome_serie_libelle'],
+			$candidats                   ,
+			$row['specialite_id'        ]
 		);
 	}
 
