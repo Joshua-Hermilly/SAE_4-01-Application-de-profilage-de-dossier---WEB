@@ -72,6 +72,21 @@ class GroupeRepository
 		);
 	}
 
+	public function findByPage(int $page): array
+	{
+		$sql = "SELECT * FROM groupe OFFSET :page ROWS LIMIT 25";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':page', (int)(($page - 1) * 25));
+		$stmt->execute();
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$result[] = $this->createGroupeFromRow($row);
+		}
+		return $result;
+	}
+
 	public function findById(int $id): ?Groupe
 	{
 		$sql  = "SELECT * FROM GROUPE WHERE groupe_id = :id";
@@ -96,5 +111,14 @@ class GroupeRepository
 			$result[] = $this->createGroupeFromRow($row);
 		}
 		return $result;
+	}
+
+	public function nbMaxDossier(): int
+	{
+		$sql = "SELECT COUNT(*) FROM GROUPE";
+		$stmt = $this->pdo->prepare($sql);
+
+		$stmt->execute();
+		return $stmt->fetchColumn();
 	}
 }

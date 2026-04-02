@@ -12,9 +12,9 @@
 		<!-- RIGHT (responsif) -->
 		<div class="col-12 col-lg-4">
 			<div class="header-right d-flex gap-2">
-				<button id="btnDossier"    class="menu-btn active flex-grow-1">Dossiers  </button>
-				<button id="btnGroupes"    class="menu-btn flex-grow-1"       >Groupes   </button>
-				<button id="btnFormations" class="menu-btn flex-grow-1"       >Formations</button>
+				<button id="btnDossier"    class="menu-btn flex-grow-1 {{ pageActive == 'dossiers'   ? 'active' : '' }}">Dossiers</button>
+				<button id="btnGroupes"    class="menu-btn flex-grow-1 {{ pageActive == 'groupes'    ? 'active' : '' }}">Groupes</button>
+				<button id="btnFormations" class="menu-btn flex-grow-1 {{ pageActive == 'formations' ? 'active' : '' }}">Formations</button>
 			</div>
 		</div>
 	</div>
