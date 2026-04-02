@@ -79,4 +79,19 @@ class LocalisationService
 		}
 		return $csv;
 	}
+
+	/*-------------------------------*/
+	/*  Export HTTP du CSV           */
+	/*-------------------------------*/
+	public function export(string $filename = 'localisations.csv'): void
+	{
+		$csv = $this->getCSVString();
+
+		header('Content-Type: text/csv; charset=utf-8');
+		header('Content-Disposition: attachment; filename="' . $filename . '"');
+		header('Content-Length: ' . strlen($csv));
+
+		echo $csv;
+		exit();
+	}
 }
