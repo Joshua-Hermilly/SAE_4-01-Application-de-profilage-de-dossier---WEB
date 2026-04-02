@@ -1,6 +1,6 @@
 <?php
 
-class Groupe
+class Groupe implements JsonSerializable
 {
 	/*-------------------------------*/
 	/*  Construct                    */
@@ -15,6 +15,35 @@ class Groupe
 		private array $criteres  = [],
 		private array $candidats = []
 	){}
+
+	public function getHeader(): arrayw
+	{
+		return
+			[
+				'Id groupe'   ,
+				'Nom groupe'  ,
+				'Note Dossier',
+				'Nombre Étudiants',
+				'Couleur'
+			];
+	}
+
+	/*-------------------------------*/
+	/*  Serialize                    */
+	/*-------------------------------*/
+	public function jsonSerialize(): mixed { return $this->__serialize(); }
+
+	public function __serialize()
+	{
+		return
+			[
+				'Id groupe'       => $this->getGroupeId         (),
+				'Nom groupe'      => $this->getGroupeNom        (),
+				'Note Dossier'    => $this->getGroupeNoteDossier(),
+				'Nombre Étudiants'=> $this->getNbCandidats      (),
+				'Couleur'         => $this->getGroupeCouleur    (),
+			];
+	}
 
 	/*-------------------------------*/
 	/*  Getters                      */
@@ -47,6 +76,11 @@ class Groupe
 	public function getCandidats(): array
 	{
 		return $this->candidats;
+	}
+
+	public function getNbCandidats(): int
+	{
+		return count($this->candidats);
 	}
 
 	/*-------------------------------*/

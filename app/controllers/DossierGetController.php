@@ -57,20 +57,17 @@ class DossierGetController extends Controller
 		// Page valide ?
 		if ( $page < 1 ) { $page = 1; }
 
+		$this->dossierCandidats = $serviceDossier->findAtPageDossierCandidat($page, $filters);
 		$maxPage = $serviceDossier->maxPage($filters);
-		if ( $page > $maxPage )
+		if ( $page > $maxPage || empty($this->dossierCandidats))
 		{
 			$this->json(['erreur' => "Aucune données disponible. Merci d'insérer des données ou de contacter un administrateur."]);
 			return;
 		}
 
 		// Il est admin ?
-		if ( $_SESSION['compte']->getCompteIsAdmin())
-		{
-			$isAdmin = true;
-		}
+		if ( $_SESSION['compte']->getCompteIsAdmin()) { $isAdmin = true; }
 
-		$this->dossierCandidats = $serviceDossier->findAtPageDossierCandidat($page, $filters);
 		$this->json
 		([
 			'isAdmin'  => $isAdmin,
