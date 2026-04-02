@@ -19,6 +19,12 @@ class LocalisationService
 	];
 
 	/*-------------------------------*/
+	/* Constantes                    */
+	/*-------------------------------*/
+	// Marque d'ordre d'octet UTF-8 (BOM) pour les outils comme Excel
+	private const BOM_UTF8 = "\u{FEFF}";
+
+	/*-------------------------------*/
 	/* Attributs                     */
 	/*-------------------------------*/
 	private \SplTempFileObject      $fichierCsv;
@@ -76,7 +82,7 @@ class LocalisationService
 	public function getCSVString(): string
 	{
 		$this->fichierCsv->rewind();
-		$csvTexte = "\xEF\xBB\xBF"; // BOM UTF-8 pour compatibilité Excel / API
+		$csvTexte = self::BOM_UTF8; // BOM UTF-8 pour compatibilité Excel / API
 		while (!$this->fichierCsv->eof())
 		{
 			$ligne = $this->fichierCsv->fgets();
