@@ -48,6 +48,7 @@
     border: none;
     border-top: 1px solid var(--gris-text-fond-foncé);
     margin: 20px 0;
+}
 
 #text {
 	text-align: left;
@@ -55,8 +56,6 @@
 
 #under-title {
 	color: var(--bleu-icon);
-	text-align: left;
-}
 }
 
 #bouton {
@@ -84,6 +83,43 @@
 #under-title {
 	color: var(--bleu-icon);
 	text-align: left;
+	display: block;
+}
+
+#specialite-checkboxes {
+	max-height: 220px;
+	overflow-y: auto;
+	padding-right: 0.25rem;
+}
+
+#specialite-checkboxes #list-group-item,
+#specialite-checkboxes .specialite-checkbox-item {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.5rem;
+	width: 100%;
+	min-width: 0;
+	white-space: normal;
+	padding-top: 0.35rem;
+	padding-bottom: 0.35rem;
+}
+
+#specialite-checkboxes input[type="checkbox"],
+.form-check input[type="checkbox"] {
+	flex: 0 0 auto;
+	min-width: 20px;
+	min-height: 20px;
+	width: auto !important;
+	height: auto !important;
+}
+
+#specialite-checkboxes #list-group-item span,
+#specialite-checkboxes #list-group-item label,
+#specialite-checkboxes .specialite-checkbox-item span {
+	flex: 1 1 auto;
+	min-width: 0;
+	word-break: break-word;
 }
 
 a#text:hover {
