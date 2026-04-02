@@ -35,8 +35,8 @@ class DossierGetController extends Controller
 		}
 
 		$serviceDossier = new DossierCandidatService();
-		$data = json_decode(file_get_contents('php://input'), true);
-		$page = $data['page'] ?? null;
+		$data           = json_decode(file_get_contents('php://input'), true);
+		$page           = $data['page'] ?? null;
 		$isAdmin        = false;
 
 		// Page définie ?
@@ -64,10 +64,10 @@ class DossierGetController extends Controller
 		$this->json
 		([
 			'isAdmin'  => $isAdmin,
-			'headers'  => $this         ->getHeader(),
-			'dossiers' => $this         ->dossierCandidats,
-			'maxPage' => $serviceDossier->maxPage(),
-			'actPage' => $page
+			'headers'  => $this          ->getHeader(),
+			'dossiers' => $this          ->dossierCandidats,
+			'maxPage'  => $serviceDossier->maxPage(),
+			'actPage'  => $page
 		]);
 	}
 
