@@ -125,99 +125,118 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-	const select = document.getElementById("filter_typeBac");
-	const blocs = document.querySelectorAll(".bac-filter");
-	const collapseBtn = document.getElementById('filter_collapse_btn');
-	const expandBtn = document.getElementById('filter_expand_btn');
-	const sidebar = document.getElementById('filter_sidebar');
-	const closeBar = document.getElementById('filter_close_bar');
-	const chevronUp = collapseBtn ? collapseBtn.querySelector('i') : null;
-	const chevronDown = expandBtn ? expandBtn.querySelector('i') : null;
+    const typeBacSelect = document.getElementById("filter_type_bac");
+    const serieBacSelect = document.getElementById("filter_serie_bac");
+    const specialiteBlock = document.getElementById("specialite-checkboxes");
+    const specialiteCheckboxes = document.querySelectorAll(".specialite-checkbox");
 
-	function resetBloc(bloc) {
-		const inputs = bloc.querySelectorAll("input, select, textarea");
+    // On remonte jusqu'au div.filter-section parent du bloc spécialités
+    const specialiteSection = specialiteBlock
+        ? specialiteBlock.closest(".filter-section")
+        : null;
 
-		inputs.forEach(input => {
-			if (input.type === "checkbox" || input.type === "radio") {
-				input.checked = false;
-			} else {
-				input.value = "";
-			}
-		});
-	}
-	// Filtrer les spécialités en fonction de la série de bac sélectionnée
-	const serieBacSelect = document.getElementById("filter_serie_bac");
-	const specialiteCheckboxes = document.querySelectorAll(".specialite-checkbox");
+    // Cacher le bloc ET la section au chargement
+    function hideSpecialiteSection() {
+        if (specialiteBlock) specialiteBlock.style.display = "none";
+        if (specialiteSection) specialiteSection.style.display = "none";
+        specialiteCheckboxes.forEach(cb => {
+            cb.checked = false;
+            const container = cb.closest("label") || cb.parentElement;
+            if (container) container.style.display = "none";
+        });
+    }
 
-	function filterSpecialites() {
-		const selectedSerieCode = serieBacSelect ? serieBacSelect.value : '';
-		
-		specialiteCheckboxes.forEach(checkbox => {
-			const speCode = checkbox.getAttribute('data-code');
-			const checkboxContainer = checkbox.closest(".form-check, label") || checkbox.parentElement;
-			if (!checkboxContainer) { return; }
-			
-			if (!selectedSerieCode) {
-				checkboxContainer.style.display = "block";
-			} else if (speCode === selectedSerieCode) {
-				checkboxContainer.style.display = "block";
-			} else {
-				checkboxContainer.style.display = "none";
-				checkbox.checked = false;
-			}
-		});
-	}
+    function showSpecialiteSection() {
+        if (specialiteBlock) specialiteBlock.style.display = "block";
+        if (specialiteSection) specialiteSection.style.display = "block";
+    }
 
-	if (serieBacSelect) {
-		serieBacSelect.addEventListener("change", filterSpecialites);
-	}
-	if (select) {
-		select.addEventListener("change", function () {
-	const selectedValue = this.value;
+    // Init au chargement
+    hideSpecialiteSection();
 
-	// cacher et reset tous les blocs
-	blocs.forEach(bloc => {
-		bloc.style.display = "none";
-		resetBloc(bloc);
-	});
+    function serieHasSpecialites(serieValue) {
+        if (!serieValue) return false;
+        let found = false;
+        specialiteCheckboxes.forEach(checkbox => {
+            if (checkbox.getAttribute("data-code") === serieValue) {
+                found = true;
+            }
+        });
+        return found;
+    }
 
-	// afficher seulement le bloc correspondant
-	if (selectedValue) {
-		const blocToShow = document.querySelector(`[data-bac-type="${selectedValue}"]`);
-		if (blocToShow) {
-			blocToShow.style.display = "block";
-		}
-	}
-		});
-	}
+    function filterSpecialites() {
+        const selectedSerieCode = serieBacSelect ? serieBacSelect.value : "";
 
-	function collapseFilters() {
-		if (sidebar) {
-			sidebar.classList.add('d-none');
-		}
-		if (closeBar) {
-			closeBar.classList.remove('d-none');
-		}
-		if (chevronDown) {
-			chevronDown.classList.remove('bi-chevron-down');
-			chevronDown.classList.add('bi-chevron-up');
-		}
-	}
+        if (!selectedSerieCode || !serieHasSpecialites(selectedSerieCode)) {
+            hideSpecialiteSection();
+            return;
+        }
 
-	function expandFilters() {
-		if (sidebar) {
-			sidebar.classList.remove('d-none');
-		}
-		if (closeBar) {
-			closeBar.classList.add('d-none');
-		}
-		if (chevronDown) {
-			chevronDown.classList.remove('bi-chevron-up');
-			chevronDown.classList.add('bi-chevron-down');
-		}
-	}
+        showSpecialiteSection();
 
-	if (collapseBtn) { collapseBtn.addEventListener('click', collapseFilters); }
-	if (expandBtn) { expandBtn.addEventListener('click', expandFilters); }
+        specialiteCheckboxes.forEach(checkbox => {
+            const speCode = checkbox.getAttribute("data-code");
+            const container = checkbox.closest("label") || checkbox.parentElement;
+            if (!container) return;
+
+            if (speCode === selectedSerieCode) {
+                container.style.display = "flex"; /* flex pour garder l'alignement */
+            } else {
+                container.style.display = "none";
+                checkbox.checked = false;
+            }
+        });
+    }
+
+    function onTypeBacChange() {
+        const val = typeBacSelect ? typeBacSelect.value : "";
+
+        if (serieBacSelect) serieBacSelect.value = "";
+        hideSpecialiteSection();
+
+        const blocs = document.querySelectorAll(".bac-filter");
+        blocs.forEach(bloc => {
+            bloc.style.display = "none";
+            resetBloc(bloc);
+        });
+
+        if (val) {
+            const blocToShow = document.querySelector(`[data-bac-type="${val}"]`);
+            if (blocToShow) blocToShow.style.display = "block";
+        }
+    }
+
+    function resetBloc(bloc) {
+        const inputs = bloc.querySelectorAll("input, select, textarea");
+        inputs.forEach(input => {
+            if (input.type === "checkbox" || input.type === "radio") {
+                input.checked = false;
+            } else {
+                input.value = "";
+            }
+        });
+    }
+
+    if (typeBacSelect) typeBacSelect.addEventListener("change", onTypeBacChange);
+    if (serieBacSelect) serieBacSelect.addEventListener("change", filterSpecialites);
+
+    const collapseBtn = document.getElementById("filter_collapse_btn");
+    const expandBtn = document.getElementById("filter_expand_btn");
+    const sidebar = document.getElementById("filter_sidebar");
+    const closeBar = document.getElementById("filter_close_bar");
+
+    if (collapseBtn) {
+        collapseBtn.addEventListener("click", function () {
+            if (sidebar) sidebar.classList.add("d-none");
+            if (closeBar) closeBar.classList.remove("d-none");
+        });
+    }
+    if (expandBtn) {
+        expandBtn.addEventListener("click", function () {
+            if (sidebar) sidebar.classList.remove("d-none");
+            if (closeBar) closeBar.classList.add("d-none");
+        });
+    }
 });
 </script>
