@@ -50,14 +50,6 @@
     margin: 20px 0;
 }
 
-#text {
-	text-align: left;
-}
-
-#under-title {
-	color: var(--bleu-icon);
-}
-
 #bouton {
 	background-color: var(--gris-select-assets);
 	color: var(--blanc);
@@ -82,18 +74,24 @@
 
 #under-title {
 	color: var(--bleu-icon);
-	text-align: left;
+	text-align: center;
 	display: block;
 }
 
-#specialite-checkboxes {
+#specialite-checkboxes-specialite_spe,
+#specialite-checkboxes-specialite_opt,
+.specialite-checkboxes {
 	max-height: 220px;
 	overflow-y: auto;
 	padding-right: 0.25rem;
 }
 
-#specialite-checkboxes #list-group-item,
-#specialite-checkboxes .specialite-checkbox-item {
+#specialite-checkboxes-specialite_spe #list-group-item,
+#specialite-checkboxes-specialite_spe .specialite-checkbox-item,
+#specialite-checkboxes-specialite_opt #list-group-item,
+#specialite-checkboxes-specialite_opt .specialite-checkbox-item,
+.specialite-checkboxes #list-group-item,
+.specialite-checkboxes .specialite-checkbox-item {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -105,7 +103,9 @@
 	padding-bottom: 0.35rem;
 }
 
-#specialite-checkboxes input[type="checkbox"],
+#specialite-checkboxes-specialite_spe input[type="checkbox"],
+#specialite-checkboxes-specialite_opt input[type="checkbox"],
+.specialite-checkboxes input[type="checkbox"],
 .form-check input[type="checkbox"] {
 	flex: 0 0 auto;
 	min-width: 20px;
@@ -114,9 +114,15 @@
 	height: auto !important;
 }
 
-#specialite-checkboxes #list-group-item span,
-#specialite-checkboxes #list-group-item label,
-#specialite-checkboxes .specialite-checkbox-item span {
+#specialite-checkboxes-specialite_spe #list-group-item span,
+#specialite-checkboxes-specialite_spe #list-group-item label,
+#specialite-checkboxes-specialite_spe .specialite-checkbox-item span,
+#specialite-checkboxes-specialite_opt #list-group-item span,
+#specialite-checkboxes-specialite_opt #list-group-item label,
+#specialite-checkboxes-specialite_opt .specialite-checkbox-item span,
+.specialite-checkboxes #list-group-item span,
+.specialite-checkboxes #list-group-item label,
+.specialite-checkboxes .specialite-checkbox-item span {
 	flex: 1 1 auto;
 	min-width: 0;
 	word-break: break-word;

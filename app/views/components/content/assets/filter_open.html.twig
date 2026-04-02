@@ -20,11 +20,11 @@
 									</div>
 
 									{% for section in sections %}
-										<div class="filter-section mb-4">
+										<div id="filter-section" class="mb-4">
 											<label id="under-title" class="text-uppercase small">{{ section.label }}</label>
 											<div class="d-flex flex-column gap-3">
 												{% for filter in section.filters %}
-													<div class="d-flex flex-column gap-1">
+												<div class="d-flex flex-column gap-1" data-filter-name="{{ filter.name }}">
 														<label id="text" class="small text-white-50">{{ filter.label }}</label>
 														{% if filter.type == 'text' %}
 															<input class="form-control form-control-sm" 
@@ -44,31 +44,31 @@
 															</select>
 														{% elseif filter.type == 'multiselect' %}
 															{% if filter.name == 'specialite_spe' or filter.name == 'specialite_opt' %}
-															<div id="specialite-checkboxes" class="list-group list-group-flush">
-																{% for option_key, option_data in filter.options %}
-																	{% if option_data is iterable %}
-																	<label id="list-group-item" class="specialite-checkbox-item">
-																		<input class="specialite-checkbox" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_data.value }}" data-code="{{ option_data.code }}" />
-																		<span>{{ option_data.label }}</span>
-																	</label>
-																	{% else %}
-																	<label id="list-group-item" class="specialite-checkbox-item">
-																		<input class="form-check-input me-2" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_key }}" />
-																		<span>{{ option_data }}</span>
-																	</label>
-																	{% endif %}
-																{% endfor %}
-															</div>
+															<div id="specialite-checkboxes-{{ filter.name }}" class="list-group list-group-flush specialite-checkboxes">
+																	{% for option_key, option_data in filter.options %}
+																		{% if option_data is iterable %}
+																			<label id="list-group-item" class="specialite-checkbox-item">
+																				<input class="specialite-checkbox" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_data.value }}" data-code="{{ option_data.code }}" />
+																				<span>{{ option_data.label }}</span>
+																			</label>
+																		{% else %}
+																			<label id="list-group-item" class="specialite-checkbox-item">
+																				<input class="form-check-input me-2" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_key }}" />
+																				<span>{{ option_data }}</span>
+																			</label>
+																		{% endif %}
+																	{% endfor %}
+																</div>
 															{% else %}
-															<select
-																class="form-select form-select-sm"
-																id="filter_{{ filter.name }}"
-																name="{{ filter.name }}[]"
-																multiple>
-																{% for value, label in filter.options %}
-																	<option value="{{ value }}">{{ label }}</option>
-																{% endfor %}
-															</select>
+																<select
+																	class="form-select form-select-sm"
+																	id="filter_{{ filter.name }}"
+																	name="{{ filter.name }}[]"
+																	multiple>
+																	{% for value, label in filter.options %}
+																		<option value="{{ value }}">{{ label }}</option>
+																	{% endfor %}
+																</select>
 															{% endif %}
 														{% elseif filter.type == 'checkbox' %}
 															<div class="form-check">
@@ -125,74 +125,194 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const typeBacSelect = document.getElementById("filter_type_bac");
+
+    // ==========================================================
+    // 1) RÉCUPÉRATION DES ÉLÉMENTS HTML (inputs / blocs du formulaire)
+    // ==========================================================
+
+    // Select de la série du bac (ex: STI2D, STMG, etc.)
     const serieBacSelect = document.getElementById("filter_serie_bac");
-    const specialiteBlock = document.getElementById("specialite-checkboxes");
+    const typeBacSelect = document.getElementById("filter_type_bac");
+
+    // Éléments pour collapse/expand
+    const collapseBtn = document.getElementById("filter_collapse_btn");
+    const expandBtn = document.getElementById("filter_expand_btn");
+    const closeBar = document.getElementById("filter_closebar");
+
+    // Toutes les checkboxes de spécialités (elles ont la classe .specialite-checkbox)
     const specialiteCheckboxes = document.querySelectorAll(".specialite-checkbox");
 
-    // On remonte jusqu'au div.filter-section parent du bloc spécialités
-    const specialiteSection = specialiteBlock
-        ? specialiteBlock.closest(".filter-section")
-        : null;
 
-    // Cacher le bloc ET la section au chargement
+    // ==========================================================
+    // 2) FONCTION POUR CACHER/AFFICHER LA SECTION DES SPÉCIALITÉS
+    // ==========================================================
+
     function hideSpecialiteSection() {
-		if (specialiteBlock) specialiteBlock.style.display = "none";
+        // Cacher le label de spécialités
+        const speLabel = document.querySelector('[data-filter-name="specialite_spe"] label#text');
+        if (speLabel) speLabel.style.display = "none";
+
+        // Cacher le conteneur des checkboxes
+        const speBlock = document.getElementById("specialite-checkboxes-specialite_spe");
+        if (speBlock) speBlock.style.display = "none";
+
+        // Décocher et cacher chaque ligne de spécialité
         specialiteCheckboxes.forEach(cb => {
-            cb.checked = false;
-            const container = cb.closest("label") || cb.parentElement;
-            if (container) container.style.display = "none";
+            if (cb.name === "specialite_spe[]") {
+                cb.checked = false;
+                const container = cb.closest("label") || cb.parentElement;
+                if (container) container.style.display = "none";
+            }
         });
     }
 
     function showSpecialiteSection() {
-		if (specialiteBlock) specialiteBlock.style.display = "block";
+        // Afficher le label de spécialités
+        const speLabel = document.querySelector('[data-filter-name="specialite_spe"] label#text');
+        if (speLabel) speLabel.style.display = "block";
+
+        // Afficher le conteneur des checkboxes
+        const speBlock = document.getElementById("specialite-checkboxes-specialite_spe");
+        if (speBlock) speBlock.style.display = "block";
     }
 
-    // Init au chargement
+
+    // ==========================================================
+    // 3) FONCTION POUR CACHER/AFFICHER LA SECTION DES OPTIONS
+    // ==========================================================
+
+    function hideOptionSection() {
+        // Cacher le label des options
+        const optLabel = document.querySelector('[data-filter-name="specialite_opt"] label#text');
+        if (optLabel) optLabel.style.display = "none";
+
+        // Cacher le conteneur des checkboxes
+        const optBlock = document.getElementById("specialite-checkboxes-specialite_opt");
+        if (optBlock) optBlock.style.display = "none";
+
+        // Décocher et cacher chaque ligne d'option
+        specialiteCheckboxes.forEach(cb => {
+            if (cb.name === "specialite_opt[]") {
+                cb.checked = false;
+                const container = cb.closest("label") || cb.parentElement;
+                if (container) container.style.display = "none";
+            }
+        });
+    }
+
+    function showOptionSection() {
+        // Afficher le label des options
+        const optLabel = document.querySelector('[data-filter-name="specialite_opt"] label#text');
+        if (optLabel) optLabel.style.display = "block";
+
+        // Afficher le conteneur des checkboxes
+        const optBlock = document.getElementById("specialite-checkboxes-specialite_opt");
+        if (optBlock) optBlock.style.display = "block";
+    }
+
+
+    // ==========================================================
+    // 4) INITIALISATION AU CHARGEMENT
+    // ==========================================================
     hideSpecialiteSection();
+    hideOptionSection();
+
+
+    // ==========================================================
+    // 5) VÉRIFIER SI UNE SÉRIE A DES SPÉCIALITÉS/OPTIONS DISPONIBLES
+    // ==========================================================
 
     function serieHasSpecialites(serieValue) {
         if (!serieValue) return false;
+
         let found = false;
         specialiteCheckboxes.forEach(checkbox => {
-            if (checkbox.getAttribute("data-code") === serieValue) {
+            if (checkbox.getAttribute("data-code") === serieValue && checkbox.name === "specialite_spe[]") {
                 found = true;
             }
         });
         return found;
     }
 
+    function serieHasOptions(serieValue) {
+        if (!serieValue) return false;
+
+        let found = false;
+        specialiteCheckboxes.forEach(checkbox => {
+            if (checkbox.getAttribute("data-code") === serieValue && checkbox.name === "specialite_opt[]") {
+                found = true;
+            }
+        });
+        return found;
+    }
+
+
+    // ==========================================================
+    // 6) FILTRER LES SPÉCIALITÉS ET OPTIONS SELON LA SÉRIE CHOISIE
+    // ==========================================================
+
     function filterSpecialites() {
         const selectedSerieCode = serieBacSelect ? serieBacSelect.value : "";
 
+        // Gérer les spécialités
         if (!selectedSerieCode || !serieHasSpecialites(selectedSerieCode)) {
             hideSpecialiteSection();
-            return;
+        } else {
+            showSpecialiteSection();
+            specialiteCheckboxes.forEach(checkbox => {
+                if (checkbox.name === "specialite_spe[]") {
+                    const speCode = checkbox.getAttribute("data-code");
+                    const container = checkbox.closest("label") || checkbox.parentElement;
+                    if (!container) return;
+
+                    if (speCode === selectedSerieCode) {
+                        container.style.display = "flex";
+                    } else {
+                        container.style.display = "none";
+                        checkbox.checked = false;
+                    }
+                }
+            });
         }
 
-        showSpecialiteSection();
+        // Gérer les options
+        if (!selectedSerieCode || !serieHasOptions(selectedSerieCode)) {
+            hideOptionSection();
+        } else {
+            showOptionSection();
+            specialiteCheckboxes.forEach(checkbox => {
+                if (checkbox.name === "specialite_opt[]") {
+                    const optCode = checkbox.getAttribute("data-code");
+                    const container = checkbox.closest("label") || checkbox.parentElement;
+                    if (!container) return;
 
-        specialiteCheckboxes.forEach(checkbox => {
-            const speCode = checkbox.getAttribute("data-code");
-            const container = checkbox.closest("label") || checkbox.parentElement;
-            if (!container) return;
-
-            if (speCode === selectedSerieCode) {
-                container.style.display = "flex"; /* flex pour garder l'alignement */
-            } else {
-                container.style.display = "none";
-                checkbox.checked = false;
-            }
-        });
+                    if (optCode === selectedSerieCode) {
+                        container.style.display = "flex";
+                    } else {
+                        container.style.display = "none";
+                        checkbox.checked = false;
+                    }
+                }
+            });
+        }
     }
+
+
+    // ==========================================================
+    // 7) GESTION DU CHANGEMENT DE TYPE DE BAC
+    // ==========================================================
 
     function onTypeBacChange() {
         const val = typeBacSelect ? typeBacSelect.value : "";
 
+        // Reset de la série bac
         if (serieBacSelect) serieBacSelect.value = "";
-        hideSpecialiteSection();
 
+        // Cache les spécialités et options
+        hideSpecialiteSection();
+        hideOptionSection();
+
+        // Récupère tous les blocs ayant la classe .bac-filter
         const blocs = document.querySelectorAll(".bac-filter");
         blocs.forEach(bloc => {
             bloc.style.display = "none";
@@ -205,6 +325,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+
+    // ==========================================================
+    // 8) FONCTION POUR RESET UN BLOC (vider les champs)
+    // ==========================================================
+
     function resetBloc(bloc) {
         const inputs = bloc.querySelectorAll("input, select, textarea");
         inputs.forEach(input => {
@@ -216,13 +341,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+
+    // ==========================================================
+    // 9) ÉVÉNEMENTS : QUAND L'UTILISATEUR CHANGE UN CHAMP
+    // ==========================================================
+
     if (typeBacSelect) typeBacSelect.addEventListener("change", onTypeBacChange);
     if (serieBacSelect) serieBacSelect.addEventListener("change", filterSpecialites);
 
-    const collapseBtn = document.getElementById("filter_collapse_btn");
-    const expandBtn = document.getElementById("filter_expand_btn");
+    // Gestion du collapse/expand de la sidebar
     const sidebar = document.getElementById("filter_sidebar");
-    const closeBar = document.getElementById("filter_close_bar");
 
     if (collapseBtn) {
         collapseBtn.addEventListener("click", function () {
@@ -230,11 +358,13 @@ document.addEventListener("DOMContentLoaded", function () {
             if (closeBar) closeBar.classList.remove("d-none");
         });
     }
+
     if (expandBtn) {
         expandBtn.addEventListener("click", function () {
             if (sidebar) sidebar.classList.remove("d-none");
             if (closeBar) closeBar.classList.add("d-none");
         });
     }
+
 });
 </script>
