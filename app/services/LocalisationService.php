@@ -21,7 +21,7 @@ class LocalisationService
 	/*-------------------------------*/
 	/* Attributs                     */
 	/*-------------------------------*/
-	private \SplTempFileObject      $fichierCsv;
+	private                         $fluxCsv;
 	private EtablissementRepository $etablissementRepository;
 	private LocalisationRepository  $localisationRepository;
 
@@ -31,7 +31,7 @@ class LocalisationService
 	/*-------------------------------*/
 	public function __construct()
 	{
-		$this->fichierCsv = new \SplTempFileObject();
+		$this->fluxCsv = fopen('php://temp', 'r+');
 		$this->creerLigneCSV(self::COLONNE);
 
 		$this->etablissementRepository = new EtablissementRepository();
@@ -66,8 +66,11 @@ class LocalisationService
 	/*-------------------------------*/
 	public function getCSVFichier(): \SplTempFileObject
 	{
-		$this->fichierCsv->rewind();
-		return $this->fichierCsv;
+		$csvTexte = $this->getCSVString();
+		$fichier  = new \SplTempFileObject();
+		$fichier->fwrite($csvTexte);
+		$fichier->rewind();
+		return $fichier;
 	}
 
 	/*-------------------------------*/
@@ -75,33 +78,15 @@ class LocalisationService
 	/*-------------------------------*/
 	public function getCSVString(): string
 	{
-		$this->fichierCsv->rewind();
-		$csvTexte = '';
-		while (!$this->fichierCsv->eof())
-		{
-			$ligne = $this->fichierCsv->fgets();
-			if ($ligne === false) { break; }
-			$csvTexte .= $ligne;
-		}
-		return $csvTexte;
+		rewind($this->fluxCsv);
+		$csvTexte = stream_get_contents($this->fluxCsv);
+		return $csvTexte === false ? '' : $csvTexte;
 	}
 
 	/*-------------------------------*/
 	/*  Écriture d'une ligne CSV     */
 	/*-------------------------------*/
-	private function creerLigneCSV(array $ligneDonnees): void
-	{
-		$champsEchappes = [];
-		foreach ($ligneDonnees as $champ)
-		{
-			$champ = (string) $champ;
-			$champ = str_replace('"', '""', $champ);
-			if (strpbrk($champ, ";\r\n\"") !== false) { $champ = '"' . $champ . '"'; }
-			$champsEchappes[] = $champ;
-		}
-		$ligneCsv = implode(';', $champsEchappes) . "\r\n";
-		$this->fichierCsv->fwrite($ligneCsv);
-	}
+	private function creerLigneCSV(array $ligneDonnees): void { fputcsv($this->fluxCsv, $ligneDonnees, ';'); }
 
 	/*-------------------------------*/
 	/*  Export HTTP du CSV           */
