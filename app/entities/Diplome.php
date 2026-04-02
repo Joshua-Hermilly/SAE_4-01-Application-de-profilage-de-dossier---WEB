@@ -14,8 +14,8 @@ class Diplome
 		private string $diplome_serie_libelle,
 
 		// Relation
-		private array $candidats  = [],
-		private array $formations = []
+		private ?array     $candidats  = [],
+		private Specialite $specialite
 	) {}
 
 	/*---------------------------------*/
@@ -45,14 +45,14 @@ class Diplome
 	{
 		return $this->diplome_serie_libelle;
 	}
-	public function getCandidats(): array
+	public function getCandidats(): ?	array
 	{
 		return $this->candidats;
 	}
 
-	public function getFormations(): array
+	public function getSpecialite(): Specialite
 	{
-		return $this->formations;
+		return $this->specialite;
 	}
 
 	/*---------------------------------*/
@@ -88,8 +88,8 @@ class Diplome
 		$this->candidats = $candidats;
 	}
 
-	public function setFormations(array $formations): void
+	public function setSpecialite(Specialite $specialite): void
 	{
-		$this->formations = $formations;
+		$this->specialite = $specialite;
 	}
 }

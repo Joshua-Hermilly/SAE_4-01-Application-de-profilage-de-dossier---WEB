@@ -14,8 +14,6 @@ class Specialite
 		private ?string $specialite_spe2,
 		private ?string $specialite_spe3,
 		private ?string $specialite_speAbd,
-
-		private int     $diplome_id
 	) {}
 
 
@@ -57,12 +55,6 @@ class Specialite
 		return $this->specialite_speAbd;
 	}
 
-	public function getDiplomeId(): int
-	{
-		return $this->diplome_id;
-	}
-
-
 	/*---------------------------------*/
 	/*             Setters             */
 	/*---------------------------------*/
@@ -99,10 +91,5 @@ class Specialite
 	public function setSpecialiteSpeAbd(?string $specialite_speAbd): void
 	{
 		$this->specialite_speAbd = $specialite_speAbd;
-	}
-
-	public function setDiplomeId(int $diplomeId): void
-	{
-		$this->diplome_id = $diplomeId;
 	}
 }

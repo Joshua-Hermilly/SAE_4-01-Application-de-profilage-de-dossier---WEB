@@ -34,7 +34,7 @@ class DossierCandidatService
 
 	public function maxPage(): int
 	{
-		return (int) ($this->dossierCandidatRepository->nbMaxDossier() / 25);
+		return (int) ($this->dossierCandidatRepository->nbMaxDossier() / 25) +1;
 	}
 
 }

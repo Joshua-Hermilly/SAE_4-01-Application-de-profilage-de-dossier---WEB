@@ -102,7 +102,6 @@ class ImportService
 		$data  = $sheet->toArray(null, true, true);
 		array_shift($data); 
 
-		$specialiteRelations = [];
 		$candidatRelations   = [];
 
 		foreach ($data as $ligne)
@@ -111,15 +110,10 @@ class ImportService
 
 			$localisation  = $this->createLoc( $ligne                                                  );
 			$etablissement = $this->createEtb( $ligne, $localisation                                   );
-			$diplome       = $this->createDpm( $ligne                                                  );
+			$specialite    = $this->createSpt( $ligne                                                  );
+			$diplome       = $this->createDpm( $ligne, $specialite                                     );
 			$formationSup  = $this->createFms( $ligne                                                  );
-			$specialite    = $this->createSpt( $ligne, $diplome                                        );
 			$candidat      = $this->createCdt( $ligne, $etablissement, $diplome, $formationSup, $annee );
-
-			$specialiteRelations[] = [
-				'specialite' => $specialite,
-				'diplome'    => $diplome
-			];
 
 			$candidatRelations[] = [
 				'candidat'      => $candidat,
@@ -133,16 +127,9 @@ class ImportService
 		$this->localisationRepository ->creates($this->localisations );
 		$this->etablissementRepository->creates($this->etablissements);
 		$this->formationsSupRepository->creates($this->formationsSup );
+		$this->specialiteRepository   ->creates($this->specialites   );
 		$this->diplomeRepository      ->creates($this->diplomes      );
 
-		for ($cpt = 0; $cpt < count($specialiteRelations); $cpt++)
-		{
-			$specialite = $specialiteRelations[$cpt]['specialite'];
-			$diplome    = $specialiteRelations[$cpt]['diplome'   ];
-
-			$specialite->setDiplomeId($diplome->getDiplomeId());
-		}
-		$this->specialiteRepository->creates($this->specialites);
 
 		for ($cpt = 0; $cpt < count($candidatRelations); $cpt++)
 		{
@@ -209,7 +196,7 @@ class ImportService
 		return $etablissement;
 	}
 
-	private function createDpm(array $ligne): ?Diplome
+	private function createDpm(array $ligne, $specialite): ?Diplome
 	{
 		$diplome = new Diplome(
 			0,
@@ -217,6 +204,8 @@ class ImportService
 			$this->getCol($ligne, 'diplome_type_lib'  ),
 			$this->getCol($ligne, 'diplome_serie_code'),
 			$this->getCol($ligne, 'diplome_serie_lib' ),
+			null,
+			$specialite,
 		);
 
 		foreach ($this->diplomes as $dip)
@@ -224,7 +213,8 @@ class ImportService
 			if ( $dip->getDiplomeTypeCode    () === $diplome->getDiplomeTypeCode    () &&
 				 $dip->getDiplomeSerieCode   () === $diplome->getDiplomeSerieCode   () &&
 				 $dip->getDiplomeTypeLibelle () === $diplome->getDiplomeTypeLibelle () &&
-				 $dip->getDiplomeSerieLibelle() === $diplome->getDiplomeSerieLibelle()    )
+				 $dip->getDiplomeSerieLibelle() === $diplome->getDiplomeSerieLibelle() &&
+			     $dip->getSpecialite         () === $diplome->getSpecialite         ()    )
 			{
 				return $dip;
 			}
@@ -256,7 +246,7 @@ class ImportService
 		return $formationSup;
 	}
 
-	private function createSpt(array $ligne, $diplome): ?Specialite
+	private function createSpt(array $ligne): ?Specialite
 	{
 		$combinaison = (string)($this->getCol($ligne, 'spe_combinaison') ?? '');
 		$parties = explode('/', $combinaison);
@@ -273,8 +263,7 @@ class ImportService
 			$spe1,
 			$spe2,
 			$spe3,
-			$this->getCol($ligne, 'spe_abandonnee'),
-			$diplome->getDiplomeId()
+			$this->getCol($ligne, 'spe_abandonnee')
 		);
 
 		foreach ($this->specialites as $spe)
@@ -284,8 +273,7 @@ class ImportService
 				$spe->getSpecialiteSpe1  () === $specialite->getSpecialiteSpe1  () &&
 				$spe->getSpecialiteSpe2  () === $specialite->getSpecialiteSpe2  () &&
 				$spe->getSpecialiteSpe3  () === $specialite->getSpecialiteSpe3  () &&
-				$spe->getSpecialiteSpeAbd() === $specialite->getSpecialiteSpeAbd() &&
-				$spe->getDiplomeId       () === $specialite->getDiplomeId       ()   )
+				$spe->getSpecialiteSpeAbd() === $specialite->getSpecialiteSpeAbd()   )
 			{
 				return $spe;
 			}
