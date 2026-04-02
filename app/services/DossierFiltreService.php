@@ -76,11 +76,6 @@ class DossierFiltreService
 							'type'     => 'select',
 							'options'  => [],
 						],
-					],
-				],
-				'specialites' => [
-					'label'   => 'Spécialités',
-					'filters' => [
 						[
 							'name'     => 'specialite_spe',
 							'label'    => 'Spécialités',
