@@ -86,7 +86,7 @@ class LocalisationService
 	/*-------------------------------*/
 	/*  Écriture d'une ligne CSV     */
 	/*-------------------------------*/
-	private function creerLigneCSV(array $ligneDonnees): void { fputcsv($this->fluxCsv, $ligneDonnees, ';'); }
+	private function creerLigneCSV(array $ligneDonnees): void { fputcsv($this->fluxCsv, $ligneDonnees, ';', '"', '\\'); }
 
 	/*-------------------------------*/
 	/*  Export HTTP du CSV           */
