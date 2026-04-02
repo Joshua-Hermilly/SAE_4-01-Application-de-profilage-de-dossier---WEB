@@ -11,6 +11,7 @@ const vue        = 6;
 /*------------------------*/
 let   map            = null;
 let   localisations = [];
+let   makCluster     = null;
 
 /*------------------------*/
 /* INITIALISER LA CARTE    */
@@ -40,7 +41,7 @@ async function getCarte()
             method: 'GET',
             headers:
 			{
-                'Token': 'SAE-4.01_WEB_TOKEN',
+                'Token'       : 'SAE-4.01_WEB_TOKEN',
                 'Content-Type': 'application/json'
             }
         });
@@ -54,6 +55,7 @@ async function getCarte()
 
 
         // Point
+            makCluster = L.markerClusterGroup().addTo(map);
         if (Array.isArray(donnees) && donnees.length > 0)
 		{
             donnees.forEach(etablissement => { ajouterMarqueur(etablissement); });
@@ -67,15 +69,8 @@ async function getCarte()
 /*------------------------*/
 function ajouterMarqueur(etablissement)
 {
-	// Position ?
-    if (!etablissement.localisation)
-	{
-        console.warn('Pas de localisation pour:', etablissement);
-        return;
-    }
-
-    const lat = etablissement.localisation.localisation_latitude;
-    const lon = etablissement.localisation.localisation_longitude;
+    const lat = etablissement.localisation_latitude;
+    const lon = etablissement.localisation_longitude;
 
     // Coordonnées ?
     if (lat === null || lon === null)
@@ -85,12 +80,13 @@ function ajouterMarqueur(etablissement)
     }
 
     // Markeur
-    const marker     = L.marker([lat, lon]).addTo(map);
+    const marker     = L.marker([lat, lon]);
 	const nomEtab    = etablissement.etablissement_nom                    ;
-    const codePostal = etablissement.localisation.localisation_code_postal;
-    const commune    = etablissement.localisation.localisation_commune    ;
+    const codePostal = etablissement.localisation_code_postal;
+    const commune    = etablissement.localisation_commune    ;
 
-    marker.bindPopup(`<strong>${nomEtab}</strong><br/>${commune}${codePostal}`);
+    makCluster.addLayer(marker);
+    //marker.bindPopup(`<strong>${nomEtab}</strong><br/>${commune}${codePostal}`);
 }
 
 /*------------------------*/

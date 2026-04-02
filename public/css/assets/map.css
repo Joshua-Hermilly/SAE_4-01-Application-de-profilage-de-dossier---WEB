@@ -28,13 +28,13 @@
 	color: #FFFFFF;
 }
 
+/* MAP - Hauteur gérée par Bootstrap h-100 */
 #map {
 	width: 100%;
-	height: 400px;
+	height: 100%;
 	border-radius: 8px;
 	overflow: hidden;
 	display: block;
-	border: 2px solid #343533;
 	background-color: #f0f0f0;
 }
 

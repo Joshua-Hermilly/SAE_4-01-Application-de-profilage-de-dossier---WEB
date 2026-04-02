@@ -32,14 +32,14 @@ class LocalisationRepository
 			$row['localisation_departement'],
 			$row['localisation_latitide'   ],
 			$row['localisation_longitude'  ],
-			$row['localisation_disctance'  ]
+			$row['localisation_distance'   ]
 		);
 	}
 
 	public function create(Localisation $localisation): void
 	{
 		$sql = "INSERT INTO LOCALISATION
-				(localisation_pays, localisation_code_postal, localisation_commune, localisation_departement, localisation_latitide, localisation_longitude, localisation_disctance)
+				(localisation_pays, localisation_code_postal, localisation_commune, localisation_departement, localisation_latitide, localisation_longitude, localisation_distance)
 				VALUES (:pays, :code_postal, :commune, :departement, :latitde, :longitude, :dis)";
 
 		$req = $this->pdo->prepare($sql);
@@ -75,7 +75,7 @@ class LocalisationRepository
 		}
 
 		$sql = "INSERT INTO LOCALISATION 
-				(localisation_pays, localisation_code_postal, localisation_commune, localisation_departement, localisation_latitide, localisation_longitude, localisation_disctance)
+				(localisation_pays, localisation_code_postal, localisation_commune, localisation_departement, localisation_latitide, localisation_longitude, localisation_distance)
 				VALUES " . implode(', ', $valeurBind) . "
 				RETURNING localisation_id";
 
@@ -102,6 +102,23 @@ class LocalisationRepository
 				$localisations[$cpt]->setLocalisationId((int) $rows[$cpt]['localisation_id']);
 			}
 		}
+	}
+
+	public function update(Localisation $localisation)
+	{
+		$sql = "UPDATE LOCALISATION
+				SET localisation_latitide    = :latitde,
+					localisation_longitude   = :longitude,
+					localisation_distance    = :dis
+				WHERE localisation_id = :id";
+
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':id'         , $localisation->getLocalisationId         ());
+		$stmt->bindValue(':latitde'    , $localisation->getLocalisationLatitude   ());
+		$stmt->bindValue(':longitude'  , $localisation->getLocalisationLongitude  ());
+		$stmt->bindValue(':dis'        , $localisation->getLocalisationDistance   ());
+		$stmt->execute();
 	}
 
 	public function findById(int $id): ?Localisation
@@ -133,14 +150,14 @@ class LocalisationRepository
 	public function exist(Localisation $localisation): int
 	{
 		$sql  = "SELECT * FROM localisation 
-                 WHERE localisation_pays        = :pays
-				   AND localisation_code_postal = :code_postal
+                 WHERE
+				       localisation_code_postal = :code_postal
 				   AND localisation_commune     = :commune
 				   AND localisation_departement = :departement
 				 LIMIT 1";
 
 		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':pays'       , $localisation->getLocalisationPays       ());
+		//$stmt->bindValue(':pays'       , $localisation->getLocalisationPays       ());
 		$stmt->bindValue(':code_postal', $localisation->getLocalisationCodePostal ());
 		$stmt->bindValue(':commune'    , $localisation->getLocalisationCommune    ());
 		$stmt->bindValue(':departement', $localisation->getLocalisationDepartement());

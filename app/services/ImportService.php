@@ -2,7 +2,7 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-require_once '../app/services/LocalisationService.php';
+require_once '../app/services/RechercheLocalisationService.php';
 
 require_once '../app/entities/Candidat.php';
 require_once '../app/entities/Etablissement.php';
@@ -77,7 +77,7 @@ class ImportService
 	/*-------------------------------*/
 	/* Service  localisation         */
 	/*-------------------------------*/
-	private $serviceLocalisation;
+	private $serviceRechercheLocalisation;
 
 	/*-------------------------------*/
 	/* Construct                     */
@@ -98,7 +98,7 @@ class ImportService
 		$this->specialites    = $this->specialiteRepository   ->findAll();
 		$this->candidats      = $this->candidatRepository     ->findAll();
 
-		$this->serviceLocalisation = new LocalisationService();
+		$this->serviceRechercheLocalisation = new RechercheLocalisationService();
 	}
 
 	/*-------------------------------*/
@@ -135,10 +135,10 @@ class ImportService
 		$this->localisationRepository ->creates($this->localisations );
 		$this->etablissementRepository->creates($this->etablissements);
 
-		// dont au service
-//		$this->serviceLocalisation    ->addAll($this->etablissements);
-//		$this->serviceLocalisation    ->export();
-		$this->serviceLocalisation->geocoder();
+		//ajout des localisation
+		$fichier = $this->serviceRechercheLocalisation->remplissageTerminee();
+		$retour  = $this->serviceRechercheLocalisation->appelerApi($fichier);
+		if ( $retour ) { $this->serviceRechercheLocalisation->parcoursTableau($retour);}
 
 		$this->formationsSupRepository->creates($this->formationsSup );
 		$this->specialiteRepository   ->creates($this->specialites   );
@@ -210,7 +210,7 @@ class ImportService
 		}
 
 		$this->etablissements[] = $etablissement;
-		//$this->serviceLocalisation->addEtablisement($etablissement);
+		$this->serviceRechercheLocalisation->addEtablissement($etablissement);
 		return $etablissement;
 	}
 
