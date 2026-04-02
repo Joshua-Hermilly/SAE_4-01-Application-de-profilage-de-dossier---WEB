@@ -11,5 +11,3 @@ function changerPage(page)
 {
 	this.window.location.href = page;
 }
-
-

@@ -1,20 +1,20 @@
-<header class="main-header container-fluid py-3 px-4">
-  	<div class="row w-100 g-3 align-items-center">
+<header class="main-header py-3 w-100 m-0">
+	<div class="row g-0 w-100 m-0 align-items-center">
 
 		<!-- LEFT (responsif) -->
-		<div class="col-12 col-lg-8">
-			<div class="header-left d-flex align-items-center">
-				<div class="avatar"></div>
-				<span class="bar-menu-text ms-3">{{ project_name | default('Nom de l\'application') }}</span>
+		<div class="col-12 col-lg-8 p-0">
+			<div id="header-left" class="d-flex align-items-center py-2 px-3">
+				<div id="avatar"></div>
+				<span id="bar-menu-text" class="ms-3">{{ project_name | default('Nom de l\'application') }}</span>
 			</div>
 		</div>
 
 		<!-- RIGHT (responsif) -->
-		<div class="col-12 col-lg-4">
-			<div class="header-right d-flex gap-2">
-				<button id="btnDossier"    class="menu-btn active flex-grow-1">Dossiers  </button>
-				<button id="btnGroupes"    class="menu-btn flex-grow-1"       >Groupes   </button>
-				<button id="btnFormations" class="menu-btn flex-grow-1"       >Formations</button>
+		<div class="col-12 col-lg-4 d-flex justify-content-end p-0">
+			<div id="header-right" class="d-flex align-items-center gap-2 w-100 py-2 px-3">
+				<button id="btnDossier"    class="active flex-grow-1 py-2 px-3">Dossiers</button>
+				<button id="btnGroupes"    class="menu-btn flex-grow-1 py-2 px-3">Groupes</button>
+				<button id="btnFormations" class="menu-btn flex-grow-1 py-2 px-3">Formations</button>
 			</div>
 		</div>
 	</div>

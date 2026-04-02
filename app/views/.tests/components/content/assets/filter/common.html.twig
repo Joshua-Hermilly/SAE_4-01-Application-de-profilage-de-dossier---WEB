@@ -1,0 +1,103 @@
+{# Filtres communs à tous les types de bac #}
+
+{# Genre #}
+<div class="mb-3">
+	<label for="filter_genre" class="form-label">Genre</label>
+	<select class="form-select filter-input" id="filter_genre" name="genre">
+		<option value="">Sélectionnez un genre</option>
+		<option value="homme">Homme</option>
+		<option value="femme">Femme</option>
+	</select>
+</div>
+
+{# Département #}
+<div class="mb-3">
+	<label for="filter_departement" class="form-label">Département</label>
+	<input 
+		type="text" 
+		class="form-control filter-input" 
+		id="filter_departement" 
+		name="departement"
+		placeholder="Nom ou numéro (ex: 75 ou Paris)"
+	>
+</div>
+
+{# Boursier #}
+<div class="mb-3 form-check">
+	<input 
+		type="checkbox" 
+		class="form-check-input filter-input" 
+		id="filter_boursier" 
+		name="boursier"
+		value="1"
+	>
+	<label class="form-check-label" for="filter_boursier">
+		Boursier
+	</label>
+</div>
+
+{# Note Globale #}
+<div class="mb-3">
+	<label class="form-label">Note Globale minimale</label>
+	<div class="row">
+		<div class="col-6">
+			<small class="text-muted d-block mb-1">Minimum</small>
+			<input 
+				type="number" 
+				class="form-control filter-input" 
+				id="filter_noteGlobale_min" 
+				name="noteGlobale_min"
+				min="0"
+				max="20"
+				placeholder="0"
+			>
+		</div>
+		<div class="col-6">
+			<small class="text-muted d-block mb-1">/ 20</small>
+		</div>
+	</div>
+</div>
+
+{# Note Lycée #}
+<div class="mb-3">
+	<label class="form-label">Note Lycée minimale</label>
+	<div class="row">
+		<div class="col-6">
+			<small class="text-muted d-block mb-1">Minimum</small>
+			<input 
+				type="number" 
+				class="form-control filter-input" 
+				id="filter_noteLycee_min" 
+				name="noteLycee_min"
+				min="0"
+				max="20"
+				placeholder="0"
+			>
+		</div>
+		<div class="col-6">
+			<small class="text-muted d-block mb-1">/ 20</small>
+		</div>
+	</div>
+</div>
+
+{# Note Fiche Avenir #}
+<div class="mb-3">
+	<label class="form-label">Note Fiche Avenir minimale</label>
+	<div class="row">
+		<div class="col-6">
+			<small class="text-muted d-block mb-1">Minimum</small>
+			<input 
+				type="number" 
+				class="form-control filter-input" 
+				id="filter_noteFicheAvenir_min" 
+				name="noteFicheAvenir_min"
+				min="0"
+				max="20"
+				placeholder="0"
+			>
+		</div>
+		<div class="col-6">
+			<small class="text-muted d-block mb-1">/ 20</small>
+		</div>
+	</div>
+</div>

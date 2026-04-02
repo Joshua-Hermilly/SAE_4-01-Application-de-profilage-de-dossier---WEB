@@ -19,6 +19,7 @@ CREATE TABLE COMPTE
 );
 INSERT INTO COMPTE (compte_identifiant, compte_mdp, compte_isAdmin)
 VALUES ('admin', '$2y$12$rNJ8W0ubDoYEQHhhhdp7QOAuZlYLPqhu.903Qclctpg2damKaEVn6', TRUE);
+VALUES ('admin', '$2y$12$rNJ8W0ubDoYEQHhhhdp7QOAuZlYLPqhu.903Qclctpg2damKaEVn6', TRUE);
 
 
 -- Table LOCALISATION
