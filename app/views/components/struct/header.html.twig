@@ -10,11 +10,11 @@
 		</div>
 
 		<!-- RIGHT (responsif) -->
-		<div class="col-12 col-lg-4">
-			<div class="header-right d-flex gap-2">
-				<button id="btnDossier"    class="menu-btn flex-grow-1 {{ pageActive == 'dossiers'   ? 'active' : '' }}">Dossiers</button>
-				<button id="btnGroupes"    class="menu-btn flex-grow-1 {{ pageActive == 'groupes'    ? 'active' : '' }}">Groupes</button>
-				<button id="btnFormations" class="menu-btn flex-grow-1 {{ pageActive == 'formations' ? 'active' : '' }}">Formations</button>
+		<div class="col-12 col-lg-4 d-flex justify-content-end p-0">
+			<div id="header-right" class="d-flex align-items-center gap-2 w-100 py-2 px-3">
+				<button id="btnDossier"    class="menu-btn flex-grow-1  py-2 px-3 {{ pageActive == 'dossiers'   ? 'active' : '' }}">Dossiers</button>
+				<button id="btnGroupes"    class="menu-btn flex-grow-1  py-2 px-3 {{ pageActive == 'groupes'    ? 'active' : '' }}">Groupes</button>
+				<button id="btnFormations" class="menu-btn flex-grow-1  py-2 px-3 {{ pageActive == 'formations' ? 'active' : '' }}">Formations</button>
 			</div>
 		</div>
 	</div>
