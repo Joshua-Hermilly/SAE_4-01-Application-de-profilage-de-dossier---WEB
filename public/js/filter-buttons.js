@@ -17,9 +17,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==========================================================
     // INITIALISATION AU CHARGEMENT
     // ==========================================================
-    // Par défaut : closeBar visible, sidebar caché
-    if (sidebar) sidebar.classList.add("d-none");
-    if (closeBar) closeBar.classList.remove("d-none");
+    // Par défaut : sidebar caché, closeBar visible
+    function initializeFilter() {
+        if (sidebar) {
+            sidebar.classList.add("d-none");
+        }
+        if (closeBar) {
+            closeBar.classList.remove("d-none");
+        }
+    }
+
+    // Initialiser au chargement
+    initializeFilter();
 
 
     // ==========================================================
@@ -28,7 +37,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Bouton de collapse (fermer le filtre et afficher closeBar)
     if (collapseBtn) {
-        collapseBtn.addEventListener("click", function () {
+        collapseBtn.addEventListener("click", function (e) {
+            e.preventDefault();
             if (sidebar) sidebar.classList.add("d-none");
             if (closeBar) closeBar.classList.remove("d-none");
         });
@@ -36,7 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Bouton d'expand (afficher le filtre et cacher closeBar)
     if (expandBtn) {
-        expandBtn.addEventListener("click", function () {
+        expandBtn.addEventListener("click", function (e) {
+            e.preventDefault();
             if (sidebar) sidebar.classList.remove("d-none");
             if (closeBar) closeBar.classList.add("d-none");
         });
