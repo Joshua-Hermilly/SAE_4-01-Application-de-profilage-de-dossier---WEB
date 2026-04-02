@@ -157,6 +157,9 @@ class ImportService
 			$this->getCol($ligne, 'commune_cp'     ),
 			$this->getCol($ligne, 'commune_libelle'),
 			$this->getCol($ligne, 'departement'    ),
+			null,
+			null,
+			null
 		);
 
 		foreach ($this->localisations as $loc)
@@ -204,8 +207,8 @@ class ImportService
 			$this->getCol($ligne, 'diplome_type_lib'  ),
 			$this->getCol($ligne, 'diplome_serie_code'),
 			$this->getCol($ligne, 'diplome_serie_lib' ),
-			null,
 			$specialite,
+			null,
 		);
 
 		foreach ($this->diplomes as $dip)

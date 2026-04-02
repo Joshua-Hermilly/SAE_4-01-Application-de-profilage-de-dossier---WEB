@@ -29,21 +29,27 @@ class LocalisationRepository
 			$row['localisation_pays'       ],
 			$row['localisation_code_postal'],
 			$row['localisation_commune'    ],
-			$row['localisation_departement']
+			$row['localisation_departement'],
+			$row['localisation_latitide'   ],
+			$row['localisation_longitude'  ],
+			$row['localisation_disctance'  ]
 		);
 	}
 
 	public function create(Localisation $localisation): void
 	{
 		$sql = "INSERT INTO LOCALISATION
-				(localisation_pays, localisation_code_postal, localisation_commune, localisation_departement)
-				VALUES (:pays, :code_postal, :commune, :departement)";
+				(localisation_pays, localisation_code_postal, localisation_commune, localisation_departement, localisation_latitide, localisation_longitude, localisation_disctance)
+				VALUES (:pays, :code_postal, :commune, :departement, :latitde, :longitude, :dis)";
 
 		$req = $this->pdo->prepare($sql);
 		$req->bindValue(':pays'       , $localisation->getLocalisationPays       ());
 		$req->bindValue(':code_postal', $localisation->getLocalisationCodePostal ());
 		$req->bindValue(':commune'    , $localisation->getLocalisationCommune    ());
 		$req->bindValue(':departement', $localisation->getLocalisationDepartement());
+		$req->bindValue(':latitde'    , $localisation->getLocalisationLatitude   ());
+		$req->bindValue(':longitude'  , $localisation->getLocalisationLongitude  ());
+		$req->bindValue(':dis'        , $localisation->getLocalisationDistance   ());
 		$req->execute();
 
 		$localisation->setLocalisationId((int) $this->pdo->lastInsertId());
@@ -57,16 +63,19 @@ class LocalisationRepository
 		for ($cpt = 0; $cpt < count($localisations); $cpt++)
 		{
 			$localisation = $localisations[$cpt];
-			$valeurBind[]  = "(:pays{$cpt}, :code_postal{$cpt}, :commune{$cpt}, :departement{$cpt})";
+			$valeurBind[]  = "(:pays{$cpt}, :code_postal{$cpt}, :commune{$cpt}, :departement{$cpt}, :latitde{$cpt}, :longitude{$cpt}, :dis{$cpt})";
 
-			$valeurBrut[":pays{$cpt}"]        = $localisation->getLocalisationPays();
-			$valeurBrut[":code_postal{$cpt}"] = $localisation->getLocalisationCodePostal();
-			$valeurBrut[":commune{$cpt}"]     = $localisation->getLocalisationCommune();
+			$valeurBrut[":pays{$cpt}"       ] = $localisation->getLocalisationPays       ();
+			$valeurBrut[":code_postal{$cpt}"] = $localisation->getLocalisationCodePostal ();
+			$valeurBrut[":commune{$cpt}"    ] = $localisation->getLocalisationCommune    ();
 			$valeurBrut[":departement{$cpt}"] = $localisation->getLocalisationDepartement();
+			$valeurBrut[":latitde{$cpt}"    ] = $localisation->getLocalisationLatitude   ();
+			$valeurBrut[":longitude{$cpt}"  ] = $localisation->getLocalisationLongitude  ();
+			$valeurBrut[":dis{$cpt}"        ] = $localisation->getLocalisationDistance   ();
 		}
 
 		$sql = "INSERT INTO LOCALISATION 
-				(localisation_pays, localisation_code_postal, localisation_commune, localisation_departement)
+				(localisation_pays, localisation_code_postal, localisation_commune, localisation_departement, localisation_latitide, localisation_longitude, localisation_disctance)
 				VALUES " . implode(', ', $valeurBind) . "
 				RETURNING localisation_id";
 
@@ -74,10 +83,13 @@ class LocalisationRepository
 
 		for ($cpt = 0; $cpt < count($localisations); $cpt++)
 		{
-			$stmt->bindValue(":pays{$cpt}",        $valeurBrut[":pays{$cpt}"]);
+			$stmt->bindValue(":pays{$cpt}"       , $valeurBrut[":pays{$cpt}"       ]);
 			$stmt->bindValue(":code_postal{$cpt}", $valeurBrut[":code_postal{$cpt}"]);
-			$stmt->bindValue(":commune{$cpt}",     $valeurBrut[":commune{$cpt}"]);
+			$stmt->bindValue(":commune{$cpt}"    , $valeurBrut[":commune{$cpt}"    ]);
 			$stmt->bindValue(":departement{$cpt}", $valeurBrut[":departement{$cpt}"]);
+			$stmt->bindValue(":latitde{$cpt}"    , $valeurBrut[":latitde{$cpt}"    ]);
+			$stmt->bindValue(":longitude{$cpt}"  , $valeurBrut[":longitude{$cpt}"  ]);
+			$stmt->bindValue(":dis{$cpt}"        , $valeurBrut[":dis{$cpt}"        ]);
 		}
 
 		$stmt->execute();
@@ -138,4 +150,14 @@ class LocalisationRepository
 		if ($row) { return $row['localisation_id']; }
 		return -1;
 	}
+
+
+	public function getMaxDistance()
+	{
+		$sql = "SELECT MAX(localisation_distance) FROM LOCALISATION";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $row['MAX(localisation_distance)'];
 	}
+}

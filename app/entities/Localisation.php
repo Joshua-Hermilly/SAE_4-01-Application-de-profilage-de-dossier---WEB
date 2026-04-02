@@ -7,11 +7,14 @@ class Localisation
 	/*---------------------------------*/
 	public function __construct
 	(
-		private int    $localisation_id,
+		private int     $localisation_id,
 		private ?string $localisation_pays,
 		private ?string $localisation_code_postal,
 		private ?string $localisation_commune,
-		private ?string $localisation_departement
+		private ?string $localisation_departement,
+		private ?float  $localisation_latitude,
+		private ?float  $localisation_longitude,
+		private ?float  $localisation_distance
 	) {}
 
 	/*---------------------------------*/
@@ -42,6 +45,21 @@ class Localisation
 		return $this->localisation_departement;
 	}
 
+	public function getLocalisationLatitude(): ?float
+	{
+		return $this->localisation_latitude;
+	}
+
+	public function getLocalisationLongitude(): ?float
+	{
+		return $this->localisation_longitude;
+	}
+
+	public function getLocalisationDistance(): ?float
+	{
+		return $this->localisation_distance;
+	}
+
 	/*---------------------------------*/
 	/*            Setters              */
 	/*---------------------------------*/
@@ -68,5 +86,20 @@ class Localisation
 	public function setLocalisationDepartement($localisation_departement): void
 	{
 		$this->localisation_departement = $localisation_departement;
+	}
+
+	public function setLocalisationLatitude($localisation_latitude): void
+	{
+		$this->localisation_latitude = $localisation_latitude;
+	}
+
+	public function setLocalisationLongitude($localisation_longitude): void
+	{
+		$this->localisation_longitude = $localisation_longitude;
+	}
+
+	public function setLocalisationDistance($localisation_distance): void
+	{
+		$this->localisation_distance = $localisation_distance;
 	}
 }

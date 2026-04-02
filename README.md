@@ -47,8 +47,8 @@ projet/
 L'architecture MVC sépare l'application en 3 couches :
 
 1. **Modèle** : Gestion des données (entités, repositories, services)
-2. **Vue** : Affichage et présentation
-3. **Contrôleur** : Coordination entre modèle et vue
+   2. **Vue** : Affichage et présentation
+   3. **Contrôleur** : Coordination entre modèle et vue
 
 ```
 Utilisateur → Point d'entrée (public/*.php)
@@ -94,9 +94,9 @@ $this->view('example', 'Titre de la page', [
 
 **Fonctionnement** :
 1. Crée un `FilesystemLoader` pointant sur `app/views/`
-2. Instancie `\Twig\Environment` avec ce loader
-3. Appelle `$twig->render('example.html.twig', $data + ['title' => $title])`
-4. Les clés du tableau deviennent des variables Twig dans le template
+   2. Instancie `\Twig\Environment` avec ce loader
+   3. Appelle `$twig->render('example.html.twig', $data + ['title' => $title])`
+   4. Les clés du tableau deviennent des variables Twig dans le template
 
 ```php
 // Dans le contrôleur
@@ -278,8 +278,8 @@ class ExampleController extends Controller
 
 **Principe** :
 - Le contrôleur **orchestre**, il ne contient pas de logique métier
-- Aucune requête SQL dans un contrôleur
-- Aucune logique d'affichage dans un contrôleur
+  - Aucune requête SQL dans un contrôleur
+  - Aucune logique d'affichage dans un contrôleur
 
 ---
 
@@ -482,9 +482,9 @@ Ou avec le bloc `else` du `for` (syntaxe Twig native) :
 ## Stack technique
 
 - **PHP** >= 8.0
-- **Twig** ^3.0 (moteur de templates)
-- **Bootstrap** 5.3.8
-- **Composer** (gestion des dépendances)
+  - **Twig** ^3.0 (moteur de templates)
+  - **Bootstrap** 5.3.8
+  - **Composer** (gestion des dépendances)
 
 ## Installation
 
