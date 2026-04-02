@@ -27,7 +27,6 @@ class DossierFiltreService
 			'sections' => [
 				'candidat' => [
 					'label'   => 'Candidat',
-					'join'    => null,
 					'filters' => [
 						[
 							'name'        => 'civilite',
@@ -57,7 +56,6 @@ class DossierFiltreService
 				],
 				'diplome' => [
 					'label'   => 'Diplôme / Bac',
-					'join'    => 'LEFT JOIN DIPLOME ON DIPLOME.diplome_id = CANDIDAT.diplome_id',
 					'filters' => [
 						[
 							'name'     => 'type_bac',
@@ -69,8 +67,7 @@ class DossierFiltreService
 					],
 				],
 				'serie_bac' => [
-					'label'   => 'Série de Bac (Techno/Pro)',
-					'join'    => 'LEFT JOIN DIPLOME ON DIPLOME.diplome_id = CANDIDAT.diplome_id',
+					'label'   => 'Série de Bac',
 					'filters' => [
 						[
 							'name'     => 'serie_bac',
@@ -83,7 +80,6 @@ class DossierFiltreService
 				],
 				'specialites' => [
 					'label'   => 'Spécialités',
-					'join'    => 'LEFT JOIN SPECIALITE ON SPECIALITE.diplome_id = CANDIDAT.diplome_id',
 					'filters' => [
 						[
 							'name'     => 'specialite_spe',
@@ -92,11 +88,17 @@ class DossierFiltreService
 							'type'     => 'multiselect',
 							'options'  => [],
 						],
+						[
+							'name'     => 'specialite_opt',
+							'label'    => 'Options',
+							'column'   => 'SPECIALITE.specialite_opt1',
+							'type'     => 'multiselect',
+							'options'  => [],
+						],
 					],
 				],
 				'notes' => [
 					'label'   => 'Notes',
-					'join'    => null,
 					'filters' => [
 						[
 							'name'     => 'note_lycee',
@@ -129,7 +131,6 @@ class DossierFiltreService
 				],
 				'etablissement' => [
 					'label'   => 'Établissement',
-					'join'    => 'LEFT JOIN ETABLISSEMENT ON ETABLISSEMENT.etablissement_id = CANDIDAT.etablissement_id LEFT JOIN LOCALISATION ON LOCALISATION.localisation_id = ETABLISSEMENT.localisation_id',
 					'filters' => [
 						[
 							'name'     => 'departement',

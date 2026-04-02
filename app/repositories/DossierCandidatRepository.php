@@ -136,6 +136,19 @@ class DossierCandidatRepository
 			$conditions[] = '(' . implode(' OR ', $specialiteParts) . ')';
 		}
 
+		if (!empty($filters['specialite_opt']))
+		{
+			$options = is_array($filters['specialite_opt']) ? $filters['specialite_opt'] : [$filters['specialite_opt']];
+			$optionParts = [];
+			foreach ($options as $index => $option)
+			{
+				$param = ':option_' . $index;
+				$optionParts[] = "(COALESCE(S.specialite_opt1, '') = $param OR COALESCE(S.specialite_opt2, '') = $param)";
+				$params[$param] = $option;
+			}
+			$conditions[] = '(' . implode(' OR ', $optionParts) . ')';
+		}
+
 		foreach (['note_lycee', 'note_fiche', 'note_globale'] as $noteFilter)
 		{
 			$minKey = $noteFilter . '_min';

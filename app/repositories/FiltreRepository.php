@@ -42,6 +42,10 @@ class FiltreRepository
 				'sql'   => $this->unionDistinctWithSerieCode(),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
+			'specialite_opt' => [
+				'sql'   => $this->unionDistinctOptionsWithSerieCode(),
+				'label' => static fn(array $row): ?string => $row['val'] ?? null,
+			],
 			'departement'     => [
 				'sql'   => $this->selectDistinct('LOCALISATION', 'localisation_departement'),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
@@ -52,17 +56,6 @@ class FiltreRepository
 	private function selectDistinct(string $table, string $column): string
 	{
 		return "SELECT DISTINCT CAST($column AS TEXT) AS val FROM $table WHERE $column IS NOT NULL ORDER BY CAST($column AS TEXT)";
-	}
-
-	private function unionDistinct(string $table, array $columns): string
-	{
-		$selects = [];
-		foreach ($columns as $column)
-		{
-			$selects[] = "SELECT CAST($column AS TEXT) AS val FROM $table WHERE $column IS NOT NULL";
-		}
-		$union = implode(' UNION ALL ', $selects);
-		return "SELECT DISTINCT TRIM(val) AS val FROM ($union) AS all_specs WHERE TRIM(val) <> '' ORDER BY val";
 	}
 
 	private function unionDistinctWithSerieCode(): string
@@ -85,9 +78,26 @@ class FiltreRepository
 		";
 	}
 
-	/**
-	 * Hydrate les filtres select/multiselect avec leurs options
-	 */
+	private function unionDistinctOptionsWithSerieCode(): string
+	{
+		return "
+			SELECT DISTINCT 
+				TRIM(SPECIALITE.specialite_opt1) AS val,
+				DIPLOME.diplome_serie_code AS code
+			FROM SPECIALITE
+			JOIN DIPLOME ON SPECIALITE.specialite_id = DIPLOME.specialite_id
+			WHERE TRIM(SPECIALITE.specialite_opt1) IS NOT NULL AND TRIM(SPECIALITE.specialite_opt1) <> ''
+			UNION ALL
+			SELECT DISTINCT 
+				TRIM(SPECIALITE.specialite_opt2) AS val,
+				DIPLOME.diplome_serie_code AS code
+			FROM SPECIALITE
+			JOIN DIPLOME ON SPECIALITE.specialite_id = DIPLOME.specialite_id
+			WHERE TRIM(SPECIALITE.specialite_opt2) IS NOT NULL AND TRIM(SPECIALITE.specialite_opt2) <> ''
+			ORDER BY val, code
+		";
+	}
+
 	public function hydrateSelectFilters(array &$config): void
 	{
 		$optionQueries = $this->getOptionQueries();
@@ -108,8 +118,8 @@ class FiltreRepository
 					if ($label === null || $label === '') { continue; }
 					$value = $row['val'] ?? $label;
 					
-					// Si la requête retourne un code (comme pour specialite_spe), créer un objet
-					if (isset($row['code']) && $name === 'specialite_spe')
+					// Si la requête retourne un code (comme pour specialite_spe / specialite_opt), créer un objet
+					if (isset($row['code']) && ($name === 'specialite_spe' || $name === 'specialite_opt'))
 					{
 						// Utiliser une clé unique valeur-code pour éviter les doublons
 						$uniqueKey = $value . '|' . $row['code'];
