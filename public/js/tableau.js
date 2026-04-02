@@ -268,6 +268,12 @@ btnFin .addEventListener( "click", ()      => getDossierCandidat(   btnFin.value
 if (filterForm)
 {
 	filterForm.addEventListener('submit', function (event) {
+		const bouton = event.submitter;
+		if (bouton && bouton.dataset && bouton.dataset.action === 'creer-groupe')
+		{
+			return;
+		}
+
 		event.preventDefault();
 		filtresCourant = serialiserFiltres();
 		getDossierCandidat(1, filtresCourant);

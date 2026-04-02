@@ -109,8 +109,21 @@
 							{% endfor %}
 
 							<div class="d-grid gap-2 mt-3">
-								<button type="submit" class="btn btn-primary">Appliquer</button>
-								<button type="button" class="btn btn-outline-light">Créer un groupe</button>
+								<button
+									type="submit"
+									class="btn btn-primary"
+									data-action="appliquer-filtres">
+									Appliquer
+								</button>
+								<button
+									type="submit"
+									class="btn btn-outline-light"
+									data-action="creer-groupe"
+									formaction="creerGroupe.php"
+									formmethod="POST"
+									formnovalidate>
+									Créer un groupe
+								</button>
 							</div>
 
 						</form>
