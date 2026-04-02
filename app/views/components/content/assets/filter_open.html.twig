@@ -137,8 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cacher le bloc ET la section au chargement
     function hideSpecialiteSection() {
-        if (specialiteBlock) specialiteBlock.style.display = "none";
-        if (specialiteSection) specialiteSection.style.display = "none";
+		if (specialiteBlock) specialiteBlock.style.display = "none";
         specialiteCheckboxes.forEach(cb => {
             cb.checked = false;
             const container = cb.closest("label") || cb.parentElement;
@@ -147,8 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showSpecialiteSection() {
-        if (specialiteBlock) specialiteBlock.style.display = "block";
-        if (specialiteSection) specialiteSection.style.display = "block";
+		if (specialiteBlock) specialiteBlock.style.display = "block";
     }
 
     // Init au chargement

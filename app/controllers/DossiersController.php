@@ -6,27 +6,13 @@ require_once '../app/repositories/FiltreRepository.php';
 
 class DossiersController extends Controller
 {
-	private const FILTER_CONFIG_VERSION = '2';
-
 	public function dossiers(): void
 	{
 		if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
 		$filtreRepo    = new FiltreRepository();
-		$dataVersion   = $_SESSION['data_version'] ?? '0';
-		$cacheVersion  = $dataVersion . '|' . self::FILTER_CONFIG_VERSION;
-		$filtreCache   = $_SESSION['filter_cache'] ?? null;
-
-		if (is_array($filtreCache) && ($filtreCache['version'] ?? '') === $cacheVersion) { $filterConfig = $filtreCache['data']; }
-		else
-		{
-			$filterConfig = $this->buildFilterConfig();
-			$filtreRepo->hydrateSelectFilters($filterConfig);
-			$_SESSION['filter_cache'] = [
-				'version' => $cacheVersion,
-				'data'    => $filterConfig,
-			];
-		}
+		$filterConfig = $this->buildFilterConfig();
+		$filtreRepo->hydrateSelectFilters($filterConfig);
 
 		$this->view('pages/dossiers', 'Dossiers', ['filterConfig' => $filterConfig]);
 	}
@@ -38,7 +24,6 @@ class DossiersController extends Controller
 			'sections' => [
 				'candidat' => [
 					'label'   => 'Candidat',
-					'join'    => null,
 					'filters' => [
 						[
 							'name'        => 'civilite',
@@ -68,7 +53,6 @@ class DossiersController extends Controller
 				],
 				'diplome' => [
 					'label'   => 'Diplôme / Bac',
-					'join'    => 'LEFT JOIN DIPLOME ON DIPLOME.diplome_id = CANDIDAT.diplome_id',
 					'filters' => [
 						[
 							'name'     => 'type_bac',
@@ -81,7 +65,6 @@ class DossiersController extends Controller
 				],
 				'serie_bac' => [
 					'label'   => 'Série de Bac (Techno/Pro)',
-					'join'    => 'LEFT JOIN DIPLOME ON DIPLOME.diplome_id = CANDIDAT.diplome_id',
 					'filters' => [
 						[
 							'name'     => 'serie_bac',
@@ -89,13 +72,7 @@ class DossiersController extends Controller
 							'column'   => 'DIPLOME.diplome_serie_libelle',
 							'type'     => 'select',
 							'options'  => [],
-							],
-					],
-				],
-				'specialites' => [
-					'label'   => 'Spécialités',
-					'join'    => 'LEFT JOIN SPECIALITE ON SPECIALITE.diplome_id = CANDIDAT.diplome_id',
-					'filters' => [
+						],
 						[
 							'name'     => 'specialite_spe',
 							'label'    => 'Spécialités',
@@ -103,12 +80,6 @@ class DossiersController extends Controller
 							'type'     => 'multiselect',
 							'options'  => [],
 						],
-					],
-				],
-				'options' => [
-					'label'   => 'Options',
-					'join'    => 'LEFT JOIN SPECIALITE ON SPECIALITE.diplome_id = CANDIDAT.diplome_id',
-					'filters' => [
 						[
 							'name'     => 'specialite_opt',
 							'label'    => 'Options',
@@ -120,7 +91,6 @@ class DossiersController extends Controller
 				],
 				'notes' => [
 					'label'   => 'Notes',
-					'join'    => null,
 					'filters' => [
 						[
 							'name'     => 'note_lycee',
@@ -153,7 +123,6 @@ class DossiersController extends Controller
 				],
 				'etablissement' => [
 					'label'   => 'Établissement',
-					'join'    => 'LEFT JOIN ETABLISSEMENT ON ETABLISSEMENT.etablissement_id = CANDIDAT.etablissement_id LEFT JOIN LOCALISATION ON LOCALISATION.localisation_id = ETABLISSEMENT.localisation_id',
 					'filters' => [
 						[
 							'name'     => 'departement',
