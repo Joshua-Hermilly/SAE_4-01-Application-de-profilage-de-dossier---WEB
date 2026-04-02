@@ -250,7 +250,6 @@ async function getDossierCandidat( indexPage, filters = filtresCourant )
 	} catch (error) { console.error('Erreur :', error); }
 }
 
-
 async function getGroupes( indexPage )
 {
 	try
