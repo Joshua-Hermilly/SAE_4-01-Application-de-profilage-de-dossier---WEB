@@ -2,6 +2,8 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+require_once '../app/services/LocalisationService.php';
+
 require_once '../app/entities/Candidat.php';
 require_once '../app/entities/Etablissement.php';
 require_once '../app/entities/Localisation.php';
@@ -72,6 +74,10 @@ class ImportService
 	private array $specialites;
 	private array $candidats;
 
+	/*-------------------------------*/
+	/* Service  localisation         */
+	/*-------------------------------*/
+	private $serviceLocalisation;
 
 	/*-------------------------------*/
 	/* Construct                     */
@@ -91,6 +97,8 @@ class ImportService
 		$this->formationsSup  = $this->formationsSupRepository->findAll();
 		$this->specialites    = $this->specialiteRepository   ->findAll();
 		$this->candidats      = $this->candidatRepository     ->findAll();
+
+		$this->serviceLocalisation = new LocalisationService();
 	}
 
 	/*-------------------------------*/
@@ -126,6 +134,11 @@ class ImportService
 		// Insertion en base
 		$this->localisationRepository ->creates($this->localisations );
 		$this->etablissementRepository->creates($this->etablissements);
+
+		// dont au service
+		$this->serviceLocalisation    ->addAll($this->etablissements);
+		$this->serviceLocalisation    ->export();
+
 		$this->formationsSupRepository->creates($this->formationsSup );
 		$this->specialiteRepository   ->creates($this->specialites   );
 		$this->diplomeRepository      ->creates($this->diplomes      );
@@ -196,12 +209,14 @@ class ImportService
 		}
 
 		$this->etablissements[] = $etablissement;
+		//$this->serviceLocalisation->addEtablisement($etablissement);
 		return $etablissement;
 	}
 
 	private function createDpm(array $ligne, $specialite): ?Diplome
 	{
-		$diplome = new Diplome(
+		$diplome = new Diplome
+		(
 			0,
 			$this->getCol($ligne, 'diplome_type_code' ),
 			$this->getCol($ligne, 'diplome_type_lib'  ),

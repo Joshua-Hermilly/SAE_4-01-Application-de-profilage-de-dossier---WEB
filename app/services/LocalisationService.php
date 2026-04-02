@@ -39,19 +39,28 @@ class LocalisationService
 	}
 
 	/*-------------------------------*/
-	/*  Ajout d'un établissement     */
+	/*  Ajout d'Etablissement        */
 	/*-------------------------------*/
+	public function addAll(array $etablissements)
+	{
+		foreach ($etablissements as $etablissement)
+		{
+			$this->addEtablisement($etablissement);
+		}
+	}
+
 	public function addEtablisement(Etablissement $etablissement): void
 	{
 		$localisation = $etablissement->getLocalisation();
 
-		$this->file->fputcsv([
-			$etablissement->getEtablissementId()        ,
-			$etablissement->getEtablissementNom()       ,
-			$localisation ->getLocalisationPays()       ,
+		$this->file->fputcsv
+		([
+			$etablissement->getEtablissementNom       (),
+			$etablissement->getEtablissementId        (),
+			$localisation ->getLocalisationPays       (),
 			$localisation ->getLocalisationDepartement(),
-			$localisation ->getLocalisationCodePostal() ,
-			$localisation ->getLocalisationCommune()    ,
+			$localisation ->getLocalisationCodePostal (),
+			$localisation ->getLocalisationCommune    (),
 		]);
 	}
 
