@@ -251,11 +251,17 @@ class ImportService
 		$filiere = $f1 !== '' ? $f1 : ($f2 !== '' ? $f2 : null);
 		if ($filiere === null) return null;
 
-		$formationSup = new FormationSup(0, $filiere);
+		$formationSup = new FormationSup
+		(
+			0,
+			$this->getCol($ligne, 'filiere'  ),
+			$this->getCol($ligne, 'formation')
+		);
 
 		foreach ($this->formationsSup as $fms)
 		{
-			if ( $fms->getFormationNom() === $formationSup->getFormationNom() )
+			if ( $fms->getFormationNom() === $formationSup->getFormationNom() &&
+			     $fms->getFormationLib() === $formationSup->getFormationLib()   )
 			{
 				return $fms;
 			}

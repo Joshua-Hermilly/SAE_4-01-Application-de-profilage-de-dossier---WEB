@@ -7,8 +7,9 @@ class FormationSup
 	/*-------------------------------*/
 	function __construct
 	(
-		private int    $formation_id,
-		private string $formation_nom,
+		private  int    $formation_id,
+		private ?string $formation_nom,
+		private ?string $formation_lib,
 	) {}
 
 	/*-------------------------------*/
@@ -19,9 +20,14 @@ class FormationSup
 		return $this->formation_id;
 	}
 
-	public function getFormationNom(): string
+	public function getFormationNom(): ?string
 	{
 		return $this->formation_nom;
+	}
+
+	public function getFormationLib(): ?string
+	{
+		return $this->formation_lib;
 	}
 
 	/*-------------------------------*/
@@ -35,5 +41,10 @@ class FormationSup
 	public function setFormationNom(string $formation_nom): void
 	{
 		$this->formation_nom = $formation_nom;
+	}
+
+	public function setFormationLib(string $formation_lib): void
+	{
+		$this->formation_lib = $formation_lib;
 	}
 }

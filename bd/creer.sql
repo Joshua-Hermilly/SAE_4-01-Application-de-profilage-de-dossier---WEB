@@ -90,7 +90,8 @@ CREATE TABLE DIPLOME
 CREATE TABLE FORMATION_SUP
 (
     formation_id  SERIAL PRIMARY KEY,
-    formation_nom VARCHAR(255) NOT NULL
+    formation_nom VARCHAR(255)  NULL,
+    formation_lib VARCHAR(255)  NULL
 );
 
 -- Table CANDIDAT
@@ -113,10 +114,10 @@ CREATE TABLE CANDIDAT
     etablissement_id            INT,
     formation_id                INT,
     groupe_id                   INT,
-    FOREIGN KEY (diplome_id) REFERENCES DIPLOME (diplome_id),
+    FOREIGN KEY (diplome_id      ) REFERENCES DIPLOME       (diplome_id      ),
     FOREIGN KEY (etablissement_id) REFERENCES ETABLISSEMENT (etablissement_id),
-    FOREIGN KEY (formation_id) REFERENCES FORMATION_SUP (formation_id),
-    FOREIGN KEY (groupe_id) REFERENCES GROUPE (groupe_id)
+    FOREIGN KEY (formation_id    ) REFERENCES FORMATION_SUP (formation_id    ),
+    FOREIGN KEY (groupe_id       ) REFERENCES GROUPE        (groupe_id       )
 );
 
 -- Table FILTRE

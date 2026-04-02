@@ -15,7 +15,7 @@ class Diplome
 
 		// Relation
 		private Specialite $specialite,
-		private ?array     $candidats  = []
+		private ?array     $candidats  = [],
 	) {}
 
 	/*---------------------------------*/
