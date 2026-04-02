@@ -1,5 +1,8 @@
 <?php
 
+require_once '../app/entities/Etablissement.php';
+require_once '../app/entities/Localisation.php';
+
 class LocalisationService
 {
 	/*-------------------------------*/
@@ -16,75 +19,64 @@ class LocalisationService
 	];
 
 	/*-------------------------------*/
-	/* REPOSITORY                    */
+	/* Attributs                     */
 	/*-------------------------------*/
-	private $repoEtablissement;
-	private $repoLocalisation;
+	private \SplTempFileObject      $file;
+	private EtablissementRepository $etablissementRepository;
+	private LocalisationRepository  $localisationRepository;
+
 
 	/*-------------------------------*/
-	/* ENTITY                        */
+	/* CONSTRUCTEUR                  */
 	/*-------------------------------*/
-	private array $etablissements;
-	private array $localisations;
-
-	/*-------------------------------*/
-	/* CONSTRUCT                     */
-	/*-------------------------------*/
-	function __construct()
+	public function __construct()
 	{
-		$this->repoEtablissement = new EtablissementRepository();
-		$this->repoLocalisation  = new LocalisationRepository();
+		$this->file = new \SplTempFileObject();
+		$this->file->fputcsv(self::COLONNE);
+
+		$this->etablissementRepository = new EtablissementRepository();
+		$this->localisationRepository  = new LocalisationRepository();
 	}
 
-	private function CreerLigneEtablissement(): array
+	/*-------------------------------*/
+	/*  Ajout d'un établissement     */
+	/*-------------------------------*/
+	public function addEtablisement(Etablissement $etablissement): void
 	{
-		$rows = [];
-		$etablissements = $this->repoEtablissement->findAll();
+		$localisation = $etablissement->getLocalisation();
 
-		foreach ($etablissements as $etablissement)
+		$this->file->fputcsv([
+			$etablissement->getEtablissementId()        ,
+			$etablissement->getEtablissementNom()       ,
+			$localisation ->getLocalisationPays()       ,
+			$localisation ->getLocalisationDepartement(),
+			$localisation ->getLocalisationCodePostal() ,
+			$localisation ->getLocalisationCommune()    ,
+		]);
+	}
+
+	/*-------------------------------*/
+	/*  Récupérer l'objet fichier    */
+	/*-------------------------------*/
+	public function getCSVFichier(): \SplTempFileObject
+	{
+		$this->file->rewind();
+		return $this->file;
+	}
+
+	/*-------------------------------*/
+	/*  Récupérer la chaîne CSV      */
+	/*-------------------------------*/
+	public function getCSVString(): string
+	{
+		$this->file->rewind();
+		$csv = '';
+		while (!$this->file->eof())
 		{
-			$localisation = $etablissement->getLocalisation();
-			$rows[] = [
-				$etablissement->getEtablissementId()        ,
-				$etablissement->getEtablissementNom()       ,
-				$localisation ->getLocalisationPays()       ,
-				$localisation ->getLocalisationDepartement(),
-				$localisation ->getLocalisationCodePostal() ,
-				$localisation ->getLocalisationCommune()    ,
-			];
+			$line = $this->file->fgets();
+			if ($line === false) { break; }
+			$csv .= $line;
 		}
-
-		return $rows;
-	}
-
-	public function exportAllLocalisationsCSV(): void
-	{
-		$rows = $this->CreerLigneEtablissement();
-		$this->exportCSV($rows);
-	}
-
-	public function getAllLocalisationsCSV(): \SplTempFileObject
-	{
-		$file = new \SplTempFileObject();
-		$file->fputcsv(self::COLONNE);
-
-		foreach ($this->CreerLigneEtablissement() as $row) { $file->fputcsv($row); }
-
-		$file->rewind();
-		return $file;
-	}
-
-	function exportCSV(array $data)
-	{
-		header('Content-Type: text/csv; charset=utf-8');
-		header('Content-Disposition: attachment; filename="localisations.csv"');
-
-		$output = fopen('php://output', 'w');
-		fputcsv($output, self::COLONNE);
-
-		foreach ($data as $row) { fputcsv($output, $row); }
-
-		fclose($output);
-		exit();
+		return $csv;
 	}
 }
