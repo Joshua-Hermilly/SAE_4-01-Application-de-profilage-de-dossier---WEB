@@ -2,21 +2,25 @@
 /* CONSTANTES             */
 /*------------------------*/
 // Tableau
-const tableau  = document.getElementById( "tableau"         );
-const dvErreur = document.getElementById( "erreur"          );
-const page     = document.getElementById( "page"            );
-const trHeader = document.getElementById( "trHead"          );
-const tBody    = document.getElementById( "tBody"           );
+const tableau    = document.getElementById( "tableau"         );
+const dvErreur   = document.getElementById( "erreur"          );
+const vide       = document.getElementById( "vide"            );
+const page       = document.getElementById( "page"            );
+const trHeader   = document.getElementById( "trHead"          );
+const tBody      = document.getElementById( "tBody"           );
+const filterForm = document.getElementById( 'filterForm'      );
 
 // Bouton
 const btnPrc   = document.getElementById( "btnPrc"          );
 const btnSvt   = document.getElementById( "btnSvt"          );
-const pageAct  = document.getElementById( "pageAct"          );
+const pageAct  = document.getElementById( "pageAct"         );
 const btnDeb   = document.getElementById( "btnDeb"          );
 const btnFin   = document.getElementById( "btnFin"          );
 
 // Infos page
 const infos    = document.getElementById( "pagination-info" );
+
+let filtresCourant = {};
 
 
 /*------------------------*/
@@ -29,7 +33,6 @@ function creerHeader( headers, isAdmin )
 	for ( let cpt = 0; cpt < headers.length-1; cpt++ )
 	{
 		th = `<th scope="col" class="border-end">${headers[cpt]}</th>`;
-
 		trHeader.innerHTML+= th;
 	}
 
@@ -56,6 +59,19 @@ function creerTableau( headers, dossiers, isAdmin )
 {
 	tBody.innerHTML  = "";
 
+	if (!Array.isArray(dossiers) || dossiers.length === 0)
+	{
+		const colonneCount = headers.length + (isAdmin ? 1 : 0) - 1;
+		const tr = document.createElement('tr');
+		const td = document.createElement('td');
+		td.colSpan = Math.max(1, colonneCount);
+		td.className = 'text-center text-muted py-4';
+		td.textContent = 'Aucune donnée disponible pour ces filtres.';
+		tr.appendChild(td);
+		tBody.appendChild(tr);
+		return;
+	}
+
 	for ( let cptD = 0; cptD < dossiers.length; cptD++ )
 	{
 		const tr = document.createElement( 'tr' );
@@ -75,15 +91,8 @@ function creerTableau( headers, dossiers, isAdmin )
 					      <span class="badge border border-dark text-dark rounded-2 p-2">${valeur}</span>
 				     </th>`;
 			}
-			else if ( valeur === "NaN" || valeur === "Non définie" )
-			{
-				th = `<th style="color: gray">${valeur}</th>`;
-
-			}
-			else
-			{
-				th = `<th>${valeur}</th>`;
-			}
+			else if ( valeur === "NaN" || valeur === "Non définie" ) { th = `<th style="color: gray">${valeur}</th>`; }
+			else                                                     { th = `<th>${valeur}</th>`;                     }
 
 			tr.innerHTML += th;
 		}
@@ -118,21 +127,41 @@ function creerBtnPage( maxPage, actPage )
 	pageAct.textContent = actPage;
 	pageAct.value       = actPage;
 	btnFin.value        = maxPage;
-	btnSvt.disabled     =  btnPrc.disabled = btnFin.disabled = btnDeb.disabled = false;
-	btnSvt.style.color = "#FFFFFFFF";
-	btnPrc.style.color = "#FFFFFFFF";
+	btnSvt.disabled     = btnPrc.disabled = btnFin.disabled = btnDeb.disabled = false;
+	btnSvt.style.color  = "#FFFFFFFF";
+	btnPrc.style.color  = "#FFFFFFFF";
 
-	console.log(maxPage)
+	console.log(maxPage  )
 	console.log(actPage+1)
 
-	if ( maxPage <= actPage+1  ) {btnSvt.disabled = true; btnSvt.style.color =  "#3f3f3f;"; }
-	if ( actPage ==         1  ) {btnPrc.disabled = true; btnPrc.style.color =  "#3d3b3b;"; }
+	if ( actPage >= maxPage    ) { btnSvt.disabled = true; btnSvt.style.color =  "#3f3f3f;"; }
+	if ( actPage ==         1  ) { btnPrc.disabled = true; btnPrc.style.color =  "#3d3b3b;"; }
 }
 
 function afficherErreur( erreur )
 {
 	dvErreur.textContent   = erreur;
 	dvErreur.style.display = "block";
+}
+
+function serialiserFiltres()
+{
+	if (!filterForm) { return {}; }
+
+	const formData = new FormData(filterForm);
+	const filters = {};
+
+	for (const [key, value] of formData.entries())
+	{
+		if (key === 'page') { continue; }
+
+		const normalizedKey = key.endsWith('[]') ? key.slice(0, -2) : key;
+		if (filters[normalizedKey] === undefined      ) { filters[normalizedKey] = value;                           }
+		else if (Array.isArray(filters[normalizedKey])) { filters[normalizedKey].push(value);                       }
+		else                                            { filters[normalizedKey] = [filters[normalizedKey], value]; }
+	}
+
+	return filters;
 }
 
 function selectionFaite(event)
@@ -189,7 +218,7 @@ function selectionFaite(event)
 /*------------------------*/
 /* Fetch                  */
 /*------------------------*/
-async function getDossierCandidat( indexPage )
+async function getDossierCandidat( indexPage, filters = filtresCourant )
 {
 	try
 	{
@@ -200,7 +229,7 @@ async function getDossierCandidat( indexPage )
 				'Token'       : 'SAE-4.01_WEB_TOKEN',
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ page:indexPage })
+			body: JSON.stringify({ page:indexPage, ...filters })
 		});
 
 		const donnees = await response.json();
@@ -215,14 +244,8 @@ async function getDossierCandidat( indexPage )
 			return;
 		}
 
-		if ( donnees['dossiers'] !== null )
-		{
-			tableau.style.display = "";
-		}
-		else
-		{
-			document.getElementById( "vide"    ).style.display = "block";
-		}
+		vide.style.display    = "none";
+		tableau.style.display = "";
 		creerHeader ( donnees['headers' ], donnees['isAdmin' ]                     );
 		creerTableau( donnees['headers' ], donnees['dossiers'], donnees['isAdmin'] );
 		creerBtnPage( donnees['maxPage' ], donnees['actPage' ]                     );
@@ -236,8 +259,17 @@ getDossierCandidat(1);
 /* Event                  */
 /*------------------------*/
 // tBody.addEventListener ( "click", () => getDossierCandidat(             1) );
-tableau.addEventListener( "click",(event) => selectionFaite    (event)  );
-btnPrc.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value - 1) );
-btnSvt.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value + 1) );
-btnDeb.addEventListener( "click", ()    => getDossierCandidat(   1) );
-btnFin.addEventListener( "click", ()    => getDossierCandidat(   btnFin.value) );
+tableau.addEventListener( "click", (event) => selectionFaite    (event                             ) );
+btnPrc .addEventListener( "click", ()      => getDossierCandidat(+pageAct.value - 1, filtresCourant) );
+btnSvt .addEventListener( "click", ()      => getDossierCandidat(+pageAct.value + 1, filtresCourant) );
+btnDeb .addEventListener( "click", ()      => getDossierCandidat(   1, filtresCourant              ) );
+btnFin .addEventListener( "click", ()      => getDossierCandidat(   btnFin.value, filtresCourant   ) );
+
+if (filterForm)
+{
+	filterForm.addEventListener('submit', function (event) {
+		event.preventDefault();
+		filtresCourant = serialiserFiltres();
+		getDossierCandidat(1, filtresCourant);
+	});
+}

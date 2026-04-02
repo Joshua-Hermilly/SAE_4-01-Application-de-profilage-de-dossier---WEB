@@ -27,46 +27,56 @@ class DossierGetController extends Controller
 	/*-------------------------------*/
 	public function getDossierCandidat()
 	{
-		// Token valide et saisie ?
-		if ( !$this->validerToken() )
+		if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+		{
+			$this->json(['erreur' => 'Méthode non autorisée'], 405);
+			return;
+		}
+
+		if (session_status() === PHP_SESSION_NONE)  session_start();
+		if (empty($_SESSION['compte']))
+		{
+			$this->json(['erreur' => 'Non authentifié'], 401);
+			return;
+		}
+
+		$serviceDossier = new DossierCandidatService();
+		$contentType    = $_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '';
+		$isJson         = stripos($contentType, 'application/json') !== false;
+		$data           = $isJson ? (json_decode(file_get_contents('php://input'), true) ?? []) : $_POST;
+		$page           = isset($data['page']) ? (int) $data['page'] : 1;
+		$filters        = $this->extractFilters($data);
+		$isAdmin        = false;
+
+		if ($isJson && !$this->validerToken())
 		{
 			$this->json(['erreur' => 'Token invalide'], 401);
 			return;
 		}
 
-		$serviceDossier = new DossierCandidatService();
-		$data           = json_decode(file_get_contents('php://input'), true);
-		$page           = $data['page'] ?? null;
-		$isAdmin        = false;
-
-		// Page définie ?
-		if ( !$page )
-		{
-			$this->json(['erreur' => 'La clée page doit être indiquée'], 401);
-			return;
-		}
-
 		// Page valide ?
-		if ( $page < 1 || $page > $serviceDossier->maxPage() )
+		if ( $page < 1 ) { $page = 1; }
+
+		$maxPage = $serviceDossier->maxPage($filters);
+		if ( $page > $maxPage )
 		{
 			$this->json(['erreur' => "Aucune données disponible. Merci d'insérer des données ou de contacter un administrateur."]);
 			return;
 		}
 
 		// Il est admin ?
-		if (session_status() === PHP_SESSION_NONE)  session_start();
-		if ( isset($_SESSION['compte']) && $_SESSION['compte']->getCompteIsAdmin())
+		if ( $_SESSION['compte']->getCompteIsAdmin())
 		{
 			$isAdmin = true;
 		}
 
-		$this->dossierCandidats = $serviceDossier->findAtPageDossierCandidat( $page );
+		$this->dossierCandidats = $serviceDossier->findAtPageDossierCandidat($page, $filters);
 		$this->json
 		([
 			'isAdmin'  => $isAdmin,
 			'headers'  => $this          ->getHeader(),
 			'dossiers' => $this          ->dossierCandidats,
-			'maxPage'  => $serviceDossier->maxPage(),
+			'maxPage'  => $maxPage,
 			'actPage'  => $page
 		]);
 	}
@@ -78,6 +88,13 @@ class DossierGetController extends Controller
 	{
 		$token = $_SERVER['HTTP_TOKEN'] ?? '';
 		return $token === $this->TOKEN;
+	}
+
+	private function extractFilters(array $data): array
+	{
+		unset($data['page']);
+		unset($data['_token']);
+		return $data;
 	}
 
 	private function getHeader()
