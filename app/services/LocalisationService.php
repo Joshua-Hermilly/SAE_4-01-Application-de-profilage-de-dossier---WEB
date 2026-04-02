@@ -21,7 +21,7 @@ class LocalisationService
 	/*-------------------------------*/
 	/* Attributs                     */
 	/*-------------------------------*/
-	private \SplTempFileObject      $file;
+	private \SplTempFileObject      $fichierCsv;
 	private EtablissementRepository $etablissementRepository;
 	private LocalisationRepository  $localisationRepository;
 
@@ -31,8 +31,8 @@ class LocalisationService
 	/*-------------------------------*/
 	public function __construct()
 	{
-		$this->file = new \SplTempFileObject();
-		$this->file->fputcsv(self::COLONNE);
+		$this->fichierCsv = new \SplTempFileObject();
+		$this->creerLigneCSV(self::COLONNE);
 
 		$this->etablissementRepository = new EtablissementRepository();
 		$this->localisationRepository  = new LocalisationRepository();
@@ -43,20 +43,17 @@ class LocalisationService
 	/*-------------------------------*/
 	public function addAll(array $etablissements)
 	{
-		foreach ($etablissements as $etablissement)
-		{
-			$this->addEtablisement($etablissement);
-		}
+		foreach ($etablissements as $etablissement) { $this->addEtablisement($etablissement); }
 	}
 
 	public function addEtablisement(Etablissement $etablissement): void
 	{
 		$localisation = $etablissement->getLocalisation();
 
-		$this->file->fputcsv
+		$this->creerLigneCSV
 		([
-			$etablissement->getEtablissementNom       (),
 			$etablissement->getEtablissementId        (),
+			$etablissement->getEtablissementNom       (),
 			$localisation ->getLocalisationPays       (),
 			$localisation ->getLocalisationDepartement(),
 			$localisation ->getLocalisationCodePostal (),
@@ -69,8 +66,8 @@ class LocalisationService
 	/*-------------------------------*/
 	public function getCSVFichier(): \SplTempFileObject
 	{
-		$this->file->rewind();
-		return $this->file;
+		$this->fichierCsv->rewind();
+		return $this->fichierCsv;
 	}
 
 	/*-------------------------------*/
@@ -78,15 +75,32 @@ class LocalisationService
 	/*-------------------------------*/
 	public function getCSVString(): string
 	{
-		$this->file->rewind();
-		$csv = '';
-		while (!$this->file->eof())
+		$this->fichierCsv->rewind();
+		$csvTexte = '';
+		while (!$this->fichierCsv->eof())
 		{
-			$line = $this->file->fgets();
-			if ($line === false) { break; }
-			$csv .= $line;
+			$ligne = $this->fichierCsv->fgets();
+			if ($ligne === false) { break; }
+			$csvTexte .= $ligne;
 		}
-		return $csv;
+		return $csvTexte;
+	}
+
+	/*-------------------------------*/
+	/*  Écriture d'une ligne CSV     */
+	/*-------------------------------*/
+	private function creerLigneCSV(array $ligneDonnees): void
+	{
+		$champsEchappes = [];
+		foreach ($ligneDonnees as $champ)
+		{
+			$champ = (string) $champ;
+			$champ = str_replace('"', '""', $champ);
+			if (strpbrk($champ, ",\r\n") !== false) { $champ = '"' . $champ . '"'; }
+			$champsEchappes[] = $champ;
+		}
+		$ligneCsv = implode(',', $champsEchappes) . "\r\n";
+		$this->fichierCsv->fwrite($ligneCsv);
 	}
 
 	/*-------------------------------*/
