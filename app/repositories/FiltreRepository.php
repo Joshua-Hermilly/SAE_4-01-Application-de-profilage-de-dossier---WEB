@@ -42,6 +42,10 @@ class FiltreRepository
 				'sql'   => $this->unionDistinctWithSerieCode(),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
+			'specialite_opt' => [
+				'sql'   => $this->unionOptionsWithSerieCode(),
+				'label' => static fn(array $row): ?string => $row['val'] ?? null,
+			],
 			'departement'     => [
 				'sql'   => $this->selectDistinct('LOCALISATION', 'localisation_departement'),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
@@ -72,15 +76,35 @@ class FiltreRepository
 				TRIM(SPECIALITE.specialite_spe1) AS val,
 				DIPLOME.diplome_serie_code AS code
 			FROM SPECIALITE
-			JOIN DIPLOME ON SPECIALITE.diplome_id = DIPLOME.diplome_id
+			JOIN DIPLOME ON SPECIALITE.specialite_id = DIPLOME.specialite_id
 			WHERE TRIM(SPECIALITE.specialite_spe1) IS NOT NULL AND TRIM(SPECIALITE.specialite_spe1) <> ''
 			UNION ALL
 			SELECT DISTINCT 
 				TRIM(SPECIALITE.specialite_spe2) AS val,
 				DIPLOME.diplome_serie_code AS code
 			FROM SPECIALITE
-			JOIN DIPLOME ON SPECIALITE.diplome_id = DIPLOME.diplome_id
+			JOIN DIPLOME ON SPECIALITE.specialite_id = DIPLOME.specialite_id
 			WHERE TRIM(SPECIALITE.specialite_spe2) IS NOT NULL AND TRIM(SPECIALITE.specialite_spe2) <> ''
+			ORDER BY val, code
+		";
+	}
+
+	private function unionOptionsWithSerieCode(): string
+	{
+		return "
+			SELECT DISTINCT
+				TRIM(SPECIALITE.specialite_opt1) AS val,
+				DIPLOME.diplome_serie_code AS code
+			FROM SPECIALITE
+			JOIN DIPLOME ON SPECIALITE.specialite_id = DIPLOME.specialite_id
+			WHERE TRIM(SPECIALITE.specialite_opt1) IS NOT NULL AND TRIM(SPECIALITE.specialite_opt1) <> ''
+			UNION ALL
+			SELECT DISTINCT
+				TRIM(SPECIALITE.specialite_opt2) AS val,
+				DIPLOME.diplome_serie_code AS code
+			FROM SPECIALITE
+			JOIN DIPLOME ON SPECIALITE.specialite_id = DIPLOME.specialite_id
+			WHERE TRIM(SPECIALITE.specialite_opt2) IS NOT NULL AND TRIM(SPECIALITE.specialite_opt2) <> ''
 			ORDER BY val, code
 		";
 	}
@@ -109,7 +133,7 @@ class FiltreRepository
 					$value = $row['val'] ?? $label;
 					
 					// Si la requête retourne un code (comme pour specialite_spe), créer un objet
-					if (isset($row['code']) && $name === 'specialite_spe')
+					if (isset($row['code']) && ($name === 'specialite_spe' || $name === 'specialite_opt'))
 					{
 						// Utiliser une clé unique valeur-code pour éviter les doublons
 						$uniqueKey = $value . '|' . $row['code'];

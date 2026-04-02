@@ -6,21 +6,24 @@ require_once '../app/repositories/FiltreRepository.php';
 
 class DossiersController extends Controller
 {
+	private const FILTER_CONFIG_VERSION = '2';
+
 	public function dossiers(): void
 	{
 		if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
 		$filtreRepo    = new FiltreRepository();
 		$dataVersion   = $_SESSION['data_version'] ?? '0';
+		$cacheVersion  = $dataVersion . '|' . self::FILTER_CONFIG_VERSION;
 		$filtreCache   = $_SESSION['filter_cache'] ?? null;
 
-		if (is_array($filtreCache) && ($filtreCache['version'] ?? '') === $dataVersion) { $filterConfig = $filtreCache['data']; }
+		if (is_array($filtreCache) && ($filtreCache['version'] ?? '') === $cacheVersion) { $filterConfig = $filtreCache['data']; }
 		else
 		{
 			$filterConfig = $this->buildFilterConfig();
 			$filtreRepo->hydrateSelectFilters($filterConfig);
 			$_SESSION['filter_cache'] = [
-				'version' => $dataVersion,
+				'version' => $cacheVersion,
 				'data'    => $filterConfig,
 			];
 		}
@@ -97,6 +100,19 @@ class DossiersController extends Controller
 							'name'     => 'specialite_spe',
 							'label'    => 'Spécialités',
 							'column'   => 'SPECIALITE.specialite_spe1',
+							'type'     => 'multiselect',
+							'options'  => [],
+						],
+					],
+				],
+				'options' => [
+					'label'   => 'Options',
+					'join'    => 'LEFT JOIN SPECIALITE ON SPECIALITE.diplome_id = CANDIDAT.diplome_id',
+					'filters' => [
+						[
+							'name'     => 'specialite_opt',
+							'label'    => 'Options',
+							'column'   => 'SPECIALITE.specialite_opt1',
 							'type'     => 'multiselect',
 							'options'  => [],
 						],

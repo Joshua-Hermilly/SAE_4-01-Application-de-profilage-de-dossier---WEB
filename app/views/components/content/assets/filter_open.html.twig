@@ -43,7 +43,7 @@
 																{% endfor %}
 															</select>
 														{% elseif filter.type == 'multiselect' %}
-															{% if filter.name == 'specialite_spe' %}
+															{% if filter.name == 'specialite_spe' or filter.name == 'specialite_opt' %}
 															<div id="specialite-checkboxes" class="list-group list-group-flush">
 																{% for option_key, option_data in filter.options %}
 																	{% if option_data is iterable %}
