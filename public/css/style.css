@@ -1,22 +1,23 @@
 :root {
-	--gris-fond-assets     : #242423;
-	--gris-select-assets   : #343533;
+	--gris-fond-assets: #242423;
+	--gris-select-assets: #343533;
 	--noir-text-fond-claire: #000000;
-	--gris-text-fond-foncé : #CBD5F5;
-	--gris-fond-info-tab   : #DEDEDE;
-	--bleu-icon            : #699EFF;
-	--bleu-fond-faide      : #2158BD;
-	--blanc                : #FFFFFF;
-	
+	--gris-text-fond-foncé: #CBD5F5;
+	--gris-fond-info-tab: #DEDEDE;
+	--bleu-icon: #699EFF;
+	--bleu-fond-faide: #2158BD;
+	--blanc: #FFFFFF;
+
 	/* Filtres */
-	--filter-bg            : var(--gris-fond-assets);
-	--filter-border        : var(--gris-select-assets);
-	--filter-text          : var(--gris-text-fond-foncé);
-	--filter-button-bg     : var(--gris-fond-assets);
-	--filter-button-hover  : var(--gris-select-assets);
+	--filter-bg: var(--gris-fond-assets);
+	--filter-border: var(--gris-select-assets);
+	--filter-text: var(--gris-text-fond-foncé);
+	--filter-button-bg: var(--gris-fond-assets);
+	--filter-button-hover: var(--gris-select-assets);
 }
 
-body, html {
+body,
+html {
 	margin: 0;
 	padding: 0;
 	height: 100%;
@@ -29,6 +30,7 @@ body, html {
 	display: flex;
 	flex-direction: column;
 }
+
 /* ============================================================
    HEADER
 ============================================================ */
