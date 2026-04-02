@@ -50,8 +50,6 @@ class ImportController extends Controller
 				$errors[] = 'Format de fichier non supporté';
 			}
 
-
-
 			if (empty($errors))
 			{
 				$spreadsheet = IOFactory::load($tmpPath);
@@ -59,7 +57,8 @@ class ImportController extends Controller
 
 				$this->redirectTo('index');
 				return;
-			} else
+			}
+			else
 			{
 				$data['errors' ] = $errors;
 			}

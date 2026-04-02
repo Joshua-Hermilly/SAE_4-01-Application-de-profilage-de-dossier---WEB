@@ -136,8 +136,9 @@ class ImportService
 		$this->etablissementRepository->creates($this->etablissements);
 
 		// dont au service
-		$this->serviceLocalisation    ->addAll($this->etablissements);
-		$this->serviceLocalisation    ->export();
+//		$this->serviceLocalisation    ->addAll($this->etablissements);
+//		$this->serviceLocalisation    ->export();
+		$this->serviceLocalisation->geocoder();
 
 		$this->formationsSupRepository->creates($this->formationsSup );
 		$this->specialiteRepository   ->creates($this->specialites   );

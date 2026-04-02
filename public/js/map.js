@@ -1,81 +1,75 @@
 /*------------------------*/
-/* VARIABLES GLOBALES      */
+/* CONSTANTES             */
 /*------------------------*/
-let map = null;
-let localisations = [];
-const TOKEN = 'SAE-4.01_WEB_TOKEN';
-const mapContainer = document.getElementById('map');
+const divMap = document.getElementById("map");
+const latHavre   = 49.51627358707744;
+const lonHavre   = 0.1625817429307139
+const vue        = 6;
+
+/*------------------------*/
+/* VARIABLES              */
+/*------------------------*/
+let   map            = null;
+let   localisations = [];
 
 /*------------------------*/
 /* INITIALISER LA CARTE    */
 /*------------------------*/
-function initMap() {
-    // Éviter double initialisation
-    if (map !== null) return;
+function initMap()
+{
+    if (map !== null) {	return; }
 
-    // Vérifier que le DOM est prêt
-    if (!mapContainer) {
-        console.error('Conteneur #map introuvable');
-        return;
-    }
-
-    // Créer la carte (centré sur la France)
-    map = L.map('map').setView([46.2276, 2.2137], 6);
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // MAP
+    map = L.map('map').setView([latHavre, lonHavre], vue);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+	{
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-
-    console.log('✓ Carte initialisée');
 }
 
 /*------------------------*/
 /* CHARGER LES DONNÉES     */
 /*------------------------*/
-async function getCarte() {
-    try {
-        const response = await fetch('./carte.php', {
+async function getCarte()
+{
+    try
+	{
+        const response = await fetch('./carte.php',
+		{
             method: 'GET',
-            headers: {
-                'Token': TOKEN,
+            headers:
+			{
+                'Token': 'SAE-4.01_WEB_TOKEN',
                 'Content-Type': 'application/json'
             }
         });
 
         const donnees = await response.json();
-        console.log('Données reçues:', donnees);
+        console.log(donnees);
 
-        if (!response.ok) {
-            throw new Error(`Erreur ${response.status}`);
+		//Erreur
+        if (!response.ok  ) { throw new Error(`Erreur ${response.status}`  );           }
+        if (donnees.erreur) { console  .error('Erreur API:', donnees.erreur);  return;  }
+
+
+        // Point
+        if (Array.isArray(donnees) && donnees.length > 0)
+		{
+            donnees.forEach(etablissement => { ajouterMarqueur(etablissement); });
         }
 
-        if (donnees.erreur) {
-            console.error('Erreur API:', donnees.erreur);
-            return;
-        }
-
-        // Afficher les marqueurs sur la carte
-        if (Array.isArray(donnees) && donnees.length > 0) {
-            donnees.forEach(etablissement => {
-                ajouterMarqueur(etablissement);
-            });
-            console.log(`✓ ${donnees.length} établissements affichés`);
-        } else {
-            console.warn('Aucun établissement trouvé');
-        }
-
-    } catch (error) {
-        console.error('Erreur getCarte:', error);
-    }
+    } catch (error) {  console.error('Erreur api -- getCarte:', error); }
 }
 
 /*------------------------*/
-/* AJOUTER MARQUEUR        */
+/* AJOUTER MARQUEUR       */
 /*------------------------*/
-function ajouterMarqueur(etablissement) {
-    // Vérifier que la localisation a des coordonnées
-    if (!etablissement.localisation) {
+function ajouterMarqueur(etablissement)
+{
+	// Position ?
+    if (!etablissement.localisation)
+	{
         console.warn('Pas de localisation pour:', etablissement);
         return;
     }
@@ -83,31 +77,27 @@ function ajouterMarqueur(etablissement) {
     const lat = etablissement.localisation.localisation_latitude;
     const lon = etablissement.localisation.localisation_longitude;
 
-    // Si pas de coordonnées, on skip
-    if (lat === null || lon === null) {
+    // Coordonnées ?
+    if (lat === null || lon === null)
+	{
         console.warn(`Pas de coordonnées pour: ${etablissement.etablissement_nom}`);
         return;
     }
 
-    // Créer le marqueur
-    const marker = L.marker([lat, lon]).addTo(map);
+    // Markeur
+    const marker     = L.marker([lat, lon]).addTo(map);
+	const nomEtab    = etablissement.etablissement_nom                    ;
+    const codePostal = etablissement.localisation.localisation_code_postal;
+    const commune    = etablissement.localisation.localisation_commune    ;
 
-    // Ajouter une popup avec le nom de l'établissement
-    const nomEtab = etablissement.etablissement_nom || 'Établissement';
-    const codePostal = etablissement.localisation.localisation_code_postal || '';
-    const commune = etablissement.localisation.localisation_commune || '';
-
-    marker.bindPopup(`
-        <strong>${nomEtab}</strong><br/>
-        ${commune} ${codePostal}
-    `);
+    marker.bindPopup(`<strong>${nomEtab}</strong><br/>${commune}${codePostal}`);
 }
 
 /*------------------------*/
 /* ÉVÉNEMENTS              */
 /*------------------------*/
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOMContentLoaded - Initialisation de la carte...');
+document.addEventListener('DOMContentLoaded', async () =>
+{
     initMap();
-    //await getCarte();
+    await getCarte();
 });

@@ -70,6 +70,7 @@ class LocalisationService
 		$fichier  = new \SplTempFileObject();
 		$fichier->fwrite($csvTexte);
 		$fichier->rewind();
+
 		return $fichier;
 	}
 
@@ -80,13 +81,17 @@ class LocalisationService
 	{
 		rewind($this->fluxCsv);
 		$csvTexte = stream_get_contents($this->fluxCsv);
+
 		return $csvTexte === false ? '' : $csvTexte;
 	}
 
 	/*-------------------------------*/
 	/*  Écriture d'une ligne CSV     */
 	/*-------------------------------*/
-	private function creerLigneCSV(array $ligneDonnees): void { fputcsv($this->fluxCsv, $ligneDonnees, ';', '"', '\\'); }
+	private function creerLigneCSV(array $ligneDonnees): void
+	{
+		fputcsv($this->fluxCsv, $ligneDonnees, ';', '"', '\\');
+	}
 
 	/*-------------------------------*/
 	/*  Export HTTP du CSV           */
@@ -101,5 +106,38 @@ class LocalisationService
 
 		echo $csv;
 		exit();
+
+		//$this->geocoder();
+	}
+
+	public function geocoder(): void
+	{
+		$etablissements = $this->etablissementRepository->findAll();
+
+		$service = new LocalisationService();
+		$service->addAll($etablissements);
+		$csvString = $service->getCSVString();
+
+		// Envoyer à l'API et récupérer le CSV enrichi
+		$ch = curl_init('https://data.geopf.fr/geocodage/csv/');
+		curl_setopt_array($ch, [
+			CURLOPT_POST           => true,
+			CURLOPT_RETURNTRANSFER => true, // ← récupère la réponse dans une variable
+			CURLOPT_TIMEOUT        => 120,
+			CURLOPT_POSTFIELDS     => [
+				'data'    => new CURLStringFile($csvString, 'localisations.csv', 'text/csv'),
+				'columns' => 'Commune',
+				'postcode'=> 'Code Postale',
+			],
+		]);
+
+		$csvEnrichi = curl_exec($ch); // ← c'est ici que tu "reçois" le CSV complété
+		curl_close($ch);
+
+		// Renvoyer le CSV enrichi au navigateur
+		header('Content-Type: text/csv; charset=utf-8');
+		header('Content-Disposition: attachment; filename="geocodees.csv"');
+		echo $csvEnrichi;
+		exit;
 	}
 }
