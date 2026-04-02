@@ -72,14 +72,14 @@ class FiltreRepository
 				TRIM(SPECIALITE.specialite_spe1) AS val,
 				DIPLOME.diplome_serie_code AS code
 			FROM SPECIALITE
-			JOIN DIPLOME ON SPECIALITE.diplome_id = DIPLOME.diplome_id
+			JOIN DIPLOME ON SPECIALITE.specialite_id = DIPLOME.specialite_id
 			WHERE TRIM(SPECIALITE.specialite_spe1) IS NOT NULL AND TRIM(SPECIALITE.specialite_spe1) <> ''
 			UNION ALL
 			SELECT DISTINCT 
 				TRIM(SPECIALITE.specialite_spe2) AS val,
 				DIPLOME.diplome_serie_code AS code
 			FROM SPECIALITE
-			JOIN DIPLOME ON SPECIALITE.diplome_id = DIPLOME.diplome_id
+			JOIN DIPLOME ON SPECIALITE.specialite_id = DIPLOME.specialite_id
 			WHERE TRIM(SPECIALITE.specialite_spe2) IS NOT NULL AND TRIM(SPECIALITE.specialite_spe2) <> ''
 			ORDER BY val, code
 		";
