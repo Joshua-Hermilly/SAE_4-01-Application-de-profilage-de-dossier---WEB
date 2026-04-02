@@ -76,7 +76,7 @@ class LocalisationService
 	public function getCSVString(): string
 	{
 		$this->fichierCsv->rewind();
-		$csvTexte = '';
+		$csvTexte = "\xEF\xBB\xBF"; // BOM UTF-8 pour compatibilité Excel / API
 		while (!$this->fichierCsv->eof())
 		{
 			$ligne = $this->fichierCsv->fgets();
@@ -96,10 +96,10 @@ class LocalisationService
 		{
 			$champ = (string) $champ;
 			$champ = str_replace('"', '""', $champ);
-			if (strpbrk($champ, ",\r\n") !== false) { $champ = '"' . $champ . '"'; }
+			if (strpbrk($champ, ";\r\n\"") !== false) { $champ = '"' . $champ . '"'; }
 			$champsEchappes[] = $champ;
 		}
-		$ligneCsv = implode(',', $champsEchappes) . "\r\n";
+		$ligneCsv = implode(';', $champsEchappes) . "\r\n";
 		$this->fichierCsv->fwrite($ligneCsv);
 	}
 
