@@ -16,7 +16,7 @@ class Groupe implements JsonSerializable
 		private array $candidats = []
 	){}
 
-	public function getHeader(): array
+	public function getHeader(): arrayw
 	{
 		return
 			[

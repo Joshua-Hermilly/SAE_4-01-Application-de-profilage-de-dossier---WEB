@@ -36,7 +36,7 @@ class GroupeGetController extends Controller
 
 		$GroupeService = new GroupeService();
 		$data           = json_decode(file_get_contents('php://input'), true);
-		$page           = 1;//$data['page'] ?? null;
+		$page           = $data['page'] ?? null;
 		$isAdmin        = false;
 
 		// Page définie ?
@@ -47,7 +47,7 @@ class GroupeGetController extends Controller
 		}
 
 		// Page valide ?
-		if ( $page < 1 || $page > $GroupeService->maxPage() )
+		if ( $page < 1 || $page > $GroupeService->maxPage() -1)
 		{
 			$this->json(['erreur' => "Aucune données disponible. Merci d'insérer des données ou de contacter un administrateur."]);
 			return;
