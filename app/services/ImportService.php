@@ -126,16 +126,9 @@ class ImportService
 
 		// Insertion en base
 		$this->etablissementRepository->creates($this->etablissements);
-
-		//ajout des localisation
-		$fichier = $this->serviceRechercheLocalisation->remplissageTerminee();
-		$retour  = $this->serviceRechercheLocalisation->appelerApi($fichier);
-		if ( $retour ) { $this->serviceRechercheLocalisation->parcoursTableau($retour);}
-
 		$this->formationsSupRepository->creates($this->formationsSup );
 		$this->specialiteRepository   ->creates($this->specialites   );
 		$this->diplomeRepository      ->creates($this->diplomes      );
-
 
 		for ($cpt = 0; $cpt < count($candidatRelations); $cpt++)
 		{
@@ -150,10 +143,18 @@ class ImportService
 		}
 		$this->candidatRepository->creates($this->candidats);
 
+
+		$fichier = $this->serviceRechercheLocalisation->remplissageTerminee();
+		$retour  = $this->serviceRechercheLocalisation->appelerApi($fichier);
+		if ( $retour ) { $this->serviceRechercheLocalisation->parcoursTableau($retour); }
+
 		if (session_status() === PHP_SESSION_NONE) { session_start(); }
 		$_SESSION['data_version'] = (string)microtime(true);
 		unset($_SESSION['filter_cache']);
+
 	}
+
+
 
 
 	/*-------------------------------*/
