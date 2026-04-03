@@ -5,6 +5,36 @@
 {% set pageActive = 'formations' %}
 
 {% block content %}
-	{% include 'components/content/zones/under_header.html.twig' %}
-	{% include 'components/content/assets/tableau.html.twig' %}
+	<div id="dossiers-layout" class="d-flex w-100 overflow-hidden" style="flex: 1 1 auto; min-height: 0;">
+
+		{% include 'components/content/assets/filter_open.html.twig'
+			with
+			{
+				title: filterConfig.title | default('Filtrer'),
+				sections: filterConfig.sections | default([])
+			}
+		%}
+
+		<div id="main-content" class="d-flex flex-column overflow-hidden" style="flex: 1 1 auto; min-width: 0;">
+
+			<div class="d-flex align-items-center gap-2 py-2">
+				{% include 'components/content/assets/filter_close.html.twig'
+					with
+					{
+						title: filterConfig.title | default('Filtrer'),
+						sections: filterConfig.sections | default([])
+					}
+				%}
+
+				{% include 'components/content/assets/recherche.html.twig' %}
+				<div class="ms-auto">
+					{% include 'components/content/assets/map_close.html.twig' %}
+				</div>
+			</div>
+
+			{% include 'components/content/assets/tableau.html.twig' %}
+		</div>
+
+		{% include 'components/content/assets/map_open.html.twig' %}
+	</div>
 {% endblock %}
