@@ -20,7 +20,6 @@
 		{# Contenu principal (toolbar + tableau) #}
 		<div id="main-content" class="d-flex flex-column overflow-hidden">
 
-			{# Toolbar #}
 			<div class="d-flex align-items-center gap-2 py-2">
 				{% include 'components/content/assets/filter_close.html.twig'
 				with
@@ -34,11 +33,9 @@
 				</div>
 			</div>
 
-			{# Tableau #}
 			{% include 'components/content/assets/tableau.html.twig' %}
 		</div>
 
-		{# Sidebar carte (droite, caché par défaut) #}
 		{% include 'components/content/assets/map_open.html.twig' %}
 	</div>
 {% endblock %}

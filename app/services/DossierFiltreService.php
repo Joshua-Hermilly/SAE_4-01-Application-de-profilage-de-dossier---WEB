@@ -25,6 +25,18 @@ class DossierFiltreService
 		$config = [
 			'title'    => 'Filtres des dossiers',
 			'sections' => [
+				'anneee' => [
+					'label'   => 'Année',
+					'filters' => [
+						[
+							'name'     => 'annee',
+							'label'    => 'Année de candidature',
+							'column'   => 'CANDIDAT.candidat_annee',
+							'type'     => 'select',
+							'options'  => [],
+						],
+					],
+				],
 				'candidat' => [
 					'label'   => 'Candidat',
 					'filters' => [
@@ -34,7 +46,6 @@ class DossierFiltreService
 							'column'      => 'CANDIDAT.candidat_civilite',
 							'type'        => 'select',
 							'options'     => [],
-							'bac_tags'    => ['general', 'technologique', 'professionnel'],
 						],
 						[
 							'name'        => 'boursier',
@@ -42,7 +53,6 @@ class DossierFiltreService
 							'column'      => 'CANDIDAT.candidat_boursier_code',
 							'type'        => 'select',
 							'options'     => [],
-							'bac_tags'    => ['general', 'technologique', 'professionnel'],
 						],
 						[
 							'name'        => 'profil',
@@ -50,7 +60,6 @@ class DossierFiltreService
 							'column'      => 'CANDIDAT.candidat_profil',
 							'type'        => 'text',
 							'placeholder' => 'Ex: En terminale',
-							'bac_tags'    => ['general', 'technologique', 'professionnel'],
 						],
 					],
 				],
@@ -121,18 +130,6 @@ class DossierFiltreService
 							'operator' => '>=',
 							'min'      => 0,
 							'max'      => 20,
-						],
-					],
-				],
-				'etablissement' => [
-					'label'   => 'Établissement',
-					'filters' => [
-						[
-							'name'     => 'departement',
-							'label'    => 'Département',
-							'column'   => 'LOCALISATION.localisation_departement',
-							'type'     => 'select',
-							'options'  => [],
 						],
 					],
 				],

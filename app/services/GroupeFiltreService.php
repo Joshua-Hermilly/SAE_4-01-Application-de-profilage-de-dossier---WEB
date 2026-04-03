@@ -2,6 +2,7 @@
 
 require_once '../app/repositories/CritereRepository.php';
 require_once '../app/repositories/GroupeRepository.php';
+require_once '../app/repositories/FiltreRepository.php';
 
 class GroupeFiltreService
 {
@@ -10,6 +11,7 @@ class GroupeFiltreService
 	/*-------------------------------*/
 	private CritereRepository $critereRepository;
 	private GroupeRepository  $groupeRepository;
+	private FiltreRepository  $filtreRepository;
 
 	/*-------------------------------*/
 	/*  Constructeur                 */
@@ -18,6 +20,7 @@ class GroupeFiltreService
 	{
 		$this->critereRepository = new CritereRepository();
 		$this->groupeRepository  = new GroupeRepository();
+		$this->filtreRepository  = new FiltreRepository();
 	}
 
 	/*-------------------------------*/
@@ -49,7 +52,7 @@ class GroupeFiltreService
 			$nomOptions[$trimmed] = $trimmed;
 		}
 
-		return [
+		$config = [
 			'title'    => 'Filtres des groupes',
 			'sections' => [
 				'groupe' => [
@@ -65,14 +68,86 @@ class GroupeFiltreService
 					],
 				],
 				'criteres' => [
-					'label'   => 'Critères associés',
+					'label'   => 'Critères',
 					'filters' => [
 						[
-							'name'    => 'critere',
-							'label'   => 'Critères',
-							'column'  => 'CRITERE.critere_filtre',
-							'type'    => 'multiselect',
-							'options' => $critereOptions,
+							'name'        => 'civilite',
+							'label'       => 'Civilité',
+							'column'      => 'CANDIDAT.candidat_civilite',
+							'type'        => 'select',
+							'options'     => [],
+							'bac_tags'    => ['general', 'technologique', 'professionnel'],
+						],
+						[
+							'name'        => 'boursier',
+							'label'       => 'Statut Boursier',
+							'column'      => 'CANDIDAT.candidat_boursier_code',
+							'type'        => 'select',
+							'options'     => [],
+							'bac_tags'    => ['general', 'technologique', 'professionnel'],
+						],
+						[
+							'name'        => 'profil',
+							'label'       => 'Profil',
+							'column'      => 'CANDIDAT.candidat_profil',
+							'type'        => 'text',
+							'placeholder' => 'Ex: En terminale',
+							'bac_tags'    => ['general', 'technologique', 'professionnel'],
+						],
+						[
+							'name'     => 'type_bac',
+							'label'    => 'Type de Bac',
+							'column'   => 'DIPLOME.diplome_type_libelle',
+							'type'     => 'select',
+							'options'  => [],
+						],
+						[
+							'name'     => 'serie_bac',
+							'label'    => 'Série',
+							'column'   => 'DIPLOME.diplome_serie_libelle',
+							'type'     => 'select',
+							'options'  => [],
+						],
+						[
+							'name'     => 'specialite_spe',
+							'label'    => 'Spécialités',
+							'column'   => 'SPECIALITE.specialite_spe1',
+							'type'     => 'multiselect',
+							'options'  => [],
+						],
+						[
+							'name'     => 'specialite_opt',
+							'label'    => 'Options',
+							'column'   => 'SPECIALITE.specialite_opt1',
+							'type'     => 'multiselect',
+							'options'  => [],
+						],
+						[
+							'name'     => 'note_lycee',
+							'label'    => 'Note Lycée',
+							'column'   => 'CANDIDAT.candidat_note_lycee',
+							'type'     => 'number',
+							'operator' => '>=',
+							'min'      => 0,
+							'max'      => 20,
+						],
+						[
+							'name'     => 'note_fiche',
+							'label'    => 'Note Fiche Avenir',
+							'column'   => 'CANDIDAT.candidat_note_fiche',
+							'type'     => 'number',
+							'operator' => '>=',
+							'min'      => 0,
+							'max'      => 20,
+						],
+						[
+							'name'     => 'note_globale',
+							'label'    => 'Note Globale',
+							'column'   => 'CANDIDAT.candidat_note_globale',
+							'type'     => 'number',
+							'operator' => '>=',
+							'min'      => 0,
+							'max'      => 20,
 						],
 					],
 				],
@@ -92,5 +167,8 @@ class GroupeFiltreService
 				],
 			],
 		];
+
+		$this->filtreRepository->hydrateSelectFilters($config);
+		return $config;
 	}
 }
