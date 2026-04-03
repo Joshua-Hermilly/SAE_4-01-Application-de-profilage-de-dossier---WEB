@@ -44,7 +44,7 @@ function creerHeader( headers, isAdmin )
 	{
 		const th    = document.createElement( 'th'    );
 		const input = document.createElement( 'input' );
-		
+
 		input.classList.add( "form-check-input" );
 		input.classList.add( "border-dark"      );
 		input.classList.add( "rounded-1"        );
@@ -247,23 +247,48 @@ function initialiserTableau()
 }
 initialiserTableau();
 
+function getLienCourant()
+{
+	if      (isGroupePage   ) { return './GroupeGet.php'   ; }
+	else if (isFormationPage) { return './FormationGet.php'; }
+	else                      { return './dossierGet.php'  ; }
+}
+
+function chargerPage(indexPage, filters = filtresCourant)
+{
+	const lien = getLienCourant();
+	return getData(indexPage, lien, filters);
+}
+
+function initialiserTableau() { chargerPage(1); }
+initialiserTableau();
+
+function attacherPagination()
+{
+	if (!btnPrc || !btnSvt || !btnDeb || !btnFin || !pageAct) { return; }
+
+	btnPrc.addEventListener( "click", () => chargerPage(+pageAct.value - 1) );
+	btnSvt.addEventListener( "click", () => chargerPage(+pageAct.value + 1) );
+	btnDeb.addEventListener( "click", () => chargerPage(1                 ) );
+	btnFin.addEventListener( "click", () => chargerPage(+btnFin.value     ) );
+}
+attacherPagination();
+
 /*------------------------*/
 /* Event                  */
 /*------------------------*/
 // tBody.addEventListener ( "click", () => getDossierCandidat(             1) );
-tableau.addEventListener( "click", (event) => selectionFaite    (event                             ) );
+tableau.addEventListener( "click", (event) => selectionFaite (event) );
 
 if (filterForm)
 {
-	filterForm.addEventListener('submit', function (event) {
+	filterForm.addEventListener('submit', function (event)
+	{
 		const bouton = event.submitter;
 		if (bouton && bouton.dataset && bouton.dataset.action === 'creer-groupe') { return; }
 
 		event.preventDefault();
 		filtresCourant = serialiserFiltres();
-
-		if      (isGroupePage   ) { getData(1, './GroupeGet.php'   ,  filtresCourant); }
-		else if (isFormationPage) { getData(1, './FormationGet.php',  filtresCourant); }
-		else                      { getData(1, './dossierGet.php'  ,  filtresCourant); }
+		chargerPage(1, filtresCourant);
 	});
 }
