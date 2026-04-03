@@ -35,6 +35,10 @@ class FiltreRepository
 					};
 				},
 			],
+			'profil'          => [
+				'sql'   => $this->selectDistinct('CANDIDAT', 'candidat_profil'),
+				'label' => static fn(array $row): ?string => $row['val'] ?? null,
+			],
 			'type_bac'        => [
 				'sql'   => $this->selectDistinct('DIPLOME', 'diplome_type_libelle'),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
