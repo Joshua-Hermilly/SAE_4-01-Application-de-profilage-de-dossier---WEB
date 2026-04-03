@@ -124,18 +124,6 @@ class DossierFiltreService
 						],
 					],
 				],
-				'etablissement' => [
-					'label'   => 'Établissement',
-					'filters' => [
-						[
-							'name'     => 'departement',
-							'label'    => 'Département',
-							'column'   => 'LOCALISATION.localisation_departement',
-							'type'     => 'select',
-							'options'  => [],
-						],
-					],
-				],
 			],
 		];
 
