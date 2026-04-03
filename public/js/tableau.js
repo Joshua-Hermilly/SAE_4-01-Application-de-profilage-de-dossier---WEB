@@ -22,9 +22,9 @@ const infos    = document.getElementById( "pagination-info" );
 let filtresCourant = {};
 
 // Type de page courante
-const currentPath      = window.location.pathname.toLowerCase();
-const isGroupePage   = currentPath.includes("groupes.php");
-const isFormationPage= currentPath.includes("formations.php");
+const currentPath     = window.location.pathname.toLowerCase();
+const isGroupePage    = currentPath.includes("groupes.php"   );
+const isFormationPage = currentPath.includes("formations.php");
 
 
 /*------------------------*/
@@ -43,7 +43,8 @@ function creerHeader( headers, isAdmin )
 	if (isAdmin)
 	{
 		const th    = document.createElement( 'th'    );
-		const input    = document.createElement( 'input' );
+		const input = document.createElement( 'input' );
+		
 		input.classList.add( "form-check-input" );
 		input.classList.add( "border-dark"      );
 		input.classList.add( "rounded-1"        );
@@ -231,9 +232,9 @@ async function getData( indexPage, lien, filters = filtresCourant )
 
 		dvErreur.style.display = "none";
 		tableau .style.display = "";
-		creerHeader ( donnees['headers' ], donnees['isAdmin' ]                     );
-		creerTableau( donnees['headers' ], donnees['data'    ], donnees['isAdmin'] );
-		creerBtnPage( donnees['maxPage' ], donnees['actPage' ]                     );
+		creerHeader ( donnees['headers'], donnees['isAdmin']                     );
+		creerTableau( donnees['headers'], donnees['data'   ], donnees['isAdmin'] );
+		creerBtnPage( donnees['maxPage'], donnees['actPage']                     );
 
 	} catch (error) { console.error('Erreur :', error); }
 }
