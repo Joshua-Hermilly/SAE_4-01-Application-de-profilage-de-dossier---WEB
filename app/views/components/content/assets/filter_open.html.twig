@@ -47,10 +47,10 @@
 																	<span>{{ option_data.label }}</span>
 																</label>
 															{% else %}
-																	<label id="checkbox-item" class="list-group-item specialite-checkbox-item">
-																		<input class="form-check-input me-2" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_key }}" />
-																		<span>{{ option_data }}</span>
-																	</label>
+																<label id="checkbox-item" class="list-group-item specialite-checkbox-item">
+																	<input class="form-check-input me-2" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_key }}" />
+																	<span>{{ option_data }}</span>
+																</label>
 															{% endif %}
 														{% endfor %}
 													</div>
