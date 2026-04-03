@@ -53,11 +53,7 @@ class FiltreRepository
 			'specialite_opt' => [
 				'sql'   => $this->unionDistinctOptionsWithSerieCode(),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-			],
-			'departement'     => [
-				'sql'   => $this->selectDistinct('LOCALISATION', 'localisation_departement'),
-				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-			],
+			]
 		];
 	}
 

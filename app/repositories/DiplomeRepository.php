@@ -1,7 +1,10 @@
 <?php
 
 require_once '../app/core/Repository.php';
+require_once '../app/repositories/SpecialiteRepository.php';
 require_once '../app/entities/Diplome.php';
+require_once '../app/entities/Specialite.php';
+
 
 class DiplomeRepository
 {
@@ -9,6 +12,7 @@ class DiplomeRepository
 	/*          Attributs            */
 	/*-------------------------------*/
 	private $pdo;
+	private $specialiteRepository;
 
 	/*-------------------------------*/
 	/*         Constructeur          */
@@ -16,6 +20,7 @@ class DiplomeRepository
 	public function __construct()
 	{
 		$this->pdo = Repository::getInstance()->getPDO();
+		$this->specialiteRepository = new SpecialiteRepository();
 	}
 
 	/*-------------------------------*/
@@ -90,6 +95,7 @@ class DiplomeRepository
 	public function createDiplomeFromRow(array $row): Diplome
 	{
 		$candidats = (new CandidatRepository())->findByEtablissementId((int) $row['diplome_id']);
+		$specialite = $this->specialiteRepository->findById((int) $row['specialite_id']);
 
 		return new Diplome
 		(
@@ -98,7 +104,7 @@ class DiplomeRepository
 			$row['diplome_type_libelle' ],
 			$row['diplome_serie_code'   ],
 			$row['diplome_serie_libelle'],
-			$row['specialite_id'        ],
+			$specialite,
 			$candidats
 		);
 	}

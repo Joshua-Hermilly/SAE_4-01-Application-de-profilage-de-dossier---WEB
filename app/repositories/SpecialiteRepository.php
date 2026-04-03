@@ -35,8 +35,6 @@ class SpecialiteRepository
 		$stmt->bindValue(':speAbd'    , $specialite->getSpecialiteSpeAbd());
 		$stmt->execute();
 
-		$stmt->execute();
-
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$specialite->setSpecialiteId((int) $row['specialite_id'] );
 	}
@@ -91,14 +89,15 @@ class SpecialiteRepository
 
 	public function createSpecialiteFromRow(array $row): Specialite
 	{
-		return new Specialite(
+		return new Specialite
+		(
 			(int)$row['specialite_id'    ],
-			$row['specialite_opt1'  ],
-			$row['specialite_opt2'  ],
-			$row['specialite_spe1'  ],
-			$row['specialite_spe2'  ],
-			$row['specialite_spe3'  ],
-			$row['specialite_speabd']
+			     $row['specialite_opt1'  ],
+			     $row['specialite_opt2'  ],
+			     $row['specialite_spe1'  ],
+			     $row['specialite_spe2'  ],
+			     $row['specialite_spe3'  ],
+			     $row['specialite_speabd']
 		);
 	}
 
