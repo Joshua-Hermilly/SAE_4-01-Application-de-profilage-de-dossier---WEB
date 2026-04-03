@@ -46,7 +46,6 @@ class DossierFiltreService
 							'column'      => 'CANDIDAT.candidat_civilite',
 							'type'        => 'select',
 							'options'     => [],
-							'bac_tags'    => ['general', 'technologique', 'professionnel'],
 						],
 						[
 							'name'        => 'boursier',
@@ -54,7 +53,6 @@ class DossierFiltreService
 							'column'      => 'CANDIDAT.candidat_boursier_code',
 							'type'        => 'select',
 							'options'     => [],
-							'bac_tags'    => ['general', 'technologique', 'professionnel'],
 						],
 						[
 							'name'        => 'profil',
@@ -62,7 +60,6 @@ class DossierFiltreService
 							'column'      => 'CANDIDAT.candidat_profil',
 							'type'        => 'text',
 							'placeholder' => 'Ex: En terminale',
-							'bac_tags'    => ['general', 'technologique', 'professionnel'],
 						],
 					],
 				],
