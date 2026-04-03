@@ -23,14 +23,6 @@ class ImportController extends Controller
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST' )
 		{
-
-
-			// Fichier présent
-			//if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK)
-			//{
-			//	throw new \RuntimeException('Erreur lors de l\'upload');
-			//}
-
 			//année
 			$annee     = $_POST['annee_promotion'];
 

@@ -3,7 +3,6 @@
 require_once '../app/core/Repository.php';
 require_once '../app/entities/Etablissement.php';
 require_once '../app/repositories/CandidatRepository.php';
-require_once '../app/repositories/LocalisationRepository.php';
 
 class EtablissementRepository
 {
@@ -23,106 +22,134 @@ class EtablissementRepository
 	/*-------------------------------*/
 	/*  Requetes                     */
 	/*-------------------------------*/
+
+	// CREATE
+	// - - - - - - -
 	private function createEtablissementFromRow(array $row): Etablissement
 	{
-		$candidats = (new CandidatRepository())->findByEtablissementId((int) $row['etablissement_id']);
-
 		return new Etablissement
 		(
-			(int) $row['etablissement_id'],
-			$row['etablissement_nom'],
-			(new LocalisationRepository())->findById( (int) $row['localisation_id']),
-			$candidats
+			(int  )$row['etablissement_id'          ],
+			       $row['etablissement_nom'         ],
+			       $row['etablissement_pays'        ],
+			       $row['etablissement_code_postal' ],
+			       $row['etablissement_commune'     ],
+			       $row['etablissement_departement' ],
+			(float)$row['etablissement_latitude'    ],
+			(float)$row['etablissement_longitude'   ],
+			(float)$row['etablissement_distance'    ]
 		);
 	}
 
 	public function create(Etablissement $etablissement): void
 	{
 		$sql = "INSERT INTO ETABLISSEMENT
-				(etablissement_nom, localisation_id)
-				VALUES (:nom, :localisation)
+				(etablissement_nom, etablissement_pays, etablissement_code_postal, etablissement_commune, etablissement_departement, etablissement_latitude, etablissement_longitude, etablissement_distance)
+				VALUES (:nom, :pays, :codePostal, :commune, :departement, :latitude, :longitude, :distance)
 				RETURNING etablissement_id";
 
 		$req = $this->pdo->prepare($sql);
-		$req->bindValue(':nom'         , $etablissement->getEtablissementNom()                     );
-		$req->bindValue(':localisation', $etablissement->getLocalisation    ()->getLocalisationId());
+		$req->bindValue(':nom'        , $etablissement->getEtablissementNom        ());
+		$req->bindValue(':pays'       , $etablissement->getEtablissementPays       ());
+		$req->bindValue(':codePostal' , $etablissement->getEtablissementCodePostal ());
+		$req->bindValue(':commune'    , $etablissement->getEtablissementCommune    ());
+		$req->bindValue(':departement', $etablissement->getEtablissementDepartement());
+		$req->bindValue(':latitude'   , $etablissement->getEtablissementLatitude   ());
+		$req->bindValue(':longitude'  , $etablissement->getEtablissementLongitude  ());
+		$req->bindValue('distance'    , $etablissement->getEtablissementDistance   ());
+
 		$req->execute();
 
 		$row = $req->fetch(PDO::FETCH_ASSOC);
 		$etablissement->setEtablissementId( (int) $row['etablissement_id'] );
 	}
 
-	public function creates(array $etablissements): void
+public function creates(array $etablissements): void
+{
+	$valeurBind = [];
+	$values = [];
+
+	for ($cpt=0; $cpt<count($etablissements); $cpt++)
 	{
-		$valeurBrut = [];
-		$valeurBind = [];
+		$etablissement = $etablissements[$cpt];
+		$values[]  = "(:nom{$cpt}, :pays{$cpt}, :codePostal{$cpt}, :commune{$cpt}, :departement{$cpt}, :latitude{$cpt}, :longitude{$cpt}, :distance{$cpt})";
 
-		for ($cpt = 0; $cpt < count($etablissements); $cpt++)
-		{
-			$etablissement = $etablissements[$cpt];
-			$valeurBind[]  = "(:nom{$cpt}, :localisation{$cpt})";
-
-			$valeurBrut[":nom{$cpt}"]          = $etablissement->getEtablissementNom();
-			$valeurBrut[":localisation{$cpt}"] = $etablissement->getLocalisation()->getLocalisationId();
-		}
-
-		$sql = "INSERT INTO ETABLISSEMENT 
-				(etablissement_nom, localisation_id)
-				VALUES " . implode(', ', $valeurBind) . "
-				RETURNING etablissement_id";
-
-		$stmt = $this->pdo->prepare($sql);
-
-		for ($cpt = 0; $cpt < count($etablissements); $cpt++)
-		{
-			$stmt->bindValue(":nom{$cpt}"         , $valeurBrut[":nom{$cpt}"         ]);
-			$stmt->bindValue(":localisation{$cpt}", $valeurBrut[":localisation{$cpt}"]);
-		}
-
-		$stmt->execute();
-
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		for ($cpt = 0; $cpt < count($etablissements); $cpt++)
-		{
-			if (isset($rows[$cpt]))
-			{
-				$etablissements[$cpt]->setEtablissementId((int) $rows[$cpt]['etablissement_id']);
-			}
-		}
+		$valeurBind[":nom{$cpt}"]         = $etablissement->getEtablissementNom        ();
+		$valeurBind[":pays{$cpt}"]        = $etablissement->getEtablissementPays       ();
+		$valeurBind[":codePostal{$cpt}"]  = $etablissement->getEtablissementCodePostal ();
+		$valeurBind[":commune{$cpt}"]     = $etablissement->getEtablissementCommune    ();
+		$valeurBind[":departement{$cpt}"] = $etablissement->getEtablissementDepartement();
+		$valeurBind[":latitude{$cpt}"]    = $etablissement->getEtablissementLatitude   ();
+		$valeurBind[":longitude{$cpt}"]   = $etablissement->getEtablissementLongitude  ();
+		$valeurBind[":distance{$cpt}"]    = $etablissement->getEtablissementDistance   ();
 	}
 
-	public function update(Etablissement $etablissement): void
+	$sql = "INSERT INTO ETABLISSEMENT
+			(etablissement_nom, etablissement_pays, etablissement_code_postal, etablissement_commune, etablissement_departement, etablissement_latitude, etablissement_longitude, etablissement_distance)
+			VALUES " . implode(', ', $values) . "
+			RETURNING etablissement_id";
+
+	$stmt = $this->pdo->prepare($sql);
+	foreach ($valeurBind as $key => $value)
+	{
+		$stmt->bindValue($key, $value);
+	}
+	$stmt->execute();
+
+	$cpt = 0;
+	while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+	{
+		$etablissements[$cpt]->setEtablissementId((int) $row['etablissement_id']);
+		$cpt++;
+	}
+}
+
+
+	// UPDATE
+	// - - - - - - -
+	public function update($etablissement)
 	{
 		$sql = "UPDATE ETABLISSEMENT SET
-				etablissement_nom = :nom,
-				localisation_id   = :localisation
-				WHERE etablissement_id = :id";
+		        	etablissement_nom         = :nom,
+		        	etablissement_pays        = :pays,
+		        	etablissement_code_postal = :codePostal,
+		        	etablissement_commune     = :commune,
+		        	etablissement_departement = :departement,
+		        	etablissement_latitude    = :latitude,
+		        	etablissement_longitude   = :longitude,
+		        	etablissement_distance    = :distance
+		        WHERE etablissement_id = :id";
 
 		$req = $this->pdo->prepare($sql);
-		$req->bindValue(':id'          , $etablissement->getEtablissementId ()                     );
-		$req->bindValue(':nom'         , $etablissement->getEtablissementNom()                     );
-		$req->bindValue(':localisation', $etablissement->getLocalisation    ()->getLocalisationId());
+		$req->bindValue(':id'         , $etablissement->getEtablissementId         ());
+		$req->bindValue(':nom'        , $etablissement->getEtablissementNom        ());
+		$req->bindValue(':pays'       , $etablissement->getEtablissementPays       ());
+		$req->bindValue(':codePostal' , $etablissement->getEtablissementCodePostal ());
+		$req->bindValue(':commune'    , $etablissement->getEtablissementCommune    ());
+		$req->bindValue(':departement', $etablissement->getEtablissementDepartement());
+		$req->bindValue(':latitude'   , $etablissement->getEtablissementLatitude   ());
+		$req->bindValue(':longitude'  , $etablissement->getEtablissementLongitude  ());
+		$req->bindValue('distance'    , $etablissement->getEtablissementDistance   ());
 		$req->execute();
 	}
 
-	public function findById(int $id): ?Etablissement
+	// FIND
+	// - - - - - - -
+	public function findById(int $id)
 	{
-		$sql  = "SELECT * FROM ETABLISSEMENT WHERE etablissement_id = :id LIMIT 1";
-		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':id', $id, PDO::PARAM_INT);
-		$stmt->execute();
+		$sql = "SELECT * FROM etablissement WHERE id = :id LIMIT 1";
+		$req = $this->pdo->prepare($sql);
+		$req->bindValue(":id", $id);
+		$req->execute();
 
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		if ($row)
-		{
-			return $this->createEtablissementFromRow($row);
-		}
+		$row = $req->fetch(PDO::FETCH_ASSOC);
+		if ($row) { return $this->createEtablissementFromRow($row); }
 		return null;
 	}
 
-	public function findAll(): array
+	public function findAll()
 	{
-		$sql = "SELECT * FROM ETABLISSEMENT";
+		$sql = "SELECT * FROM etablissement";
 		$stmt = $this->pdo->query($sql);
 
 		$result = [];
@@ -133,52 +160,52 @@ class EtablissementRepository
 		return $result;
 	}
 
-	public function exist(Etablissement $etablissement): int
-	{
-		$sql = "SELECT * FROM ETABLISSEMENT
-         		WHERE etablissement_nom = :nom
-         		  AND localisation_id   = :localisation
-         		LIMIT 1";
-
-		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':nom'         , $etablissement->getEtablissementNom()                     );
-		$stmt->bindValue(':localisation', $etablissement->getLocalisation    ()->getLocalisationId());
-
-		$stmt->execute();
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		if ($row) { return $row['etablissement_id']; }
-		return -1;
-	}
-
-	public function getMaxDistance()
-	{
-		$sql  = "SELECT MAX(localisation_distance) AS max_distance FROM LOCALISATION";
-		$stmt = $this->pdo->prepare($sql);
-		$stmt->execute();
-
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		return $row ? (float) $row['max_distance'] : -1;
-	}
-
 	public function findByDistance($distance)
 	{
-		$sql = "SELECT 
-    				E.*
-				FROM   
-				    ETABLISSEMENT  AS E
-					LEFT JOIN LOCALISATION AS L ON L.localisation_id = E.localisation_id
-				WHERE  
-				    L.localisation_distance <= :distance";
-
-		$stmt = $this->pdo->prepare($sql);
-		$stmt->bindValue(':distance', $distance);
-		$stmt->execute();
+		$sql = "SELECT * FROM ETABLISEEMENT WHERE distance <= :distance";
+		$sql = $this->pdo->prepare($sql);
+		$sql->bindValue(':distance', $distance);
+		$sql->execute();
 
 		$result = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		while ($row = $sql->fetch(PDO::FETCH_ASSOC))
 		{
 			$result[] = $this->createEtablissementFromRow($row);
 		}
 		return $result;
+	}
+
+	public function findMaxDistance()
+	{
+		$sql = "SELECT MAX(etablissement_distance) FROM ETABLISEEMENT";
+		$req = $this->pdo->prepare($sql);
+		$req->execute();
+
+		$row = $req->fetch(PDO::FETCH_ASSOC);
+		if ($row) { return $this->createEtablissementFromRow($row); }
+		return null;
+	}
+
+	public function updatePos(Etablissement $etablissement)
+	{
+		$sql = "SELECT etablissement_id, etablissement_pays
+		        FROM   ETABLISSEMENT
+		        WHERE  etablissement_nom         = :nom        AND
+		               etablissement_code_postal = :codePostal AND
+		               etablissement_commune     = :commune";
+
+		$req = $this->pdo->prepare($sql);
+		$req->bindValue(':nom'        , $etablissement->getEtablissementNom       ());
+		$req->bindValue(':codePostal' , $etablissement->getEtablissementCodePostal());
+		$req->bindValue(':commune'    , $etablissement->getEtablissementCommune   ());
+
+		$req->execute();
+		$row = $req->fetch(PDO::FETCH_ASSOC);
+		if ( $row )
+		{
+			$etablissement->setEtablissementId  ((int) $row['etablissement_id'  ]);
+			$etablissement->setEtablissementPays(      $row['etablissement_pays']);
+			$this        ->update               ($etablissement                  );
+		}
 	}
 }
