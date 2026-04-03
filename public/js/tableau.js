@@ -239,14 +239,6 @@ async function getData( indexPage, lien, filters = filtresCourant )
 	} catch (error) { console.error('Erreur :', error); }
 }
 
-function initialiserTableau()
-{
-	if      (isGroupePage   ) { getData(1, './GroupeGet.php'   ); }
-	else if (isFormationPage) { getData(1, './FormationGet.php'); }
-	else                      { getData(1, './dossierGet.php'  ); }
-}
-initialiserTableau();
-
 function getLienCourant()
 {
 	if      (isGroupePage   ) { return './GroupeGet.php'   ; }
