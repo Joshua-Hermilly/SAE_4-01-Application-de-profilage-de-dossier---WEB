@@ -150,3 +150,28 @@ a#text:hover {
 	width: 100%;
 }
 
+/* ============================================================
+   MAP CLOSE HEADER - Styles
+============================================================ */
+
+#map_close_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 20px;
+	margin: 0;
+	width: 100%;
+}
+
+/* ============================================================
+   MAP SIDEBAR - Styles
+============================================================ */
+
+#map_sidebar {
+	transition: width 0.3s ease, opacity 0.3s ease;
+}
+
+#map_sidebar.d-none {
+	width: 0 !important;
+}
+
