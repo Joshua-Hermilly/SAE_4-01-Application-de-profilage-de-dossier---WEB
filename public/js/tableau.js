@@ -229,8 +229,8 @@ async function getDossierCandidat( indexPage, filters = filtresCourant )
 			return;
 		}
 
-		vide   .style.display = "none";
-		tableau.style.display = "";
+		dvErreur.style.display = "none";
+		tableau .style.display = "";
 		creerHeader ( donnees['headers' ], donnees['isAdmin' ]                     );
 		creerTableau( donnees['headers' ], donnees['dossiers'], donnees['isAdmin'] );
 		creerBtnPage( donnees['maxPage' ], donnees['actPage' ]                     );
