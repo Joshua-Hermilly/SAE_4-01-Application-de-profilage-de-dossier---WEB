@@ -47,7 +47,7 @@ class ExportService
 		header('Cache-Control: max-age=0');
 
 		$writer->save('php://output');
-		exit();
+		//exit();
 	}
 
 	private function getHeader( $annee )
