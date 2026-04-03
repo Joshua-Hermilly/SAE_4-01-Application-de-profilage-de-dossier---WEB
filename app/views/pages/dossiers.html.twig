@@ -6,8 +6,7 @@
 {% set pageActive = 'dossiers' %}
 
 {% block content %}
-	<div id="dossiers-layout" class="d-flex w-100 overflow-hidden" style="flex: 1 1 auto; min-height: 0;">
-
+	<div id="dossiers-layout" class="d-flex w-100 overflow-hidden">
 
 		{# Sidebar filtre (gauche, caché par défaut) #}
 		{% include 'components/content/assets/filter_open.html.twig'
@@ -19,7 +18,7 @@
 		%}
 
 		{# Contenu principal (toolbar + tableau) #}
-		<div id="main-content" class="d-flex flex-column overflow-hidden" style="flex: 1 1 auto; min-width: 0;">
+		<div id="main-content" class="d-flex flex-column overflow-hidden">
 
 			{# Toolbar #}
 			<div class="d-flex align-items-center gap-2 py-2">

@@ -3,7 +3,7 @@
 	border: none;
 }
 
-#bloc {
+#card-block {
 	background-color: var(--gris-fond-assets);
 	color: var(--blanc);
 	border-radius: 15px;
@@ -13,17 +13,17 @@
 	padding: 0 20px;
 }
 
-#espacement {
+#form-spacing {
 	margin: 20px 0;
 }
 
-#separateur {
+#divider {
 	border: none;
 	border-top: 1px solid var(--gris-text-fond-foncé);
 	margin: 20px 0;
 }
 
-#btnChargement {
+#btn-action {
 	background-color: var(--gris-select-assets);
 	color: var(--blanc);
 	border-radius: 15px;
@@ -33,13 +33,13 @@
 	cursor: pointer;
 }
 
-#btnChargement:hover {
+#btn-action:hover {
 	background-color: var(--gris-text-fond-foncé);
 	border: 2px solid var(--gris-text-fond-foncé);
 	color: var(--noir-text-fond-claire);
 }
 
-#text {
+#text-title {
 	color: var(--gris-text-fond-foncé);
 	text-decoration: none;
 }

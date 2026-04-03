@@ -35,7 +35,7 @@ html {
    HEADER
 ============================================================ */
 
-#main-header {
+.main-header {
 	display: flex;
 	align-items: center;
 }
@@ -45,9 +45,9 @@ html {
 	align-items: center;
 	background-color: var(--gris-fond-assets);
 	border: 1px solid var(--gris-select-assets);
-	border-radius: 22px;
+	border-radius: 35px;
 	flex: 1;
-	height: 54px;
+	min-height: 70px;
 }
 
 #bar-menu-text {
@@ -77,13 +77,13 @@ html {
 	background: var(--gris-fond-assets);
 	color: var(--gris-text-fond-foncé);
 	border: 1px solid var(--gris-select-assets);
-	border-radius: 22px;
+	border-radius: 35px;
 	font-size: 16px;
 	cursor: pointer;
-	height: 54px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	min-height: 70px;
 }
 
 #header-right button:hover {
@@ -150,4 +150,36 @@ html {
 
 .filter-scroll::-webkit-scrollbar-thumb:hover {
 	background: var(--gris-text-fond-foncé);
+}
+
+/* ============================================================
+   Général
+============================================================ */
+
+#card-block {
+	background-color: var(--gris-fond-assets);
+	color: var(--blanc);
+	border: 1px solid var(--gris-select-assets);
+	border-radius: 15px;
+	text-align: center;
+	padding: 0 20px;
+	min-height: 70px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#text-title:hover {
+	color: var(--bleu-icon);
+	text-decoration: underline;
+}
+
+#text-title {
+	color: var(--blanc);
+}
+
+#section-title {
+	color: var(--bleu-icon);
+	text-align: center;
+	display: block;
 }

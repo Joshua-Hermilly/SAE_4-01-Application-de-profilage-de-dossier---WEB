@@ -16,45 +16,17 @@
    CONTENEUR PRINCIPAL
 ============================================================ */
 
-#under-header {
-	width: 100%;
-	margin: 0;
-	padding: 0;
-	min-height: calc(100vh - 68px - 100px); /* 100vh - header height - footer height */
-	display: flex;
-	flex-direction: row;
-	position: relative;
-}
-
-#transparent{
-	background-color: transparent;
-	border: none;
-}
-
-#bloc {
-	background-color: var(--gris-fond-assets);
-	color: var(--blanc);
-	border: 1px solid var(--gris-select-assets);
-	border-radius: 15px;
-	text-align: center;
-	padding: 0 20px;
-	min-height: 70px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-#espacement {
+#form-spacing {
 	margin: 20px 0;
 }
 
-#separateur {
+#divider {
     border: none;
     border-top: 1px solid var(--gris-text-fond-foncé);
     margin: 20px 0;
 }
 
-#bouton {
+#btn-action {
 	background-color: var(--gris-select-assets);
 	color: var(--blanc);
 	border-radius: 15px;
@@ -62,40 +34,23 @@
 	display: block;
 	margin: 0 auto;
 	cursor: pointer;
+	padding: 12px 20px;
+	font-weight: 500;
 }
 
-#bouton:hover {
+#btn-action:hover {
 	background-color: var(--gris-text-fond-foncé);
 	border: 2px solid var(--gris-text-fond-foncé);
 	color: var(--noir-text-fond-claire);
 }
 
-#text {
-	color: var(--gris-text-fond-foncé);
-	text-decoration: none;
-	text-align: left;
-}
-
-#under-title {
-	color: var(--bleu-icon);
-	text-align: center;
-	display: block;
-}
-
-#specialite-checkboxes-specialite_spe,
-#specialite-checkboxes-specialite_opt,
-.specialite-checkboxes {
+#specialite-checkboxes-scroll {
 	max-height: 220px;
 	overflow-y: auto;
 	padding-right: 0.25rem;
 }
 
-#specialite-checkboxes-specialite_spe #list-group-item,
-#specialite-checkboxes-specialite_spe .specialite-checkbox-item,
-#specialite-checkboxes-specialite_opt #list-group-item,
-#specialite-checkboxes-specialite_opt .specialite-checkbox-item,
-.specialite-checkboxes #list-group-item,
-.specialite-checkboxes .specialite-checkbox-item {
+#checkbox-item {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -107,9 +62,7 @@
 	padding-bottom: 0.35rem;
 }
 
-#specialite-checkboxes-specialite_spe input[type="checkbox"],
-#specialite-checkboxes-specialite_opt input[type="checkbox"],
-.specialite-checkboxes input[type="checkbox"],
+#checkbox-item input[type="checkbox"],
 .form-check input[type="checkbox"] {
 	flex: 0 0 auto;
 	min-width: 20px;
@@ -118,43 +71,18 @@
 	height: auto !important;
 }
 
-#specialite-checkboxes-specialite_spe #list-group-item span,
-#specialite-checkboxes-specialite_spe #list-group-item label,
-#specialite-checkboxes-specialite_spe .specialite-checkbox-item span,
-#specialite-checkboxes-specialite_opt #list-group-item span,
-#specialite-checkboxes-specialite_opt #list-group-item label,
-#specialite-checkboxes-specialite_opt .specialite-checkbox-item span,
-.specialite-checkboxes #list-group-item span,
-.specialite-checkboxes #list-group-item label,
-.specialite-checkboxes .specialite-checkbox-item span {
+#checkbox-item span,
+#checkbox-item label {
 	flex: 1 1 auto;
 	min-width: 0;
 	word-break: break-word;
 }
 
-a#text:hover {
-	color: var(--bleu-icon);
-	text-decoration: underline;
-}
-
 /* ============================================================
-   FILTER CLOSE HEADER - Styles
+   PANEL HEADERS - Styles
 ============================================================ */
 
-#filter_close_header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 20px;
-	margin: 0;
-	width: 100%;
-}
-
-/* ============================================================
-   MAP CLOSE HEADER - Styles
-============================================================ */
-
-#map_close_header {
+#panel-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -175,3 +103,16 @@ a#text:hover {
 	width: 0 !important;
 }
 
+/* ============================================================
+   Placement - Styles
+============================================================ */
+
+#dossiers-layout {
+	flex: 1 1 auto; 
+	min-height: 0;
+}
+
+#main-content {
+	flex: 1 1 auto;
+	min-width: 0;
+}

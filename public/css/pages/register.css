@@ -1,9 +1,9 @@
-#transparent{
+#transparent {
 	background-color: transparent;
 	border: none;
 }
 
-#bloc {
+#block-register {
 	background-color: var(--gris-fond-assets);
 	color: var(--blanc);
 	border-radius: 15px;
@@ -13,11 +13,11 @@
 	padding: 0 20px;
 }
 
-#espacement {
+#form-spacing {
 	margin: 20px 0;
 }
 
-#bouton {
+#btn-action {
 	background-color: var(--gris-select-assets);
 	color: var(--blanc);
 	border-radius: 15px;
@@ -27,13 +27,13 @@
 	cursor: pointer;
 }
 
-#bouton:hover {
+#btn-action:hover {
 	background-color: var(--gris-text-fond-foncé);
 	border: 2px solid var(--gris-text-fond-foncé);
 	color: var(--noir-text-fond-claire);
 }
 
-#text {
+#text-title {
 	color: var(--gris-text-fond-foncé);
 	text-decoration: none;
 }
