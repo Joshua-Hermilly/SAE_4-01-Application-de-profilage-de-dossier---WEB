@@ -22,10 +22,9 @@ function initMap()
 
     // MAP
     map = L.map('map').setView([latHavre, lonHavre], vue);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-	{
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+        maxZoom: 19
     }).addTo(map);
 }
 
@@ -57,7 +56,7 @@ async function getCarte()
 
 
         // Point
-            makCluster = L.markerClusterGroup().addTo(map);
+        makCluster = L.markerClusterGroup().addTo(map);
         if (Array.isArray(donnees) && donnees.length > 0)
 		{
             donnees.forEach(etablissement => { ajouterMarqueur(etablissement); });
@@ -71,8 +70,8 @@ async function getCarte()
 /*------------------------*/
 function ajouterMarqueur(etablissement)
 {
-    const lat = etablissement.localisation_latitude;
-    const lon = etablissement.localisation_longitude;
+    const lat = etablissement.etablissement_latitude;
+    const lon = etablissement.etablissement_longitude;
 
     // Coordonnées ?
     if (lat === null || lon === null)
@@ -84,8 +83,8 @@ function ajouterMarqueur(etablissement)
     // Markeur
     const marker     = L.marker([lat, lon]);
 	const nomEtab    = etablissement.etablissement_nom                    ;
-    const codePostal = etablissement.localisation_code_postal;
-    const commune    = etablissement.localisation_commune    ;
+    const codePostal = etablissement.etablissement_code_postal;
+    const commune    = etablissement.etablissement_commune    ;
 
     makCluster.addLayer(marker);
     //marker.bindPopup(`<strong>${nomEtab}</strong><br/>${commune}${codePostal}`);
@@ -97,5 +96,5 @@ function ajouterMarqueur(etablissement)
 document.addEventListener('DOMContentLoaded', async () =>
 {
     initMap();
-    //await getCarte();
+    await getCarte();
 });

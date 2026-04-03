@@ -123,8 +123,8 @@ function creerBtnPage( maxPage, actPage )
 	btnSvt.style.color  = "#FFFFFFFF";
 	btnPrc.style.color  = "#FFFFFFFF";
 
-	console.log(maxPage  )
-	console.log(actPage+1)
+	//console.log(maxPage  )
+	//console.log(actPage+1)
 
 	if ( actPage >= maxPage    ) { btnSvt.disabled = true; btnSvt.style.color =  "#3f3f3f;"; }
 	if ( actPage ==         1  ) { btnPrc.disabled = true; btnPrc.style.color =  "#3d3b3b;"; }
@@ -221,7 +221,7 @@ async function getData( indexPage, lien, filters = filtresCourant )
 		});
 
 		const donnees = await response.json();
-		console.log(donnees)
+		//console.log(donnees)
 		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
 
 		if ( donnees['erreur'] )
@@ -269,7 +269,6 @@ attacherPagination();
 /*------------------------*/
 /* Event                  */
 /*------------------------*/
-// tBody.addEventListener ( "click", () => getDossierCandidat(             1) );
 tableau.addEventListener( "click", (event) => selectionFaite (event) );
 
 if (filterForm)
