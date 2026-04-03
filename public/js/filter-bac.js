@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function ()
 
     function hideSpecialiteSection()
     {
-        const speLabel = document.querySelector('[data-filter-name="specialite_spe"] > label');
+        const speLabel = document.querySelector('[data-filter-name="specialite_spe"] > p');
         const speBlock = document.getElementById("specialite-checkboxes-specialite_spe");
 
         console.log(speLabel)
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function ()
             if (cb.name === "specialite_spe[]")
             {
                 cb.checked = false;
-                const container = cb.closest("label") || cb.parentElement;
+                const container = cb.closest("p") || cb.parentElement;
                 if (container)
                 {
                     container.style.display = "none";
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function ()
 
     function showSpecialiteSection()
     {
-        const speLabel = document.querySelector('[data-filter-name="specialite_spe"] > label');
+        const speLabel = document.querySelector('[data-filter-name="specialite_spe"] > p');
         const speBlock = document.getElementById("specialite-checkboxes-specialite_spe");
 
         if (speLabel) speLabel.style.display = "block";
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function ()
 
     function hideOptionSection()
     {
-        const optLabel = document.querySelector('[data-filter-name="specialite_opt"] > label');
+        const optLabel = document.querySelector('[data-filter-name="specialite_opt"] > p');
         const optBlock = document.getElementById("specialite-checkboxes-specialite_opt");
 
         if (optLabel) optLabel.style.display = "none";
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function ()
             if (cb.name === "specialite_opt[]")
             {
                 cb.checked = false;
-                const container = cb.closest("label") || cb.parentElement;
+                const container = cb.closest("p") || cb.parentElement;
 
                 if (container) container.style.display = "none";
             }
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function ()
 
     function showOptionSection()
     {
-        const optLabel = document.querySelector('[data-filter-name="specialite_opt"] > label');
+        const optLabel = document.querySelector('[data-filter-name="specialite_opt"] > p');
         const optBlock = document.getElementById("specialite-checkboxes-specialite_opt");
 
         if (optLabel) optLabel.style.display = "block";
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function ()
                                              if (checkbox.name === "specialite_spe[]")
                                              {
                                                  const speCode = checkbox.getAttribute("data-code");
-                                                 const container = checkbox.closest("label") || checkbox.parentElement;
+                                                const container = checkbox.closest("p") || checkbox.parentElement;
                                                  if (!container)
                                                  {
                                                      return;
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function ()
                                              if (checkbox.name === "specialite_opt[]")
                                              {
                                                  const optCode = checkbox.getAttribute("data-code");
-                                                 const container = checkbox.closest("label") || checkbox.parentElement;
+                                                const container = checkbox.closest("p") || checkbox.parentElement;
                                                  if (!container)
                                                  {
                                                      return;

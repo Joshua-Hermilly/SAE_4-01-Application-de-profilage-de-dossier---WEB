@@ -16,11 +16,11 @@
 
 						{% for section in sections %}
 							<div id="filter-section" class="mb-4">
-								<label id="section-title" class="text-uppercase small">{{ section.label }}</label>
+							<p id="section-title" class="text-uppercase small">{{ section.label }}</p>
 								<div class="d-flex flex-column gap-3">
 									{% for filter in section.filters %}
 										<div class="d-flex flex-column gap-1" data-filter-name="{{ filter.name }}">
-											<label class="small text-white-50">{{ filter.label }}</label>
+									<p class="small text-white-50">{{ filter.label }}</p>
 											{% if filter.type == 'text' %}
 												<input class="form-control form-control-sm"
 													type="text"
@@ -72,7 +72,7 @@
 														type="checkbox"
 														id="filter_{{ filter.name }}"
 														name="{{ filter.name }}" />
-													<label class="form-check-label text-light" for="filter_{{ filter.name }}"> {{ filter.label }} </label>
+													<p class="form-check-label text-light"> {{ filter.label }} </p>
 												</div>
 											{% elseif filter.type == 'number' %}
 												<div class="d-flex gap-2 align-items-center">
