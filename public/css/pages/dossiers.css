@@ -44,12 +44,6 @@
 	color: var(--noir-text-fond-claire);
 }
 
-#specialite-checkboxes-scroll {
-	max-height: 220px;
-	overflow-y: auto;
-	padding-right: 0.25rem;
-}
-
 #checkbox-item {
 	display: flex;
 	align-items: center;
@@ -76,6 +70,13 @@
 	flex: 1 1 auto;
 	min-width: 0;
 	word-break: break-word;
+}
+
+#specialite-checkboxes-specialite_spe,
+#specialite-checkboxes-specialite_opt {
+	max-height: 220px;
+	overflow-y: auto;
+	padding-right: 0.25rem;
 }
 
 /* ============================================================
