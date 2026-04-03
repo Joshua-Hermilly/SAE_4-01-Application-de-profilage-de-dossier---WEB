@@ -2,6 +2,8 @@
 
 require_once '../app/core/Repository.php';
 require_once '../app/entities/Etablissement.php';
+require_once '../app/repositories/CandidatRepository.php';
+require_once '../app/repositories/LocalisationRepository.php';
 
 class EtablissementRepository
 {
@@ -146,5 +148,37 @@ class EtablissementRepository
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		if ($row) { return $row['etablissement_id']; }
 		return -1;
+	}
+
+	public function getMaxDistance()
+	{
+		$sql  = "SELECT MAX(localisation_distance) AS max_distance FROM LOCALISATION";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->execute();
+
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $row ? (float) $row['max_distance'] : -1;
+	}
+
+	public function findByDistance($distance)
+	{
+		$sql = "SELECT 
+    				E.*
+				FROM   
+				    ETABLISSEMENT  AS E
+					LEFT JOIN LOCALISATION AS L ON L.localisation_id = E.localisation_id
+				WHERE  
+				    L.localisation_distance <= :distance";
+
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':distance', $distance);
+		$stmt->execute();
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$result[] = $this->createEtablissementFromRow($row);
+		}
+		return $result;
 	}
 }

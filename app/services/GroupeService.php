@@ -1,22 +1,22 @@
 <?php
 
-require_once '../app/entities/DossierCandidat.php';
+require_once '../app/entities/Groupe.php';
 
-require_once '../app/repositories/DossierCandidatRepository.php';
+require_once '../app/repositories/GroupeRepository.php';
 
-class DossierCandidatService
+class GroupeService
 {
 	/*-------------------------------*/
 	/* Repository                    */
 	/*-------------------------------*/
-	private $dossierCandidatRepository;
+	private $GroupeRepository;
 
 	/*-------------------------------*/
 	/* Constructeur                  */
 	/*-------------------------------*/
 	function __construct()
 	{
-		$this->dossierCandidatRepository = new DossierCandidatRepository();
+		$this->GroupeRepository = new GroupeRepository();
 	}
 
 	/*-------------------------------*/
@@ -24,17 +24,17 @@ class DossierCandidatService
 	/*-------------------------------*/
 	public function findAllDossierCandidat(): array
 	{
-		return $this->dossierCandidatRepository->findAll();
+		return $this->GroupeRepository->findAll();
 	}
 
 	public function findAtPageDossierCandidat(int $page, array $filters = []): array
 	{
-		return $this->dossierCandidatRepository->findByPage($page, $filters);
+		return $this->GroupeRepository->findByPage($page, $filters);
 	}
 
 	public function maxPage(array $filters = []): int
 	{
-		return max(1, (int) ceil($this->dossierCandidatRepository->nbMaxDossier($filters) / 25));
+		return max(1, (int) ceil($this->GroupeRepository->nbMaxDossier($filters) / 25));
 	}
 
 }

@@ -99,7 +99,7 @@ class DiplomeRepository
 			$row['diplome_serie_code'   ],
 			$row['diplome_serie_libelle'],
 			$row['specialite_id'        ],
-			$candidats                   ,
+			$candidats
 		);
 	}
 

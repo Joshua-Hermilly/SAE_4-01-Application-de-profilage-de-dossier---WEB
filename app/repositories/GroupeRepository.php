@@ -72,6 +72,96 @@ class GroupeRepository
 		);
 	}
 
+	private function buildFilteredQuery(array $filters, int $page, ?int $limit, bool $count = false): array
+	{
+		$select = $count
+			? 'SELECT COUNT(DISTINCT G.groupe_id)'
+			: 'SELECT G.*';
+
+		$sql    = $select . " FROM GROUPE AS G\n";
+		$joins  = [];
+		$conds  = [];
+		$params = [];
+
+		if (!empty($filters['nom_groupe']))
+		{
+			$conds[] = 'G.groupe_nom = :nom_groupe';
+			$params[':nom_groupe'] = $filters['nom_groupe'];
+		}
+
+		if (!empty($filters['critere']))
+		{
+			$joins[] = "LEFT JOIN FILTRE  AS F ON F.groupe_id  = G.groupe_id";
+			$joins[] = "LEFT JOIN CRITERE AS C ON C.critere_id = F.critere_id";
+
+			$values = is_array($filters['critere']) ? $filters['critere'] : [$filters['critere']];
+			$placeholders = [];
+			foreach ($values as $idx => $val)
+			{
+				$ph = ':critere_' . $idx;
+				$placeholders[]      = $ph;
+				$params[$ph] = $val;
+			}
+			if (!empty($placeholders))
+			{
+				$conds[] = 'C.critere_filtre IN (' . implode(', ', $placeholders) . ')';
+			}
+		}
+
+		$minKey = 'note_dossier_min';
+		$maxKey = 'note_dossier_max';
+		if (isset($filters[$minKey]) && $filters[$minKey] !== '' && $filters[$minKey] !== null)
+		{
+			$conds[] = 'G.groupe_note_dossier >= :' . $minKey;
+			$params[':' . $minKey] = (float) $filters[$minKey];
+		}
+		if (isset($filters[$maxKey]) && $filters[$maxKey] !== '' && $filters[$maxKey] !== null)
+		{
+			$conds[] = 'G.groupe_note_dossier <= :' . $maxKey;
+			$params[':' . $maxKey] = (float) $filters[$maxKey];
+		}
+
+		if (!empty($joins))
+		{
+			$sql .= implode("\n", $joins) . "\n";
+		}
+
+		if (!empty($conds))
+		{
+			$sql .= 'WHERE ' . implode(' AND ', $conds) . "\n";
+		}
+
+		if ($count) { return [$sql, $params]; }
+
+		$sql .= "ORDER BY G.groupe_nom, G.groupe_id\n";
+		if ($limit !== null)
+		{
+			$sql .= "LIMIT :limit\nOFFSET :offset";
+			$params[':offset'] = max(0, ($page - 1) * $limit);
+			$params[':limit']  = $limit;
+		}
+
+		return [$sql, $params];
+	}
+
+	public function findByPage(int $page, array $filters = [], int $limit = 25): array
+	{
+		[$sql, $params] = $this->buildFilteredQuery($filters, $page, $limit, false);
+		$stmt = $this->pdo->prepare($sql);
+		foreach ($params as $key => $value)
+		{
+			$stmt->bindValue($key, $value);
+		}
+		$stmt->execute();
+
+		$result = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$result[] = $this->createGroupeFromRow($row);
+		}
+		return $result;
+	}
+
 	public function findById(int $id): ?Groupe
 	{
 		$sql  = "SELECT * FROM GROUPE WHERE groupe_id = :id";
@@ -96,5 +186,29 @@ class GroupeRepository
 			$result[] = $this->createGroupeFromRow($row);
 		}
 		return $result;
+	}
+
+	public function nbMaxDossier(array $filters = []): int
+	{
+		[$sql, $params] = $this->buildFilteredQuery($filters, 1, null, true);
+		$stmt = $this->pdo->prepare($sql);
+		foreach ($params as $key => $value)
+		{
+			$stmt->bindValue($key, $value);
+		}
+		$stmt->execute();
+		return (int) $stmt->fetchColumn();
+	}
+
+	public function getDistinctNames(): array
+	{
+		$sql  = "SELECT DISTINCT groupe_nom FROM GROUPE WHERE groupe_nom IS NOT NULL AND TRIM(groupe_nom) <> '' ORDER BY groupe_nom";
+		$stmt = $this->pdo->query($sql);
+		$names = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$names[] = $row['groupe_nom'];
+		}
+		return $names;
 	}
 }

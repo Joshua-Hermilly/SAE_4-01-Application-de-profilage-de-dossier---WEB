@@ -2,21 +2,29 @@
 /* CONSTANTES             */
 /*------------------------*/
 // Tableau
-const tableau  = document.getElementById( "tableau"         );
-const dvErreur = document.getElementById( "erreur"          );
-const page     = document.getElementById( "page"            );
-const trHeader = document.getElementById( "trHead"          );
-const tBody    = document.getElementById( "tBody"           );
+const tableau    = document.getElementById( "tableau"         );
+const dvErreur   = document.getElementById( "erreur"          );
+const page       = document.getElementById( "page"            );
+const trHeader   = document.getElementById( "trHead"          );
+const tBody      = document.getElementById( "tBody"           );
+const filterForm = document.getElementById( 'filterForm'      );
 
 // Bouton
 const btnPrc   = document.getElementById( "btnPrc"          );
 const btnSvt   = document.getElementById( "btnSvt"          );
-const pageAct  = document.getElementById( "pageAct"          );
+const pageAct  = document.getElementById( "pageAct"         );
 const btnDeb   = document.getElementById( "btnDeb"          );
 const btnFin   = document.getElementById( "btnFin"          );
 
 // Infos page
 const infos    = document.getElementById( "pagination-info" );
+
+let filtresCourant = {};
+
+// Type de page courante
+const currentPath     = window.location.pathname.toLowerCase();
+const isGroupePage    = currentPath.includes("groupes.php"   );
+const isFormationPage = currentPath.includes("formations.php");
 
 
 /*------------------------*/
@@ -29,14 +37,14 @@ function creerHeader( headers, isAdmin )
 	for ( let cpt = 0; cpt < headers.length-1; cpt++ )
 	{
 		th = `<th scope="col" class="border-end">${headers[cpt]}</th>`;
-
 		trHeader.innerHTML+= th;
 	}
 
 	if (isAdmin)
 	{
 		const th    = document.createElement( 'th'    );
-		const input    = document.createElement( 'input' );
+		const input = document.createElement( 'input' );
+
 		input.classList.add( "form-check-input" );
 		input.classList.add( "border-dark"      );
 		input.classList.add( "rounded-1"        );
@@ -71,19 +79,13 @@ function creerTableau( headers, dossiers, isAdmin )
 
 			if ( cptH === 0 )
 			{
+				let color = dossiers[cptD]['Couleur'] || dossiers[cptD]['groupe_couleur'];
 				th = `<th>
-					      <span class="badge border border-dark text-dark rounded-2 p-2">${valeur}</span>
+					      <span class="badge border border-dark text-dark rounded-2 p-2" style="background-color: ${color}" >${valeur}</span>
 				     </th>`;
 			}
-			else if ( valeur === "NaN" || valeur === "Non définie" )
-			{
-				th = `<th style="color: gray">${valeur}</th>`;
-
-			}
-			else
-			{
-				th = `<th>${valeur}</th>`;
-			}
+			else if ( valeur === "NaN" || valeur === "Non définie" ) { th = `<th style="color: gray">${valeur}</th>`; }
+			else                                                     { th = `<th>${valeur}</th>`;                     }
 
 			tr.innerHTML += th;
 		}
@@ -99,7 +101,6 @@ function creerTableau( headers, dossiers, isAdmin )
 			input.id          =  "cb"+dossiers[cptD][headers[0]];
 			input.type        = "checkbox";
 
-			//console.log(input.id)
 			if ( sessionStorage.getItem( input.id         ) === "selectionner"                                         ) { input.checked = true; }
 			if ( sessionStorage.getItem( "cbTous"    ) &&  sessionStorage.getItem( input.id ) !== "désélectionner") { input.checked = true; }
 
@@ -118,21 +119,43 @@ function creerBtnPage( maxPage, actPage )
 	pageAct.textContent = actPage;
 	pageAct.value       = actPage;
 	btnFin.value        = maxPage;
-	btnSvt.disabled     =  btnPrc.disabled = btnFin.disabled = btnDeb.disabled = false;
-	btnSvt.style.color = "#FFFFFFFF";
-	btnPrc.style.color = "#FFFFFFFF";
+	btnSvt.disabled     = btnPrc.disabled = btnFin.disabled = btnDeb.disabled = false;
+	btnSvt.style.color  = "#FFFFFFFF";
+	btnPrc.style.color  = "#FFFFFFFF";
 
-	console.log(maxPage)
+	console.log(maxPage  )
 	console.log(actPage+1)
 
-	if ( maxPage <= actPage+1  ) {btnSvt.disabled = true; btnSvt.style.color =  "#3f3f3f;"; }
-	if ( actPage ==         1  ) {btnPrc.disabled = true; btnPrc.style.color =  "#3d3b3b;"; }
+	if ( actPage >= maxPage    ) { btnSvt.disabled = true; btnSvt.style.color =  "#3f3f3f;"; }
+	if ( actPage ==         1  ) { btnPrc.disabled = true; btnPrc.style.color =  "#3d3b3b;"; }
 }
 
 function afficherErreur( erreur )
 {
+	tableau.style.display  = "none";
+
 	dvErreur.textContent   = erreur;
 	dvErreur.style.display = "block";
+}
+
+function serialiserFiltres()
+{
+	if (!filterForm) { return {}; }
+
+	const formData = new FormData(filterForm);
+	const filters = {};
+
+	for (const [key, value] of formData.entries())
+	{
+		if (key === 'page') { continue; }
+
+		const normalizedKey = key.endsWith('[]') ? key.slice(0, -2) : key;
+		if (filters[normalizedKey] === undefined      ) { filters[normalizedKey] = value;                           }
+		else if (Array.isArray(filters[normalizedKey])) { filters[normalizedKey].push(value);                       }
+		else                                            { filters[normalizedKey] = [filters[normalizedKey], value]; }
+	}
+
+	return filters;
 }
 
 function selectionFaite(event)
@@ -147,19 +170,12 @@ function selectionFaite(event)
 			if ( event.target.checked )
 			{
 				sessionStorage.setItem( "cbTous" , 'selectionner' );
-
-				for ( let cpt = 0; cpt < lstCb.length; cpt++ )
-				{
-					lstCb[cpt].checked = true;
-				}
+				for ( let cpt = 0; cpt < lstCb.length; cpt++ ) { lstCb[cpt].checked = true; }
 			}
 			else
 			{
 				sessionStorage.removeItem( event.target.id );
-				for ( let cpt = 0; cpt < lstCb.length; cpt++ )
-				{
-					lstCb[cpt].checked = false;
-				}
+				for ( let cpt = 0; cpt < lstCb.length; cpt++ ) { lstCb[cpt].checked = false; }
 			}
 		}
 		else if ( sessionStorage.getItem( "cbTous" ) === 'selectionner' )
@@ -189,24 +205,23 @@ function selectionFaite(event)
 /*------------------------*/
 /* Fetch                  */
 /*------------------------*/
-async function getDossierCandidat( indexPage )
+async function getData( indexPage, lien, filters = filtresCourant )
 {
 	try
 	{
-		const response = await fetch('./dossierGet.php', {
+		const response = await fetch(lien,
+		{
 			method : 'POST',
 			headers:
 			{
 				'Token'       : 'SAE-4.01_WEB_TOKEN',
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ page:indexPage })
+			body: JSON.stringify({ page:indexPage, ...filters })
 		});
 
 		const donnees = await response.json();
-		//console.log(donnees       )
-		//console.log(sessionStorage)
-
+		console.log(donnees)
 		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
 
 		if ( donnees['erreur'] )
@@ -215,29 +230,57 @@ async function getDossierCandidat( indexPage )
 			return;
 		}
 
-		if ( donnees['dossiers'] !== null )
-		{
-			tableau.style.display = "";
-		}
-		else
-		{
-			document.getElementById( "vide"    ).style.display = "block";
-		}
-		creerHeader ( donnees['headers' ], donnees['isAdmin' ]                     );
-		creerTableau( donnees['headers' ], donnees['dossiers'], donnees['isAdmin'] );
-		creerBtnPage( donnees['maxPage' ], donnees['actPage' ]                     );
+		dvErreur.style.display = "none";
+		tableau .style.display = "";
+		creerHeader ( donnees['headers'], donnees['isAdmin']                     );
+		creerTableau( donnees['headers'], donnees['data'   ], donnees['isAdmin'] );
+		creerBtnPage( donnees['maxPage'], donnees['actPage']                     );
 
 	} catch (error) { console.error('Erreur :', error); }
 }
-getDossierCandidat(1);
 
+function getLienCourant()
+{
+	if      (isGroupePage   ) { return './GroupeGet.php'   ; }
+	else if (isFormationPage) { return './FormationGet.php'; }
+	else                      { return './dossierGet.php'  ; }
+}
+
+function chargerPage(indexPage, filters = filtresCourant)
+{
+	const lien = getLienCourant();
+	return getData(indexPage, lien, filters);
+}
+
+function initialiserTableau() { chargerPage(1); }
+initialiserTableau();
+
+function attacherPagination()
+{
+	if (!btnPrc || !btnSvt || !btnDeb || !btnFin || !pageAct) { return; }
+
+	btnPrc.addEventListener( "click", () => chargerPage(+pageAct.value - 1) );
+	btnSvt.addEventListener( "click", () => chargerPage(+pageAct.value + 1) );
+	btnDeb.addEventListener( "click", () => chargerPage(1                 ) );
+	btnFin.addEventListener( "click", () => chargerPage(+btnFin.value     ) );
+}
+attacherPagination();
 
 /*------------------------*/
 /* Event                  */
 /*------------------------*/
 // tBody.addEventListener ( "click", () => getDossierCandidat(             1) );
-tableau.addEventListener( "click",(event) => selectionFaite    (event)  );
-btnPrc.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value - 1) );
-btnSvt.addEventListener( "click", ()    => getDossierCandidat(+pageAct.value + 1) );
-btnDeb.addEventListener( "click", ()    => getDossierCandidat(   1) );
-btnFin.addEventListener( "click", ()    => getDossierCandidat(   btnFin.value) );
+tableau.addEventListener( "click", (event) => selectionFaite (event) );
+
+if (filterForm)
+{
+	filterForm.addEventListener('submit', function (event)
+	{
+		const bouton = event.submitter;
+		if (bouton && bouton.dataset && bouton.dataset.action === 'creer-groupe') { return; }
+
+		event.preventDefault();
+		filtresCourant = serialiserFiltres();
+		chargerPage(1, filtresCourant);
+	});
+}
