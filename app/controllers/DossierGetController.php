@@ -75,7 +75,7 @@ class DossierGetController extends Controller
 		([
 			'isAdmin'  => $isAdmin,
 			'headers'  => $this          ->getHeader(),
-			'dossiers' => $this          ->dossierCandidats,
+			'data'     => $this          ->dossierCandidats,
 			'maxPage'  => $maxPage,
 			'actPage'  => $page
 		]);

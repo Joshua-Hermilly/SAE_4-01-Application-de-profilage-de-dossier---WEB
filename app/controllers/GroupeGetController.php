@@ -59,7 +59,7 @@ class GroupeGetController extends Controller
 		([
 			'isAdmin'  => $isAdmin,
 			'headers'  => $this          ->getHeader(),
-			'groupes' => $this          ->groupes,
+			'data'     => $this          ->groupes,
 			'maxPage'  => $maxPage,
 			'actPage'  => $page
 		]);
