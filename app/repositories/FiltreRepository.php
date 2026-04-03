@@ -17,7 +17,6 @@ class FiltreRepository
 			'annee'           => [
 				'sql'   => $this->selectDistinct('CANDIDAT', 'candidat_annee'),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-				'group_by_tags' => ['annee'],
 			],
 			'civilite'        => [
 				'sql'   => $this->selectDistinct('CANDIDAT', 'candidat_civilite'),
@@ -34,6 +33,10 @@ class FiltreRepository
 						default => 'Boursier (' . $row['val'] . ')',
 					};
 				},
+			],
+			'profil'          => [
+				'sql'   => $this->selectDistinct('CANDIDAT', 'candidat_profil'),
+				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
 			'type_bac'        => [
 				'sql'   => $this->selectDistinct('DIPLOME', 'diplome_type_libelle'),
