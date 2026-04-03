@@ -25,6 +25,18 @@ class DossierFiltreService
 		$config = [
 			'title'    => 'Filtres des dossiers',
 			'sections' => [
+				'anneee' => [
+					'label'   => 'Année',
+					'filters' => [
+						[
+							'name'     => 'annee',
+							'label'    => 'Année de candidature',
+							'column'   => 'CANDIDAT.candidat_annee',
+							'type'     => 'select',
+							'options'  => [],
+						],
+					],
+				],
 				'candidat' => [
 					'label'   => 'Candidat',
 					'filters' => [
