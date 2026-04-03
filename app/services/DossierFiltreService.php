@@ -123,19 +123,7 @@ class DossierFiltreService
 							'max'      => 20,
 						],
 					],
-				],
-				'etablissement' => [
-					'label'   => 'Établissement',
-					'filters' => [
-						[
-							'name'     => 'departement',
-							'label'    => 'Département',
-							'column'   => 'LOCALISATION.localisation_departement',
-							'type'     => 'select',
-							'options'  => [],
-						],
-					],
-				],
+				]
 			],
 		];
 

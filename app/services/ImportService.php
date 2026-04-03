@@ -6,14 +6,12 @@ require_once '../app/services/RechercheLocalisationService.php';
 
 require_once '../app/entities/Candidat.php';
 require_once '../app/entities/Etablissement.php';
-require_once '../app/entities/Localisation.php';
 require_once '../app/entities/Diplome.php';
 require_once '../app/entities/FormationSup.php';
 require_once '../app/entities/Specialite.php';
 
 require_once '../app/repositories/CandidatRepository.php';
 require_once '../app/repositories/DiplomeRepository.php';
-require_once '../app/repositories/LocalisationRepository.php';
 require_once '../app/repositories/EtablissementRepository.php';
 require_once '../app/repositories/FormationSupRepository.php';
 require_once '../app/repositories/SpecialiteRepository.php';
@@ -57,7 +55,6 @@ class ImportService
 	/*-------------------------------*/
 	/* Repository                    */
 	/*-------------------------------*/
-	private $localisationRepository;
 	private $candidatRepository;
 	private $etablissementRepository;
 	private $diplomeRepository;
@@ -67,7 +64,6 @@ class ImportService
 	/*-------------------------------*/
 	/* Entitées                      */
 	/*-------------------------------*/
-	private array $localisations;
 	private array $etablissements;
 	private array $diplomes;
 	private array $formationsSup;
@@ -84,21 +80,19 @@ class ImportService
 	/*-------------------------------*/
 	function __construct()
 	{
-		$this->localisationRepository  = new LocalisationRepository ();
-		$this->etablissementRepository = new EtablissementRepository();
-		$this->diplomeRepository       = new DiplomeRepository      ();
-		$this->formationsSupRepository = new FormationSupRepository ();
-		$this->specialiteRepository    = new SpecialiteRepository   ();
-		$this->candidatRepository      = new CandidatRepository     ();
+		$this->etablissementRepository      = new EtablissementRepository            ();
+		$this->diplomeRepository            = new DiplomeRepository                  ();
+		$this->formationsSupRepository      = new FormationSupRepository             ();
+		$this->specialiteRepository         = new SpecialiteRepository               ();
+		$this->candidatRepository           = new CandidatRepository                 ();
 
-		$this->localisations  = $this->localisationRepository ->findAll();
-		$this->etablissements = $this->etablissementRepository->findAll();
-		$this->diplomes       = $this->diplomeRepository      ->findAll();
-		$this->formationsSup  = $this->formationsSupRepository->findAll();
-		$this->specialites    = $this->specialiteRepository   ->findAll();
-		$this->candidats      = $this->candidatRepository     ->findAll();
+		$this->etablissements               = $this->etablissementRepository->findAll();
+		$this->diplomes                     = $this->diplomeRepository      ->findAll();
+		$this->formationsSup                = $this->formationsSupRepository->findAll();
+		$this->specialites                  = $this->specialiteRepository   ->findAll();
+		$this->candidats                    = $this->candidatRepository     ->findAll();
 
-		$this->serviceRechercheLocalisation = new RechercheLocalisationService();
+		$this->serviceRechercheLocalisation = new RechercheLocalisationService       ();
 	}
 
 	/*-------------------------------*/
@@ -116,8 +110,7 @@ class ImportService
 		{
 			if (count($ligne) < count(self::CLEES_COLONNES)) { continue; } //skip les lignes problematiques
 
-			$localisation  = $this->createLoc( $ligne                                                  );
-			$etablissement = $this->createEtb( $ligne, $localisation                                   );
+			$etablissement = $this->createEtb( $ligne                                                  );
 			$specialite    = $this->createSpt( $ligne                                                  );
 			$diplome       = $this->createDpm( $ligne, $specialite                                     );
 			$formationSup  = $this->createFms( $ligne                                                  );
@@ -132,7 +125,6 @@ class ImportService
 		}
 
 		// Insertion en base
-		$this->localisationRepository ->creates($this->localisations );
 		$this->etablissementRepository->creates($this->etablissements);
 
 		//ajout des localisation
@@ -167,10 +159,12 @@ class ImportService
 	/*-------------------------------*/
 	/* Create                        */
 	/*-------------------------------*/
-	private function createLoc(array $ligne): ?Localisation
+	private function createEtb(array $ligne)
 	{
-		$localisation = new Localisation(
+		$etablissement = new Etablissement
+		(
 			0,
+			$this->getCol($ligne, 'etab_nom'       ),
 			$this->getCol($ligne, 'pays'           ),
 			$this->getCol($ligne, 'commune_cp'     ),
 			$this->getCol($ligne, 'commune_libelle'),
@@ -180,34 +174,13 @@ class ImportService
 			null
 		);
 
-		foreach ($this->localisations as $loc)
-		{
-			if ( $localisation->getLocalisationPays       () === $loc->getLocalisationPays       () &&
-				 $localisation->getLocalisationCodePostal () === $loc->getLocalisationCodePostal () &&
-				 $localisation->getLocalisationCommune    () === $loc->getLocalisationCommune    () &&
-				 $localisation->getLocalisationDepartement() === $loc->getLocalisationDepartement()    )
-			{
-				return $loc;
-			}
-		}
-
-		$this->localisations[] = $localisation;
-		return $localisation;
-	}
-
-	private function createEtb(array $ligne, $localisation): ?Etablissement
-	{
-		$etablissement = new Etablissement(
-			0,
-			$this->getCol($ligne, 'etab_nom'),
-			$localisation,
-		);
-
 		foreach ($this->etablissements as $etab)
 		{
-			if ( $etablissement->getEtablissementNom()                              === $etab->getEtablissementNom()                              &&
-				 $etablissement->getLocalisation    ()->getLocalisationCommune   () === $etab->getLocalisation    ()->getLocalisationCommune   () &&
-				 $etablissement->getLocalisation    ()->getLocalisationCodePostal() === $etab->getLocalisation    ()->getLocalisationCodePostal()    )
+			if ( $etablissement->getEtablissementNom        () === $etab->getEtablissementNom        () &&
+				 $etablissement->getEtablissementPays       () === $etab->getEtablissementPays       () &&
+			     $etablissement->getEtablissementCommune    () === $etab->getEtablissementCommune    () &&
+			     $etablissement->getEtablissementCodePostal () === $etab->getEtablissementCodePostal () &&
+			     $etablissement->getEtablissementDepartement() === $etab->getEtablissementDepartement()    )
 			{
 				return $etab;
 			}
@@ -218,7 +191,7 @@ class ImportService
 		return $etablissement;
 	}
 
-	private function createDpm(array $ligne, $specialite): ?Diplome
+	private function createDpm(array $ligne, $specialite)
 	{
 		$diplome = new Diplome
 		(
@@ -253,7 +226,7 @@ class ImportService
 		$f2 = (string)($this->getCol($ligne, 'formation') ?? '');
 
 		$filiere = $f1 !== '' ? $f1 : ($f2 !== '' ? $f2 : null);
-		if ($filiere === null) return null;
+		if ($filiere === null) { return null; }
 
 		$formationSup = new FormationSup
 		(
@@ -278,7 +251,7 @@ class ImportService
 	private function createSpt(array $ligne): ?Specialite
 	{
 		$combinaison = (string)($this->getCol($ligne, 'spe_combinaison') ?? '');
-		$parties = explode('/', $combinaison);
+		$parties     = explode('/', $combinaison);
 
 		$spe1 = trim(($parties[0] ?? '')) ?: null;
 		$spe2 = trim(($parties[1] ?? '')) ?: null;
@@ -312,9 +285,10 @@ class ImportService
 		return $specialite;
 	}
 
-	private function createCdt(array $ligne, $etablissement, $diplome, $formationSup, $annee): Candidat
+	private function createCdt(array $ligne, $etablissement, $diplome, $formationSup, $annee)
 	{
-		$candidat = new Candidat(
+		$candidat = new Candidat
+		(
 			$this->getCol($ligne, 'candidat_code'  ),
 			$this->getCol($ligne, 'candidat_nom'   ),
 			$this->getCol($ligne, 'candidat_prenom'),
@@ -328,8 +302,8 @@ class ImportService
 			$annee,
 			$etablissement?->getEtablissementId(),
 			null,
-			$formationSup?->getFormationId(),
-			$diplome->getDiplomeId(),
+			$formationSup ?->getFormationId    (),
+			$diplome      ?->getDiplomeId      (),
 		);
 
 		foreach ($this->candidats as $cdt)
@@ -359,11 +333,7 @@ class ImportService
 	{
 		$raw = (string)($value ?? '');
 
-		if (preg_match('/^\d/', $raw) === 1)
-		{
-			return (float) $raw;
-		}
-
+		if (preg_match('/^\d/', $raw) === 1)	{ return (float) $raw;}
 		return null;
 	}
 }

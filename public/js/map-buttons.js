@@ -1,20 +1,14 @@
-document.addEventListener("DOMContentLoaded", function () {
-
+document.addEventListener("DOMContentLoaded", function ()
+{
     const collapseBtn = document.getElementById("map_collapse_btn");
-    const expandBtn   = document.getElementById("map_expand_btn");
-    const sidebar     = document.getElementById("map_sidebar");
-    const closeBar    = document.getElementById("map_close_bar");
+    const expandBtn   = document.getElementById("map_expand_btn"  );
+    const sidebar     = document.getElementById("map_sidebar"     );
+    const closeBar    = document.getElementById("map_close_bar"   );
 
     function initializeMap()
     {
-        if (sidebar)
-        {
-            sidebar.classList.add("d-none");
-        }
-        if (closeBar)
-        {
-            closeBar.classList.remove("d-none");
-        }
+        if (sidebar ) { sidebar .classList.add   ("d-none"); }
+        if (closeBar) { closeBar.classList.remove("d-none"); }
     }
 
     initializeMap();
