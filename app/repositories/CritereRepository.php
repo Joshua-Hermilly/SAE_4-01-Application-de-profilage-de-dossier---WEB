@@ -33,6 +33,32 @@ class CritereRepository
         );
     }
 
+	public function findAll(): array
+	{
+		$sql  = "SELECT * FROM CRITERE ORDER BY critere_id";
+		$stmt = $this->pdo->query($sql);
+
+		$items = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$items[] = $this->createCritereFromRow($row);
+		}
+
+		return $items;
+	}
+
+	public function getGlobalMinMax(): array
+	{
+		$sql  = "SELECT MIN(critere_min) AS min_val, MAX(critere_max) AS max_val FROM CRITERE";
+		$stmt = $this->pdo->query($sql);
+		$row  = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['min_val' => null, 'max_val' => null];
+
+		$min = $row['min_val'] !== null ? (float) $row['min_val'] : null;
+		$max = $row['max_val'] !== null ? (float) $row['max_val'] : null;
+
+		return ['min' => $min, 'max' => $max];
+	}
+
 	public function findById($id)
     {
 		$stmt = $this->pdo->prepare("SELECT * FROM critere WHERE critere_id = :id");

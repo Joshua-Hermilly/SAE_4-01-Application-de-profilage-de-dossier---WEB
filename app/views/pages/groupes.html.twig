@@ -2,8 +2,8 @@
 
 {% set css_page = '/css/pages/dossiers.css' %}
 {% set is_admin = true %}
-{% set title = 'Dossiers' %}
-{% set pageActive = 'dossiers' %}
+{% set pageActive = 'groupes' %}
+{% set fichierjs  = '/js/tableauGroupe.js' %}
 
 {% block content %}
 	<div id="dossiers-layout" class="d-flex w-100 overflow-hidden" style="flex: 1 1 auto; min-height: 0;">
@@ -11,8 +11,8 @@
 		{% include 'components/content/assets/filter_open.html.twig'
 			with
 			{
-			title: filterConfig.title | default('Filtrer'),
-			sections: filterConfig.sections | default([])
+				title: filterConfig.title | default('Filtrer'),
+				sections: filterConfig.sections | default([])
 			}
 		%}
 
@@ -20,11 +20,13 @@
 
 			<div class="d-flex align-items-center gap-2 py-2">
 				{% include 'components/content/assets/filter_close.html.twig'
-				with
-				{
-				title: filterConfig.title | default('Filtrer'),
-				sections: filterConfig.sections | default([])
-				}%}
+					with
+					{
+						title: filterConfig.title | default('Filtrer'),
+						sections: filterConfig.sections | default([])
+					}
+				%}
+
 				{% include 'components/content/assets/recherche.html.twig' %}
 				<div class="ms-auto">
 					{% include 'components/content/assets/map_close.html.twig' %}

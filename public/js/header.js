@@ -6,10 +6,7 @@ btnDossier.addEventListener   ("click", () => changerPage("index.php"     ) );
 btnGroupes.addEventListener   ("click", () => changerPage("groupes.php"   ) );
 btnFormations.addEventListener("click", () => changerPage("formations.php") );
 
-
 function changerPage(page)
 {
 	this.window.location.href = page;
 }
-
-

@@ -1,6 +1,6 @@
 <?php
 
-class Etablissement
+class Etablissement implements JsonSerializable
 {
 	/*-------------------------------*/
 	/*  Construct                    */
@@ -13,6 +13,22 @@ class Etablissement
 		private Localisation  $localisation,
 		private ?array        $candidats  = []
 	) {}
+
+	public function jsonSerialize(): array
+	{
+		return
+		[
+			'etablissement_id'         => $this->etablissement_id,
+			'etablissement_nom'        => $this->etablissement_nom,
+			'localisation_pays'        => $this->localisation->getLocalisationPays        (),
+			'localisation_code_postal' => $this->localisation->getLocalisationCodePostal  (),
+			'localisation_commune'     => $this->localisation->getLocalisationCommune     (),
+			'localisation_departement' => $this->localisation->getLocalisationDepartement (),
+			'localisation_latitude'    => $this->localisation->getLocalisationLatitude    (),
+			'localisation_longitude'   => $this->localisation->getLocalisationLongitude   (),
+			'localisation_distance'    => $this->localisation->getLocalisationDistance    ()
+		];
+	}
 
 	/*-------------------------------*/
 	/*  Getters                      */
