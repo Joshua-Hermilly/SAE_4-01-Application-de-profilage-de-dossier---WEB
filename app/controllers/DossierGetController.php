@@ -33,13 +33,6 @@ class DossierGetController extends Controller
 			return;
 		}
 
-		if (session_status() === PHP_SESSION_NONE)  session_start();
-		if (empty($_SESSION['compte']))
-		{
-			$this->json(['erreur' => 'Non authentifié'], 401);
-			return;
-		}
-
 		$serviceDossier = new DossierCandidatService();
 		$contentType    = $_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '';
 		$isJson         = stripos($contentType, 'application/json') !== false;
@@ -47,6 +40,12 @@ class DossierGetController extends Controller
 		$page           = isset($data['page']) ? (int) $data['page'] : 1;
 		$filters        = $this->extractFilters($data);
 		$isAdmin        = false;
+
+		if (session_status() === PHP_SESSION_NONE)  session_start();
+		if (isset($_SESSION['compte']) && $_SESSION['compte']->getCompteIsAdmin())
+		{
+			$isAdmin = true;
+		}
 
 		if ($isJson && !$this->validerToken())
 		{
@@ -59,14 +58,18 @@ class DossierGetController extends Controller
 
 		$this->dossierCandidats = $serviceDossier->findAtPageDossierCandidat($page, $filters);
 		$maxPage = $serviceDossier->maxPage($filters);
-		if ( $page > $maxPage || empty($this->dossierCandidats))
+		if ( $page > $maxPage )
 		{
 			$this->json(['erreur' => "Aucune données disponible. Merci d'insérer des données ou de contacter un administrateur."]);
 			return;
 		}
+		else if ( empty($this->dossierCandidats) )
+		{
+			$this->json(['erreur' => "Pas d'élèves trouvé avec les filtres fournis."]);
+			return;
+		}
 
 		// Il est admin ?
-		if ( $_SESSION['compte']->getCompteIsAdmin()) { $isAdmin = true; }
 
 		$this->json
 		([

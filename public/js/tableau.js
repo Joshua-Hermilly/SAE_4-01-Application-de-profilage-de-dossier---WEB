@@ -64,19 +64,6 @@ function creerTableau( headers, dossiers, isAdmin )
 {
 	tBody.innerHTML  = "";
 
-	if (!Array.isArray(dossiers) || dossiers.length === 0)
-	{
-		const colonneCount = headers.length + (isAdmin ? 1 : 0) - 1;
-		const tr = document.createElement('tr');
-		const td = document.createElement('td');
-		td.colSpan = Math.max(1, colonneCount);
-		td.className = 'text-center text-muted py-4';
-		td.textContent = 'Aucune donnée disponible pour ces filtres.';
-		tr.appendChild(td);
-		tBody.appendChild(tr);
-		return;
-	}
-
 	for ( let cptD = 0; cptD < dossiers.length; cptD++ )
 	{
 		const tr = document.createElement( 'tr' );
@@ -145,6 +132,8 @@ function creerBtnPage( maxPage, actPage )
 
 function afficherErreur( erreur )
 {
+	tableau.style.display  = "none";
+
 	dvErreur.textContent   = erreur;
 	dvErreur.style.display = "block";
 }
@@ -231,6 +220,7 @@ async function getDossierCandidat( indexPage, filters = filtresCourant )
 		});
 
 		const donnees = await response.json();
+		console.log(donnees)
 		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
 
 		if ( donnees['erreur'] )
@@ -239,7 +229,7 @@ async function getDossierCandidat( indexPage, filters = filtresCourant )
 			return;
 		}
 
-		vide.style.display    = "none";
+		vide   .style.display = "none";
 		tableau.style.display = "";
 		creerHeader ( donnees['headers' ], donnees['isAdmin' ]                     );
 		creerTableau( donnees['headers' ], donnees['dossiers'], donnees['isAdmin'] );

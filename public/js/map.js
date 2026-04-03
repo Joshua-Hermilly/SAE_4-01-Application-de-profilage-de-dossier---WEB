@@ -46,6 +46,8 @@ async function getCarte()
             }
         });
 
+        const data = await response;
+        console.log(data)
         const donnees = await response.json();
         console.log(donnees);
 
@@ -95,5 +97,5 @@ function ajouterMarqueur(etablissement)
 document.addEventListener('DOMContentLoaded', async () =>
 {
     initMap();
-    await getCarte();
+    //await getCarte();
 });
