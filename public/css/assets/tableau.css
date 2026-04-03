@@ -9,10 +9,6 @@
     margin-top: auto;
 }
 
-.card {
-    max-height: 650px;
-}
-
 #tableau thead {
     position: sticky;
     top: 0;
@@ -23,6 +19,8 @@
 table {
     border-collapse: separate;
     border-spacing: 0;
+    height: 100%;
+    width: 100%;
 }
 
 .ligne th, .ligne td {
@@ -31,6 +29,8 @@ table {
     border: none;
     border-top: 10px solid transparent;
     background-clip: padding-box;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .ligne th:first-child, .ligne td:first-child

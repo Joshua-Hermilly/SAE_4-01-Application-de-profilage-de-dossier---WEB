@@ -1,5 +1,5 @@
 <aside id="filter_sidebar" class="d-none col-12 col-md-3 p-0 h-100 overflow-hidden">
-	<div id="card-block" class="card h-100 w-100 overflow-hidden">
+	<div id="card-block" class="card pb-5 h-100 w-100 overflow-hidden">
 		<div class="card-body body justify-content-center w-100 p-0 h-100 overflow-hidden">
 			<div id="filter-scroll" class="h-100 overflow-hidden">
 				<div id="filter-scroll-inner" class="h-100 overflow-auto pb-3 px-3">
@@ -47,10 +47,10 @@
 																	<span>{{ option_data.label }}</span>
 																</label>
 															{% else %}
-																<label id="checkbox-item" class="list-group-item specialite-checkbox-item">
-																	<input class="form-check-input me-2" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_key }}" />
-																	<span>{{ option_data }}</span>
-																</label>
+																	<label id="checkbox-item" class="list-group-item specialite-checkbox-item">
+																		<input class="form-check-input me-2" type="checkbox" id="filter_{{ filter.name }}_{{ loop.index }}" name="{{ filter.name }}[]" value="{{ option_key }}" />
+																		<span>{{ option_data }}</span>
+																	</label>
 															{% endif %}
 														{% endfor %}
 													</div>

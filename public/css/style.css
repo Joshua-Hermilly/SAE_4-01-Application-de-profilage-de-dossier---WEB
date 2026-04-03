@@ -84,6 +84,7 @@ html {
 	align-items: center;
 	justify-content: center;
 	min-height: 70px;
+	width: 120px;
 }
 
 #header-right button:hover {
@@ -105,6 +106,7 @@ html {
 #footer {
 	background-color: var(--gris-fond-assets);
 	color: var(--blanc);
+	border: 1px solid var(--bleu-icon);
 	font-size: 14px;
 	left: 0;
 	right: 0;
@@ -182,4 +184,14 @@ html {
 	color: var(--bleu-icon);
 	text-align: center;
 	display: block;
+}
+
+#filter_sidebar,
+#map_sidebar {
+	padding: 30px;
+}
+
+#filter_sidebar #card-block,
+#map_sidebar    #card-block {
+	min-height: 100%;
 }
