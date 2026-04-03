@@ -3,10 +3,8 @@
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 
-require_once '../app/repositories/LocalisationRepository.php';
 require_once '../app/repositories/EtablissementRepository.php';
 require_once '../app/entities/Etablissement.php';
-require_once '../app/entities/Localisation.php';
 
 class RechercheLocalisationService
 {
@@ -19,7 +17,6 @@ class RechercheLocalisationService
     /* Attributs                     */
     /*-------------------------------*/
     private $etablissementRepository;
-    private $localisationRepository;
 	private $ctpLigne;
 
     /*-------------------------------*/
@@ -38,9 +35,7 @@ class RechercheLocalisationService
 		$this->sheet->fromArray(self::COLONNE, null, "A1");
 
 		$this->etablissementRepository = new EtablissementRepository();
-		$this->localisationRepository  = new LocalisationRepository ();
-
-		$this->ctpLigne = 2;
+		$this->ctpLigne                = 2;
 	}
 
 	/*-------------------------------*/
@@ -48,10 +43,10 @@ class RechercheLocalisationService
     /*-------------------------------*/
 	public function addEtablissement(Etablissement $etablissement)
 	{
-		$this->sheet->setCellValue('A' . $this->ctpLigne, $etablissement->getEtablissementNom() );
-		$this->sheet->setCellValue('B' . $this->ctpLigne, $etablissement->getLocalisation    ()->getLocalisationCommune    () );
-		$this->sheet->setCellValue('C' . $this->ctpLigne, $etablissement->getLocalisation    ()->getLocalisationCodePostal () );
-		$this->sheet->setCellValue('D' . $this->ctpLigne, $etablissement->getLocalisation    ()->getLocalisationDepartement() );
+		$this->sheet->setCellValue('A' . $this->ctpLigne, $etablissement->getEtablissementNom        () );
+		$this->sheet->setCellValue('B' . $this->ctpLigne, $etablissement->getEtablissementCommune    () );
+		$this->sheet->setCellValue('C' . $this->ctpLigne, $etablissement->getEtablissementCodePostal () );
+		$this->sheet->setCellValue('D' . $this->ctpLigne, $etablissement->getEtablissementDepartement() );
 		$this->ctpLigne++;
 	}
 
@@ -107,41 +102,29 @@ class RechercheLocalisationService
 					{
 						if ( $etablissementActuel[$colonne] === 'not-found' )
 						{
-
+							//envouer a une autre api
 						}
 						else
 						{
-							$attTableau[] = $etablissementActuel[$colonne];
+							$attTableau[$colonne] = $etablissementActuel[$colonne];
 						}
 					}
 				}
 
-				$loc = new Localisation
+				$etablissement = new Etablissement
 				(
-					0,
-					null,
-					$attTableau[2],      // Code Postale
-					$attTableau[1],      // Commune
-					$attTableau[3],      // Departement
-					(float)$attTableau[5],  // latitude
-					(float)$attTableau[4],  // longitude
-					null,
+				    0,
+				    $attTableau['Etablissement'],
+				    null,
+				    $attTableau['Code Postale' ],
+				    $attTableau['Commune'      ],
+				    $attTableau['Departement'  ],
+				    (float)$attTableau['latitude'     ],
+				    (float)$attTableau['longitude'    ],
+				    null
 				);
 
-				// CORRECTION : Récupérer l'ID de la localisation existante et la mettre à jour
-				$localisationExistante = $this->localisationRepository->exist($loc);
-
-				if ($localisationExistante !== -1)
-				{
-					// La localisation existe déjà, on la met à jour avec les coordonnées
-					$loc->setLocalisationId($localisationExistante);
-					$this->localisationRepository->update($loc);
-				}
-				else
-				{
-					// La localisation n'existe pas, on la crée
-					$this->localisationRepository->create($loc);
-				}
+				$this->etablissementRepository->updatePos($etablissement);
 			}
 		}
 

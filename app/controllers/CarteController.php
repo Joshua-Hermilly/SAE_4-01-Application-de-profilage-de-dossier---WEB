@@ -33,40 +33,13 @@ class CarteController extends Controller
 
             if ( $distance < 0 || $distance > $max )
             {
-                $this->json(['erreur' => "La distance doit être entre 0 et $max"], 422);
+                $this->json(['erreur' => "La distance doit être entre 0 et $max"]);
                 return;
             }
 
             $this->json( $serviceCarte->findByDistance($distance) );
         }
-        else
-        {
-            // Pas de distance → retourne tout
-            $this->json( $serviceCarte->findAll() );
-        }
-    }
-
-    public function setLocalisation()
-    {
-        if ( !$this->validerToken() )
-        {
-            $this->json(['erreur' => 'Token invalide'], 401);
-            return;
-        }
-
-        $serviceCarte  = new CarteService();
-        // POST body JSON, pas $_GET
-        $data          = json_decode(file_get_contents('php://input'), true);
-        $localisations = $data['localisations'] ?? null;
-
-        if ( !$localisations )
-        {
-            $this->json(['erreur' => 'Aucune localisation saisie'], 422);
-            return;
-        }
-
-        $serviceCarte->setLocalisation($localisations);
-        $this->json(['success' => true], 200);
+        else { $this->json( $serviceCarte->findAll() ); }
     }
 
     /*-------------------------------*/
