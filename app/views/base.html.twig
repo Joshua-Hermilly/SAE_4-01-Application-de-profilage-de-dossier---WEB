@@ -11,9 +11,10 @@
 		{% include 'components/struct/header.html.twig' %}
 	{% endif %}
 	
-	{% block content %}
-	{# Le contenu des pages s'insère ici #}
-	{% endblock %}
+	<div id="dossiers-layout" class="d-flex w-100 mb-5 align-content-center overflow-hidden">
+		{% block content %}
+		{% endblock %}
+	</div>
 
 	{% include 'components/struct/footer.html.twig' %}
 

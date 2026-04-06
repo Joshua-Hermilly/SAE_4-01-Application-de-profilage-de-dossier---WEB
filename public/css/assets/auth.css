@@ -3,6 +3,9 @@
 	border: none;
 }
 
+#block-login,
+#block-password,
+#block-register,
 #card-block {
 	background-color: var(--gris-fond-assets);
 	color: var(--blanc);
@@ -42,6 +45,11 @@
 #text-title {
 	color: var(--gris-text-fond-foncé);
 	text-decoration: none;
+}
+
+#text-title:hover {
+	color: var(--bleu-icon);
+	text-decoration: underline;
 }
 
 .form-control {

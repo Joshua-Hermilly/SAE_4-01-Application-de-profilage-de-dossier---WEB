@@ -106,7 +106,6 @@ html {
 #footer {
 	background-color: var(--gris-fond-assets);
 	color: var(--blanc);
-	border: 1px solid var(--bleu-icon);
 	font-size: 14px;
 	left: 0;
 	right: 0;
@@ -183,6 +182,12 @@ html {
 #section-title {
 	color: var(--bleu-icon);
 	text-align: center;
+	display: block;
+}
+
+#filter-title {
+	color: var(--gris-text-fond-foncé);
+	text-align: left;
 	display: block;
 }
 

@@ -20,7 +20,7 @@
 								<div class="d-flex flex-column gap-3">
 									{% for filter in section.filters %}
 										<div class="d-flex flex-column gap-1" data-filter-name="{{ filter.name }}">
-									<p class="small text-white-50">{{ filter.label }}</p>
+									<p id="filter-title" class="small text-white-50">{{ filter.label }}</p>
 											{% if filter.type == 'text' %}
 												<input class="form-control form-control-sm"
 													type="text"

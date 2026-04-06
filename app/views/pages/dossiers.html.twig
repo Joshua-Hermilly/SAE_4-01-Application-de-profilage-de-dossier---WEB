@@ -6,36 +6,33 @@
 {% set pageActive = 'dossiers' %}
 
 {% block content %}
-	<div id="dossiers-layout" class="d-flex w-100 mb-5">
 
-		{# Sidebar filtre (gauche, caché par défaut) #}
-		{% include 'components/content/assets/filter_open.html.twig'
+	{# Sidebar filtre (gauche, caché par défaut) #}
+	{% include 'components/content/assets/filter_open.html.twig'
+		with
+		{
+		title: filterConfig.title | default('Filtrer'),
+		sections: filterConfig.sections | default([])
+		}
+	%}
+
+	{# Contenu principal (toolbar + tableau) #}
+	<div id="main-content" class="d-flex h-100 p-2 flex-column ">	
+
+		<div class="d-flex justify-content-between align-items-center gap-2 py-2 w-100">
+			{% include 'components/content/assets/filter_close.html.twig'
 			with
 			{
 			title: filterConfig.title | default('Filtrer'),
 			sections: filterConfig.sections | default([])
-			}
-		%}
-
-		{# Contenu principal (toolbar + tableau) #}
-		<div id="main-content" class="d-flex h-100 p-2 flex-column overflow-hidden">	
-
-			<div class="d-flex align-items-center gap-2 py-2">
-				{% include 'components/content/assets/filter_close.html.twig'
-				with
-				{
-				title: filterConfig.title | default('Filtrer'),
-				sections: filterConfig.sections | default([])
-				}%}
-				{% include 'components/content/assets/recherche.html.twig' %}
-				<div class="ms-auto">
-					{% include 'components/content/assets/map_close.html.twig' %}
-				</div>
-			</div>
-
-			{% include 'components/content/assets/tableau.html.twig' %}
+			}%}
+			{% include 'components/content/assets/recherche.html.twig' %}
+			{% include 'components/content/assets/map_close.html.twig' %}
 		</div>
 
-		{% include 'components/content/assets/map_open.html.twig' %}
+		{% include 'components/content/assets/tableau.html.twig' %}
 	</div>
+
+	{% include 'components/content/assets/map_open.html.twig' %}
+
 {% endblock %}
