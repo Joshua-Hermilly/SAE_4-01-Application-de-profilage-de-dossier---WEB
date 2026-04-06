@@ -25,18 +25,20 @@ class GroupeRepository
 	/*-------------------------------*/
 	public function create(Groupe $groupe)
 	{
-		$sql = "INSERT INTO GROUPE (groupe_nom, groupe_couleur, groupe_note_dossier)
-				VALUES (:nom, :couleur, :note_dossier)
-				RETURNING groupe_id";
+		// La colonne groupe_id n'est pas en SERIAL dans le schéma, on calcule donc le prochain id manuellement
+		$nextId = (int) $this->pdo->query('SELECT COALESCE(MAX(groupe_id), 0) + 1 FROM GROUPE')->fetchColumn();
+
+		$sql = "INSERT INTO GROUPE (groupe_id, groupe_nom, groupe_couleur, groupe_note_dossier)
+				VALUES (:id, :nom, :couleur, :note_dossier)";
 
 		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':id'           , $nextId, PDO::PARAM_INT);
 		$stmt->bindValue(':nom'          , $groupe->getGroupeNom          ());
 		$stmt->bindValue(':couleur'      , $groupe->getGroupeCouleur      ());
 		$stmt->bindValue(':note_dossier' , $groupe->getGroupeNoteDossier  ());
 
 		$stmt->execute();
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		$groupe->setGroupeId( $row['groupe_id'] );
+		$groupe->setGroupeId($nextId);
 	}
 
 	public function update(Groupe $groupe): bool
