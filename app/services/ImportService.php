@@ -69,6 +69,12 @@ class ImportService
 	private array $formationsSup;
 	private array $specialites;
 	private array $candidats;
+	private array $nouveauxEtablissements;
+	private array $nouveauxDiplomes;
+	private array $nouveauxFormationsSup;
+	private array $nouveauxSpecialites;
+	private array $nouveauxCandidats;
+	private array $candidatsAMettreAJour;
 
 	/*-------------------------------*/
 	/* Service  localisation         */
@@ -91,6 +97,12 @@ class ImportService
 		$this->formationsSup                = $this->formationsSupRepository->findAll();
 		$this->specialites                  = $this->specialiteRepository   ->findAll();
 		$this->candidats                    = $this->candidatRepository     ->findAll();
+		$this->nouveauxEtablissements       = [];
+		$this->nouveauxDiplomes             = [];
+		$this->nouveauxFormationsSup        = [];
+		$this->nouveauxSpecialites          = [];
+		$this->nouveauxCandidats            = [];
+		$this->candidatsAMettreAJour        = [];
 
 		$this->serviceRechercheLocalisation = new RechercheLocalisationService       ();
 	}
@@ -125,10 +137,10 @@ class ImportService
 		}
 
 		// Insertion en base
-		$this->etablissementRepository->creates($this->etablissements);
-		$this->formationsSupRepository->creates($this->formationsSup );
-		$this->specialiteRepository   ->creates($this->specialites   );
-		$this->diplomeRepository      ->creates($this->diplomes      );
+		$this->etablissementRepository->creates($this->nouveauxEtablissements);
+		$this->formationsSupRepository->creates($this->nouveauxFormationsSup );
+		$this->specialiteRepository   ->creates($this->nouveauxSpecialites   );
+		$this->diplomeRepository      ->creates($this->nouveauxDiplomes      );
 
 		for ($cpt = 0; $cpt < count($candidatRelations); $cpt++)
 		{
@@ -141,8 +153,13 @@ class ImportService
 			$candidat->setFormationId    ($formationSup ?->getFormationId    ());
 			$candidat->setDiplomeId      ($diplome       ->getDiplomeId      ());
 		}
-		$this->candidatRepository->creates($this->candidats);
+		$this->candidatRepository->creates($this->nouveauxCandidats);
 
+		// Mise à jour des candidats existants
+		foreach ($this->candidatsAMettreAJour as $candidat)
+		{
+			$this->candidatRepository->update($candidat);
+		}
 
 		$fichier = $this->serviceRechercheLocalisation->remplissageTerminee();
 		$retour  = $this->serviceRechercheLocalisation->appelerApi($fichier);
@@ -186,6 +203,7 @@ class ImportService
 			}
 		}
 
+		$this->nouveauxEtablissements[] = $etablissement;
 		$this->etablissements[] = $etablissement;
 		$this->serviceRechercheLocalisation->addEtablissement($etablissement);
 		return $etablissement;
@@ -216,6 +234,7 @@ class ImportService
 			}
 		}
 
+		$this->nouveauxDiplomes[] = $diplome;
 		$this->diplomes[] = $diplome;
 		return $diplome;
 	}
@@ -244,6 +263,7 @@ class ImportService
 			}
 		}
 
+		$this->nouveauxFormationsSup[] = $formationSup;
 		$this->formationsSup[] = $formationSup;
 		return $formationSup;
 	}
@@ -281,6 +301,7 @@ class ImportService
 			}
 		}
 
+		$this->nouveauxSpecialites[] = $specialite;
 		$this->specialites[] = $specialite;
 		return $specialite;
 	}
@@ -310,10 +331,28 @@ class ImportService
 		{
 			if ( $candidat->getCandidatCode() === $cdt->getCandidatCode() )
 			{
+				// Candidat existe déjà, mettre à jour ses informations
+				$cdt->setCandidatNom         ($candidat->getCandidatNom         ());
+				$cdt->setCandidatPrenom      ($candidat->getCandidatPrenom      ());
+				$cdt->setCandidatCivilite    ($candidat->getCandidatCivilite    ());
+				$cdt->setCandidatProfil      ($candidat->getCandidatProfil      ());
+				$cdt->setCandidatBoursierCode($candidat->getCandidatBoursierCode());
+				$cdt->setCandidatNoteLycee   ($candidat->getCandidatNoteLycee   ());
+				$cdt->setCandidatNoteFiche   ($candidat->getCandidatNoteFiche   ());
+				$cdt->setCandidatNoteGlobal  ($candidat->getCandidatNoteGlobal  ());
+				$cdt->setCandidatCommentaire ($candidat->getCandidatCommentaire ());
+				$cdt->setCandidatAnnee       ($candidat->getCandidatAnnee       ());
+				$cdt->setEtablissementId     ($candidat->getEtablissementId     ());
+				$cdt->setFormationId         ($candidat->getFormationId         ());
+				$cdt->setDiplomeId           ($candidat->getDiplomeId           ());
+				$cdt->setGroupeId            (null); // Réinitialiser le groupe
+
+				$this->candidatsAMettreAJour[] = $cdt;
 				return $cdt;
 			}
 		}
 
+		$this->nouveauxCandidats[] = $candidat;
 		$this->candidats[] = $candidat;
 		return $candidat;
 	}

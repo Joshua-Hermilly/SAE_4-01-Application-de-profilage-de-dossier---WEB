@@ -50,27 +50,37 @@ class FormationSupRepository
 			$valeurBrut[":lib{$cpt}"] = $formationSup->getFormationLib();
 		}
 
-		$sql = "INSERT INTO FORMATION_SUP 
+		$sql = "INSERT INTO FORMATION_SUP
 				(formation_nom, formation_lib)
 				VALUES " . implode(', ', $valeurBind) . "
 				RETURNING formation_id";
 
-		$stmt = $this->pdo->prepare($sql);
+		try {
+			$stmt = $this->pdo->prepare($sql);
 
-		for ($cpt = 0; $cpt < count($formationSups); $cpt++)
-		{
-			$stmt->bindValue(":nom{$cpt}", $valeurBrut[":nom{$cpt}"]);
-			$stmt->bindValue(":lib{$cpt}", $valeurBrut[":lib{$cpt}"]);
-		}
-
-		$stmt->execute();
-
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		for ($cpt = 0; $cpt < count($formationSups); $cpt++)
-		{
-			if (isset($rows[$cpt]))
+			for ($cpt = 0; $cpt < count($formationSups); $cpt++)
 			{
-				$formationSups[$cpt]->setFormationId((int) $rows[$cpt]['formation_id']);
+				$stmt->bindValue(":nom{$cpt}", $valeurBrut[":nom{$cpt}"]);
+				$stmt->bindValue(":lib{$cpt}", $valeurBrut[":lib{$cpt}"]);
+			}
+
+			$stmt->execute();
+
+			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			for ($cpt = 0; $cpt < count($formationSups); $cpt++)
+			{
+				if (isset($rows[$cpt]))
+				{
+					$formationSups[$cpt]->setFormationId((int) $rows[$cpt]['formation_id']);
+				}
+			}
+		} catch (PDOException $e) {
+			foreach ($formationSups as $formationSup) {
+				try {
+					$this->create($formationSup);
+				} catch (PDOException $ex) {
+					// Ignorer les doublons
+				}
 			}
 		}
 	}
