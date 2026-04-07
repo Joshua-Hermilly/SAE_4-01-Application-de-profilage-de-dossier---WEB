@@ -7,8 +7,10 @@ const btnDeconnexion = document.getElementById("btn-deconnexion");
 btnDossier    .addEventListener("click", () => changerPage("index.php"     ) );
 btnGroupes    .addEventListener("click", () => changerPage("groupes.php"   ) );
 btnFormations .addEventListener("click", () => changerPage("formations.php") );
-btnCreerCompte.addEventListener("click", () => changerPage("creerCompte.php") );
 btnDeconnexion.addEventListener("click", () => changerPage("deconnexion.php") );
+
+if (btnCreerCompte) btnCreerCompte.addEventListener("click", () => changerPage("creerCompte.php") );
+
 
 function changerPage(page)
 {

@@ -10,12 +10,14 @@
 					</button>
 					<span id="bar-menu-text" class="ms-3">Profilage Parcoursup</span>
 				</div>
+				{% if isAdmin %}
 				<div class="d-flex align-items-center gap-2">
 					<span id="bar-menu-text" class="ms-3">Creer Compte</span>
 					<button id="btn-creerCompte" type="button" class="btn btn-sm btn-outline-light">
 						<i class="bi bi-plus"></i>
 					</button>
 				</div>
+				{% endif %}
 			</div>
 		</div>
 

@@ -75,6 +75,6 @@ class CreerCompteController extends Controller
 
 		}
 
-		$this->view('pages/creerCompte', 'Inscription', [ 'errors' => $errors]) ;
+		$this->view('pages/creerCompte', 'Inscription', [ 'errors' => $errors, 'isAdmin' => $_SESSION['compte']->getCompteIsAdmin() ]) ;
 	}
 }

@@ -1,5 +1,6 @@
 <?php
 
+require_once '../app/entities/Compte.php';
 require_once '../app/core/Controller.php';
 require_once '../app/services/ExportService.php';
 
@@ -31,6 +32,6 @@ class ExportController extends Controller
 
 		}
 
-		$this->view('export', 'Exportation', ['errors' => $errors]);
+		$this->view('export', 'Exportation', ['errors' => $errors, 'isAdmin' => $_SESSION['compte']->getCompteIsAdmin() ]);
 	}
 }

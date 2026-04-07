@@ -3,6 +3,7 @@
 {% set assets = { css: ['/css/assets/auth.css'] } %}
 {% set show_header = true %}
 {% set title = 'Créer un compte' %}
+{% set is_admin   =  isAdmin %}
 
 {% block content %}
 	{% include 'components/auth/CreerCompte_form.html.twig' %}
