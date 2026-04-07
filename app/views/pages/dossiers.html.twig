@@ -17,7 +17,8 @@
 		'/js/filter-buttons.js',
 		'/js/tableau.js',
 		'/js/map.js',
-		'/js/map-buttons.js'
+		'/js/map-buttons.js',
+		'/js/import-export.js'
 	]
 } %}
 {% set is_admin = true %}
@@ -46,6 +47,7 @@
 			sections: filterConfig.sections | default([])
 			}%}
 			{% include 'components/content/assets/recherche.html.twig' %}
+			{% include 'components/content/assets/import-export.html.twig' %}
 			{% include 'components/content/assets/map_close.html.twig' %}
 		</div>
 
