@@ -64,30 +64,40 @@ class DiplomeRepository
 			$valeurBrut[":specialite_id{$cpt}"] = $diplome->getSpecialite         ()->getSpecialiteId();
 		}
 
-		$sql = "INSERT INTO DIPLOME 
+		$sql = "INSERT INTO DIPLOME
 				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle, specialite_id)
 				VALUES " . implode(', ', $valeurBind) . "
 				RETURNING diplome_id";
 
-		$stmt = $this->pdo->prepare($sql);
-		
-		for ($cpt = 0; $cpt < count($diplomes); $cpt++) 
-		{
-			$stmt->bindValue(":type_code{$cpt}"    , $valeurBrut[":type_code{$cpt}"    ]);
-			$stmt->bindValue(":type_libelle{$cpt}" , $valeurBrut[":type_libelle{$cpt}" ]);
-			$stmt->bindValue(":serie_code{$cpt}"   , $valeurBrut[":serie_code{$cpt}"   ]);
-			$stmt->bindValue(":serie_libelle{$cpt}", $valeurBrut[":serie_libelle{$cpt}"]);
-			$stmt->bindValue(":specialite_id{$cpt}", $valeurBrut[":specialite_id{$cpt}"]);
-		}
+		try {
+			$stmt = $this->pdo->prepare($sql);
 
-		$stmt->execute();
-
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		for ($cpt = 0; $cpt < count($diplomes); $cpt++) 
-		{
-			if (isset($rows[$cpt])) 
+			for ($cpt = 0; $cpt < count($diplomes); $cpt++)
 			{
-				$diplomes[$cpt]->setDiplomeId((int) $rows[$cpt]['diplome_id']);
+				$stmt->bindValue(":type_code{$cpt}"    , $valeurBrut[":type_code{$cpt}"    ]);
+				$stmt->bindValue(":type_libelle{$cpt}" , $valeurBrut[":type_libelle{$cpt}" ]);
+				$stmt->bindValue(":serie_code{$cpt}"   , $valeurBrut[":serie_code{$cpt}"   ]);
+				$stmt->bindValue(":serie_libelle{$cpt}", $valeurBrut[":serie_libelle{$cpt}"]);
+				$stmt->bindValue(":specialite_id{$cpt}", $valeurBrut[":specialite_id{$cpt}"]);
+			}
+
+			$stmt->execute();
+
+			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			for ($cpt = 0; $cpt < count($diplomes); $cpt++)
+			{
+				if (isset($rows[$cpt]))
+				{
+					$diplomes[$cpt]->setDiplomeId((int) $rows[$cpt]['diplome_id']);
+				}
+			}
+		} catch (PDOException $e) {
+			foreach ($diplomes as $diplome) {
+				try {
+					$this->create($diplome);
+				} catch (PDOException $ex) {
+					// Ignorer les doublons
+				}
 			}
 		}
 	}
