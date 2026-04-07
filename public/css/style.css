@@ -56,17 +56,6 @@ html {
 	font-size: 18px;
 }
 
-#avatar {
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-	background-color: var(--gris-select-assets);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-}
-
 #header-right {
 	display: flex;
 	gap: 12px;

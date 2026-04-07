@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
 
+	{% set assets = assets|default({}) %}
+	{% set assets = {
+		css: [
+			'/css/style.css',
+			'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
+			'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css'
+		]|merge(assets.css|default(css_page is defined and css_page ? [css_page] : [])),
+		js: [
+			'https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js'
+		]|merge((show_header is not defined or show_header) ? ['/js/header.js'] : [])|merge(assets.js|default([]))
+	} %}
+
 	{% include 'components/struct/head.html.twig' %}
 
 <body>
@@ -20,7 +32,9 @@
 
 </div>
 
+	{% for src in assets.js %}
+		<script src="{{ src }}"></script>
+	{% endfor %}
 
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </html>
