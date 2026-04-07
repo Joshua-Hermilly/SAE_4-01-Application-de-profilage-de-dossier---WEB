@@ -28,6 +28,7 @@ class CreerCompteController extends Controller
 			$compte_identifiant = trim($this->getPostParam('compte_identifiant', ''));
 			$compte_mdp         =      $this->getPostParam('compte_mdp'        , '' );
 			$compte_mdp_confirm =      $this->getPostParam('compte_mdp_confirm', '' );
+			$isAdmin            =      $this->getPostParam('compte_admin'      , '' ) === '1';
 
 			$oldData = array(
 				'compte_identifiant' => $compte_identifiant
@@ -60,8 +61,8 @@ class CreerCompteController extends Controller
 			{
 				// Hash du mot de passe et insertion
 				$passwordHash = password_hash($compte_mdp, PASSWORD_DEFAULT);
-				$compte = new Compte($compte_identifiant, $passwordHash, "false");
-
+				$compte = new Compte($compte_identifiant, $passwordHash);
+				$compte->setCompteIsAdmin($isAdmin);
 
 				$CompteRepo->create($compte);
 
@@ -75,6 +76,6 @@ class CreerCompteController extends Controller
 
 		}
 
-		$this->view('pages/creerCompte', 'Inscription', [ 'errors' => $errors]) ;
+		$this->view('pages/creerCompte', 'Inscription', [ 'errors' => $errors, 'isAdmin' => $_SESSION['compte']->getCompteIsAdmin() ]) ;
 	}
 }

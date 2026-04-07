@@ -1,13 +1,13 @@
-<div class="container min-vh-100 d-flex align-items-center">
+<div class="container mt-5 d-flex align-items-center justify-content-center">
 	<div class="row justify-content-center w-100">
 
 		<div id="chargement" class="text-center"></div>
 
 		<div  class="col-md-6" >
 
-			<div id="bloc" class="card">
+			<div id="card-block" class="card">
 				<div class="card-body body p-4">
-					<h2 id="text" class="card-title">Importer des données</h2>
+					<h2 id="text-title" class="card-title">Importer des données</h2>
 
 					{% if errors|default(false) %}
 						<div class="alert alert-danger text-start">
@@ -20,20 +20,20 @@
 					{% endif %}
 
 					<form method="POST" action="import.php" enctype="multipart/form-data">
-						<div id="espacement" class="mb-3">
-							<label id="text" for="annee_promotion" class="form-label">Année de promotion :</label>
+						<div id="form-spacing" class="mb-3">
+							<label id="text-title" for="annee_promotion" class="form-label">Année de promotion :</label>
 								<input type="text" class="form-control" id="annee_promotion" name="annee_promotion" placeholder="Entrez l'année de promotion" required>
 						</div>
 
-						<div id="espacement" class="mb-3">
-							<label id="text" for="file" class="form-label">Choisir un fichier</label>
+						<div id="form-spacing" class="mb-3">
+							<label id="text-title" for="file" class="form-label">Choisir un fichier</label>
 							<input type="file" class="form-control" id="file" name="file" accept=".xlsx,.xls,.csv" required>
 							<small class="form-text text-muted">Formats acceptés : Excel (.xlsx, .xls) ou CSV</small>
 						</div>
 
-						<hr id="separateur">
+						<hr id="divider">
 
-						<button id="btnChargement" type="submit" class="btn btn-login w-100"> Importer</button>
+						<button id="btn-action" type="submit" class="btn btn-login w-100"> Importer</button>
 					</form>
 				</div>
 			</div>
@@ -41,5 +41,3 @@
 		</div>
 	</div>
 </div>
-
-<script src="/js/chargement.js"/>

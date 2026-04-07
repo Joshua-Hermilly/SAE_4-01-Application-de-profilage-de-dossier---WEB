@@ -1,8 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% set css_page = '/css/pages/register.css' %}
-{% set show_header = false %}
+{% set assets = { css: ['/css/assets/auth.css'] } %}
+{% set show_header = true %}
 {% set title = 'Créer un compte' %}
+{% set is_admin   =  isAdmin %}
 
 {% block content %}
 	{% include 'components/auth/CreerCompte_form.html.twig' %}

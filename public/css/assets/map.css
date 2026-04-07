@@ -48,3 +48,15 @@
 	display: block;
 	margin-bottom: 4px;
 }
+
+#map_sidebar {
+	transition: width 0.3s ease, opacity 0.3s ease;
+}
+
+#map_sidebar.d-none {
+	width: 0 !important;
+}
+
+#map_close_bar {
+	flex: 0 0 auto;
+}
