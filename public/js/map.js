@@ -1,7 +1,11 @@
 /*------------------------*/
 /* CONSTANTES             */
 /*------------------------*/
-const divMap = document.getElementById("map");
+const divMap = document.getElementById("map"   );
+const scDist = document.getElementById("scDist");
+const txtDst = document.getElementById("txtDst");
+const btnDst = document.getElementById("btnDst");
+
 const latHavre   = 49.51627358707744;
 const lonHavre   = 0.1625817429307139
 const vue        = 6;
@@ -14,7 +18,7 @@ let   localisations = [];
 let   makCluster     = null;
 
 /*------------------------*/
-/* INITIALISER LA CARTE    */
+/* INITIALISER LA CARTE   */
 /*------------------------*/
 function initMap()
 {
@@ -28,38 +32,51 @@ function initMap()
     }).addTo(map);
 }
 
+function initSide( max )
+{
+    scDist.min = 1;
+    scDist.max = max;
+}
+
 /*------------------------*/
-/* CHARGER LES DONNÉES     */
+/* CHARGER LES DONNÉES    */
 /*------------------------*/
-async function getCarte()
+async function getCarte(distance)
 {
     try
-	{
-        const response = await fetch('./carte.php',
-		{
+    {
+        const response = await fetch('./carte.php?distance=' + distance,
+        {
             method: 'GET',
             headers:
-			{
+            {
                 'Token'       : 'SAE-4.01_WEB_TOKEN',
                 'Content-Type': 'application/json'
             }
         });
 
-        const data = await response;
-        console.log(data)
+        if (!response.ok) {  throw new Error(`Erreur HTTP ${response.status}`);  }
+
         const donnees = await response.json();
+        if (donnees.erreur) { console.error('Erreur API:', donnees.erreur); return; }
+
         console.log(donnees);
 
-		//Erreur
-        if (!response.ok  ) { throw new Error(`Erreur ${response.status}`  );           }
-        if (donnees.erreur) { console  .error('Erreur API:', donnees.erreur);  return;  }
+        initSide(donnees.max_distance);
 
-
-        // Point
+        if (makCluster)
+        {
+            makCluster.clearLayers();
+            map.removeLayer(makCluster);
+        }
         makCluster = L.markerClusterGroup().addTo(map);
-        if (Array.isArray(donnees) && donnees.length > 0)
-		{
-            donnees.forEach(etablissement => { ajouterMarqueur(etablissement); });
+
+        if (Array.isArray(donnees.etablissements) && donnees.etablissements.length > 0)
+        {
+            donnees.etablissements.forEach(etablissement =>
+            {
+                ajouterMarqueur(etablissement);
+            });
         }
 
     } catch (error) {  console.error('Erreur api -- getCarte:', error); }
@@ -74,15 +91,14 @@ function ajouterMarqueur(etablissement)
     const lon = etablissement.etablissement_longitude;
 
     // Coordonnées ?
-    if (lat === null || lon === null || (lat ==0 && lon==0))
-	{
-        console.warn(`Pas de coordonnées pour: ${etablissement.etablissement_nom}`);
+    if (lat === null || lon === null || (lat == 0 && lon == 0))
+    {
+        //console.warn(`Pas de coordonnées pour: ${etablissement.etablissement_nom}`);
         return;
     }
 
-    // Markeur
     const marker      = L.marker([lat, lon]);
-	const nomEtab     = etablissement.etablissement_nom        ;
+    const nomEtab     = etablissement.etablissement_nom        ;
     const codePostal  = etablissement.etablissement_code_postal;
     const commune     = etablissement.etablissement_commune    ;
     const nb_candidat = etablissement.nb_candidats             ;
@@ -90,17 +106,26 @@ function ajouterMarqueur(etablissement)
     makCluster.addLayer(marker);
     marker.bindPopup
     (`
-        <p><strong>${nomEtab}</strong>                         </p>
-        <p>${codePostal} ${commune}                            </p>
+        <p><strong>${nomEtab}</strong></p>
+        <p>${codePostal} ${commune}</p>
         <p><strong>Nombre d'étudiants : </strong>${nb_candidat}</p>
     `);
 }
 
 /*------------------------*/
-/* ÉVÉNEMENTS              */
+/* ÉVÉNEMENTS             */
 /*------------------------*/
-document.addEventListener('DOMContentLoaded', async () =>
+initMap ();
+getCarte(-1);
+
+
+btnDst.addEventListener('click', () =>
 {
-    initMap();
-    await getCarte();
+    sessionStorage.setItem('distance', scDist.value);
+    getCarte(scDist.value);
+})
+
+scDist.addEventListener('input', () =>
+{
+   txtDst.textContent = scDist.value;
 });

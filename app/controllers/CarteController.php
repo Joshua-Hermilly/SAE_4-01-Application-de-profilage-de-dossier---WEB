@@ -15,32 +15,44 @@ class CarteController extends Controller
     /*-------------------------------*/
     /*  Routes                       */
     /*-------------------------------*/
-    public function getLocalisationByDistance()
-    {
-        if ( !$this->validerToken() )
-        {
-            $this->json(['erreur' => 'Token invalide'], 401);
-            return;
-        }
 
-        $serviceCarte = new CarteService();
-        $data         = json_decode(file_get_contents('php://input'), true);
-        $distance     = $data['distance'] ?? null;
+	public function getLocalisationByDistance()
+	{
+		if ( !$this->validerToken() )
+		{
+			$this->json(['erreur' => 'Token invalide'], 401);
+			return;
+		}
 
-        if ( $distance !== null )
-        {
-            $max = $serviceCarte->getMaxDistance();
+		$serviceCarte = new CarteService();
+		$distance     = $_GET['distance'] ?? null;
 
-            if ( $distance < 0 || $distance > $max )
-            {
-                $this->json(['erreur' => "La distance doit être entre 0 et $max"]);
-                return;
-            }
+		if ( $distance !== null )
+		{
+			$max = $serviceCarte->getMaxDistance();
 
-            $this->json( $serviceCarte->findByDistance($distance) );
-        }
-        else { $this->json( $serviceCarte->findAll() ); }
-    }
+			if ( $distance == -1 )
+			{
+				$this->json([
+					'etablissements' => $serviceCarte->findAll(),
+					'max_distance'   => $serviceCarte->getMaxDistance(),
+				]);
+				return;
+			}
+
+			if ( $distance < 0 || $distance > $max )
+			{
+				$this->json(['erreur' => "La distance doit être entre 0 et $max, $distance"]);
+				return;
+			}
+
+			$this->json([
+				'etablissements' => $serviceCarte->getByDistance($distance),
+				'max_distance'   => $serviceCarte->getMaxDistance(),
+			]);
+			return;
+		}
+	}
 
     /*-------------------------------*/
     /*  Méthodes privées             */

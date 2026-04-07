@@ -224,6 +224,9 @@ function selectionFaite(event)
 /*------------------------*/
 async function getData( indexPage, lien, filters = filtresCourant )
 {
+	const distance = sessionStorage.getItem('distance');
+	if (distance) { filters.distance = distance; }
+
 	try
 	{
 		const response = await fetch(lien,
@@ -248,23 +251,6 @@ async function getData( indexPage, lien, filters = filtresCourant )
 		creerHeader ( donnees['headers'], donnees['isAdmin']                     );
 		creerTableau( donnees['headers'], donnees['data'   ], donnees['isAdmin'] );
 		creerBtnPage( donnees['maxPage'], donnees['actPage']                     );
-
-		if (isDossiersPage && donnees.nbEtu !== undefined)
-		{
-			const infoRightNbEtu = document.getElementById('nbEtu');
-			if (infoRightNbEtu)
-			{
-				infoRightNbEtu.textContent = donnees.nbEtu;
-			}
-		}
-		if (isDossiersPage && donnees.annees !== undefined)
-		{
-			const infoDates = document.getElementById('AnneesSelect');
-			if (infoDates)
-			{
-				infoDates.textContent = donnees.annees.length > 0 ? donnees.annees.join("\t") : 'Aucune';
-			}
-		}
 
 	}
 	catch (error)
@@ -318,3 +304,11 @@ if (filterForm)
 		chargerPage(1, filtresCourant);
 	});
 }
+
+document.getElementById( "btnDst" ).addEventListener( "click", () =>
+{
+	const distance = sessionStorage.getItem('distance');
+	event.preventDefault();
+	filtresCourant = serialiserFiltres();
+	chargerPage(1, filtresCourant);
+})

@@ -34,7 +34,7 @@ class CarteService
 
 	public function getMaxDistance()
 	{
-		return $this->repository->getMaxDistance();
+		return $this->repository->findMaxDistance();
 	}
 
 }

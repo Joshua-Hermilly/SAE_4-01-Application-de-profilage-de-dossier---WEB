@@ -221,8 +221,12 @@ public function creates(array $etablissements): void
 		$req->execute();
 
 		$row = $req->fetch(PDO::FETCH_ASSOC);
-		if ($row) { return $this->createEtablissementFromRow($row); }
-		return null;
+
+		if ($row && $row['max_distance'] !== null) {
+			return (float) $row['max_distance'];
+		}
+
+		return 0;
 	}
 
     public function updatePos(Etablissement $etablissement)
