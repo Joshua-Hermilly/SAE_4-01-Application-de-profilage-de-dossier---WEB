@@ -268,4 +268,16 @@ class CandidatRepository
 		foreach ($params as $key => $value) { $stmt->bindValue($key, $value); }
 		$stmt->execute();
 	}
+
+	public function countCdtByEtb(int $etbId)
+	{
+		$sql = "SELECT COUNT(*) AS total FROM CANDIDAT WHERE etablissement_id = :etablissement_id";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':etablissement_id', $etbId);
+		$stmt->execute();
+
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		if ($row) { return (int)$row['total']; }
+		return 0;
+	}
 }
