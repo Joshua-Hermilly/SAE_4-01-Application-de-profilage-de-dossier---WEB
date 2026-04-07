@@ -53,7 +53,11 @@ class FiltreRepository
 			'specialite_opt' => [
 				'sql'   => $this->unionDistinctOptionsWithSerieCode(),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
-			]
+			],
+			'nom_groupe'      => [
+				'sql'   => $this->selectDistinct('GROUPE', 'groupe_nom'),
+				'label' => static fn(array $row): ?string => $row['val'] ?? null,
+			],
 		];
 	}
 
@@ -150,6 +154,14 @@ class FiltreRepository
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->bindValue(':gid', $groupeId, \PDO::PARAM_INT);
 		$stmt->bindValue(':cid', $critereId, \PDO::PARAM_INT);
+		$stmt->execute();
+	}
+
+	public function deleteByGroupeId(int $groupeId): void
+	{
+		$sql  = "DELETE FROM FILTRE WHERE groupe_id = :gid";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':gid', $groupeId, \PDO::PARAM_INT);
 		$stmt->execute();
 	}
 }

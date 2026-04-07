@@ -24,6 +24,14 @@ class GroupeService
 		$this->GroupeRepository = new GroupeRepository();
 	}
 
+	/**
+	 * Retourne un groupe par son id (ou null s'il n'existe pas).
+	 */
+	public function findById(int $id): ?Groupe
+	{
+		return $this->GroupeRepository->findById($id);
+	}
+
 	/*-------------------------------*/
 	/* Requètes                      */
 	/*-------------------------------*/
@@ -49,6 +57,12 @@ class GroupeService
 
 		try
 		{
+			// Forcer la note éventuelle dans l'intervalle [0,20]
+			if ($noteDossier !== null)
+			{
+				$noteDossier = max(0.0, min(20.0, $noteDossier));
+			}
+
 			$groupe = new Groupe(0, $nom, $couleur, $noteDossier, [], []);
 			$this->GroupeRepository->create($groupe);
 
@@ -67,6 +81,58 @@ class GroupeService
 
 			$pdo->commit();
 			return $this->GroupeRepository->findById($groupe->getGroupeId()) ?? $groupe;
+		}
+		catch (\Throwable $e)
+		{
+			if ($pdo->inTransaction()) { $pdo->rollBack(); }
+			throw $e;
+		}
+	}
+
+	public function mettreAJourGroupe(int $groupeId, string $nom, string $couleur, ?float $noteDossier, array $codes, array $filters = []): Groupe
+	{
+		$pdo = Repository::getInstance()->getPDO();
+		$pdo->beginTransaction();
+
+		try
+		{
+			$groupe = $this->GroupeRepository->findById($groupeId);
+			if (!$groupe)
+			{
+				throw new RuntimeException('Groupe introuvable');
+			}
+
+			// Si aucun nouveau nom n'est fourni, on conserve le nom actuel
+			$finalNom = ($nom !== '') ? $nom : $groupe->getGroupeNom();
+			// Forcer la note éventuelle dans l'intervalle [0,20]
+			if ($noteDossier !== null)
+			{
+				$noteDossier = max(0.0, min(20.0, $noteDossier));
+			}
+			$groupe->setGroupeNom($finalNom);
+			$groupe->setGroupeCouleur($couleur);
+			$groupe->setGroupeNoteDossier($noteDossier);
+			$this->GroupeRepository->update($groupe);
+
+			$critereRepo  = new CritereRepository();
+			$filtreRepo   = new FiltreRepository();
+			$candidatRepo = new CandidatRepository();
+
+			// Réinitialiser les critères liés au groupe puis les reconstruire à partir des filtres actuels
+			$filtreRepo->deleteByGroupeId($groupeId);
+			$criteres = $this->buildCriteresFromFilters($filters);
+			foreach ($criteres as $critere)
+			{
+				$critereRepo->create($critere);
+				$filtreRepo->linkGroupToCritere($groupeId, $critere->getCritereId());
+			}
+
+			// Synchroniser les candidats du groupe
+			$candidatRepo->removeGroupAssignmentsExcept($groupeId, $codes);
+			if (!empty($codes)) { $candidatRepo->assignGroupToCodes($groupeId, $codes); }
+
+			$pdo->commit();
+			return $this->GroupeRepository->findById($groupeId) ?? $groupe;
 		}
 		catch (\Throwable $e)
 		{
@@ -124,6 +190,45 @@ class GroupeService
 		}
 
 		return $criteres;
+	}
+
+	public function buildFilterValuesFromGroupe(Groupe $groupe): array
+	{
+		$filters = [];
+
+		$discreteKeysSingle = ['civilite', 'boursier', 'type_bac', 'serie_bac'];
+		$discreteKeysMulti  = ['specialite_spe', 'specialite_opt'];
+		$noteKeys           = ['note_lycee', 'note_fiche', 'note_globale'];
+
+		foreach ($groupe->getCriteres() as $critere)
+		{
+			if (!$critere instanceof Critere) { continue; }
+
+			$label = $critere->getCritereLibelle();
+			$value = $critere->getCritereFiltre();
+			$min   = $critere->getCritereMin();
+			$max   = $critere->getCritereMax();
+
+			if (in_array($label, $discreteKeysSingle, true)) { $filters[$label] = $value; continue; }
+
+			if (in_array($label, $discreteKeysMulti, true))
+			{
+				if (!isset($filters[$label]) || !is_array($filters[$label])) { $filters[$label] = []; }
+				$filters[$label][] = $value;
+				continue;
+			}
+
+			if (in_array($label, $noteKeys, true))
+			{
+				$minKey = $label . '_min';
+				$maxKey = $label . '_max';
+				$filters[$minKey] = $min;
+				$filters[$maxKey] = $max;
+				continue;
+			}
+		}
+
+		return $filters;
 	}
 
 }

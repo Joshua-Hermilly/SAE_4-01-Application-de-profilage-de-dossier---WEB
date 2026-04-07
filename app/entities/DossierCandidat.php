@@ -26,7 +26,9 @@ class DossierCandidat implements JsonSerializable
 		private ?string $specicalite_spe2,
 
 		// Groupe
-		private ?string $groupe_couleur = "#dedede"
+		private ?string $groupe_couleur = "#dedede",
+		private ?int    $groupe_id      = null,
+		private ?string $groupe_nom     = null
 	) {}
 
 	/*-------------------------------*/
@@ -69,7 +71,9 @@ class DossierCandidat implements JsonSerializable
 			'Diplome'              => $this->diplome_libelle       ,
 			'Spécicalite 1'        => $this->specicalite_spe1      ,
 			'Spécicalite 2'        => $this->specicalite_spe2      ,
-			'Couleur'              => $this->groupe_couleur        ,
+				'Couleur'              => $this->groupe_couleur        ,
+				'groupe_id'            => $this->groupe_id             ,
+				'groupe_nom'           => $this->groupe_nom            ,
 		];
 	}
 
@@ -131,6 +135,16 @@ class DossierCandidat implements JsonSerializable
 		return $this->candidat_code;
 	}
 
+	public function getGroupeId(): ?int
+	{
+		return $this->groupe_id;
+	}
+
+	public function getGroupeNom(): ?string
+	{
+		return $this->groupe_nom;
+	}
+
 	/*-------------------------------*/
 	/*  Modificateurs                */
 	/*-------------------------------*/
@@ -187,5 +201,15 @@ class DossierCandidat implements JsonSerializable
 	public function setGroupeCouleur(string $groupe_couleur): void
 	{
 		$this->groupe_couleur = $groupe_couleur;
+	}
+
+	public function setGroupeId(?int $groupe_id): void
+	{
+		$this->groupe_id = $groupe_id;
+	}
+
+	public function setGroupeNom(?string $groupe_nom): void
+	{
+		$this->groupe_nom = $groupe_nom;
 	}
 }

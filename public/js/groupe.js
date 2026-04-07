@@ -80,6 +80,16 @@ function initCreationGroupe()
 				return;
 			}
 
+			if (note !== null && (note < 0 || note > 20))
+			{
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'La note doit être comprise entre 0 et 20.';
+					errorDiv.classList.remove('d-none');
+				}
+				return;
+			}
+
 			if (!codes.length)
 			{
 				if (errorDiv)
@@ -160,9 +170,116 @@ function initSuppressionGroupe()
 	});
 }
 
+function initEditionGroupe()
+{
+	const btnSave    = document.getElementById('btnEditGroupSave');
+	const btnCancel  = document.getElementById('btnEditGroupCancel');
+	const nameInput  = document.getElementById('editGroupNom');
+	const colorInput = document.getElementById('editGroupCouleur');
+	const noteInput  = document.getElementById('editGroupNote');
+	const errorDiv   = document.getElementById('editGroupError');
+
+	// Si les éléments d'édition ne sont pas présents, on ne fait rien
+	if (!btnSave || !btnCancel || !nameInput || !colorInput || !noteInput) { return; }
+
+	if (btnCancel)
+	{
+		btnCancel.addEventListener('click', () =>
+		{
+			window.location.href = 'groupes.php';
+		});
+	}
+
+	if (btnSave)
+	{
+		btnSave.addEventListener('click', async () =>
+		{
+			if (errorDiv)
+			{
+				errorDiv.classList.add('d-none');
+				errorDiv.textContent = '';
+			}
+
+			const nom     = nameInput  ? nameInput.value.trim() : '';
+			const couleur = colorInput && colorInput.value ? colorInput.value : '#FF8800';
+			const noteStr = noteInput  ? noteInput.value : '';
+			const note    = noteStr !== '' ? parseFloat(noteStr) : null;
+			const codes   = getSelectedCodes();
+			const filters = (typeof filtresCourant !== 'undefined' && Object.keys(filtresCourant).length)
+				? filtresCourant
+				: (typeof serialiserFiltres === 'function' ? serialiserFiltres() : {});
+			const hiddenIdEl = document.getElementById('editGroupId');
+			const groupeId   = hiddenIdEl && hiddenIdEl.value ? Number(hiddenIdEl.value) : (typeof window.editGroupId !== 'undefined' ? Number(window.editGroupId) : 0);
+
+			if (!nom)
+			{
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'Le nom du groupe est obligatoire.';
+					errorDiv.classList.remove('d-none');
+				}
+				return;
+			}
+
+			if (note !== null && (note < 0 || note > 20))
+			{
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'La note doit être comprise entre 0 et 20.';
+					errorDiv.classList.remove('d-none');
+				}
+				return;
+			}
+
+			try
+			{
+				const response = await fetch('./modifierGroupe.php',
+				{
+					method : 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body   : JSON.stringify({
+						groupe_id   : groupeId,
+						nom         : nom,
+						couleur     : couleur,
+						note_dossier: note,
+						codes       : codes,
+						filters     : filters
+					})
+				});
+
+				const data = await response.json();
+				if (!response.ok || !data.success)
+				{
+					if (errorDiv)
+					{
+						errorDiv.textContent = data.message || 'Erreur lors de la mise à jour du groupe.';
+						errorDiv.classList.remove('d-none');
+					}
+					return;
+				}
+
+				window.location.href = 'groupes.php';
+			}
+			catch (e)
+			{
+				console.error('Erreur lors de la mise à jour du groupe :', e);
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'Erreur inattendue lors de la mise à jour du groupe.';
+					errorDiv.classList.remove('d-none');
+				}
+			}
+		});
+	}
+}
+
 document.addEventListener('DOMContentLoaded', () =>
 {
-	if (typeof isDossiersPage !== 'undefined' && isDossiersPage) { initCreationGroupe   (); }
+	if (typeof isDossiersPage !== 'undefined' && isDossiersPage)
+	{
+		initCreationGroupe();
+		initEditionGroupe();
+	}
 	if (typeof isGroupePage   !== 'undefined' && isGroupePage  ) { initSuppressionGroupe(); }
 });
 

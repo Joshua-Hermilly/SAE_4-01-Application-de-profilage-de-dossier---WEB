@@ -63,6 +63,18 @@ class DossierFiltreService
 						],
 					],
 				],
+				'groupe' => [
+					'label'   => 'Groupe',
+					'filters' => [
+						[
+							'name'     => 'nom_groupe',
+							'label'    => 'Groupe',
+							'column'   => 'GROUPE.groupe_nom',
+							'type'     => 'select',
+							'options'  => [],
+						],
+					],
+				],
 				'diplome' => [
 					'label'   => 'Diplôme / Bac',
 					'filters' => [
