@@ -69,6 +69,9 @@ class DossierGetController extends Controller
 			return;
 		}
 
+		$nbDossier = $serviceDossier->nbDossier($filters);
+		$annees    = $serviceDossier->getAnnees($filters);
+
 		// Il est admin ?
 
 		$this->json
@@ -77,7 +80,9 @@ class DossierGetController extends Controller
 			'headers'  => $this          ->getHeader(),
 			'data'     => $this          ->dossierCandidats,
 			'maxPage'  => $maxPage,
-			'actPage'  => $page
+			'actPage'  => $page,
+			'nbEtu'    => $nbDossier,
+			'annees'   => $annees
 		]);
 	}
 

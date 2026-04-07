@@ -3,6 +3,7 @@
 
 require_once '../app/core/Controller.php';
 require_once '../app/services/DossierFiltreService.php';
+require_once '../app/services/DossierInfoService.php';
 require_once '../app/entities/Compte.php';
 
 class DossiersController extends Controller
@@ -14,7 +15,10 @@ class DossiersController extends Controller
 		$filtreService = new DossierFiltreService();
 		$filterConfig  = $filtreService->buildFilterConfig();
 
-		$this->view('pages/dossiers', 'Dossiers', ['filterConfig' => $filterConfig , 'isAdmin' => $_SESSION['compte']->getCompteIsAdmin() ]);
+		$infoService   = new DossierInfoService($filterConfig);
+		$infoConfig    = $infoService->getInfos($filterConfig);
+
+		$this->view('pages/dossiers', 'Dossiers', ['filterConfig' => $filterConfig , 'infoConfig' => $infoConfig, 'isAdmin' => $_SESSION['compte']->getCompteIsAdmin() ]);
 	}
 
 }

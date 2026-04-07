@@ -1,0 +1,23 @@
+
+#import-export {
+	background-color: var(--gris-fond-assets, #242423);
+}
+
+#import-export {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	padding: 0.25rem 0.75rem;
+	border-radius: 9999px;
+	min-height: 100%;
+	flex-shrink: 0;
+}
+
+#import-export .btn {
+	padding: 0.5rem;
+}
+
+#import-export .vr {
+	align-self: stretch;
+}
