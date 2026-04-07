@@ -68,6 +68,8 @@ class EtablissementRepository
 
 public function creates(array $etablissements): void
 {
+	if (empty($etablissements)) { return; }
+
 	$valeurBind = [];
 	$values = [];
 
@@ -91,18 +93,29 @@ public function creates(array $etablissements): void
 			VALUES " . implode(', ', $values) . "
 			RETURNING etablissement_id";
 
-	$stmt = $this->pdo->prepare($sql);
-	foreach ($valeurBind as $key => $value)
-	{
-		$stmt->bindValue($key, $value);
-	}
-	$stmt->execute();
+	try {
+		$stmt = $this->pdo->prepare($sql);
+		foreach ($valeurBind as $key => $value)
+		{
+			$stmt->bindValue($key, $value);
+		}
+		$stmt->execute();
 
-	$cpt = 0;
-	while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
-	{
-		$etablissements[$cpt]->setEtablissementId((int) $row['etablissement_id']);
-		$cpt++;
+		$cpt = 0;
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$etablissements[$cpt]->setEtablissementId((int) $row['etablissement_id']);
+			$cpt++;
+		}
+	} catch (PDOException $e) {
+		// En cas d'erreur (ex: doublon), insérer un par un
+		foreach ($etablissements as $etablissement) {
+			try {
+				$this->create($etablissement);
+			} catch (PDOException $ex) {
+				// Ignorer les doublons
+			}
+		}
 	}
 }
 

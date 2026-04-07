@@ -58,31 +58,41 @@ class SpecialiteRepository
 			$valeurBrut[":speAbd_{$cpt}"    ] = $specialite->getSpecialiteSpeAbd();
 		}
 
-		$sql = "INSERT INTO SPECIALITE 
+		$sql = "INSERT INTO SPECIALITE
 				(specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_spe3, specialite_speabd)
 				VALUES " . implode(', ', $valeurBind) . "
 				RETURNING specialite_id";
 
-		$stmt = $this->pdo->prepare($sql);
+		try {
+			$stmt = $this->pdo->prepare($sql);
 
-		for ($cpt = 0; $cpt < count($specialites); $cpt++)
-		{
-			$stmt->bindValue(":opt1_{$cpt}"      , $valeurBrut[":opt1_{$cpt}"      ]);
-			$stmt->bindValue(":opt2_{$cpt}"      , $valeurBrut[":opt2_{$cpt}"      ]);
-			$stmt->bindValue(":spe1_{$cpt}"      , $valeurBrut[":spe1_{$cpt}"      ]);
-			$stmt->bindValue(":spe2_{$cpt}"      , $valeurBrut[":spe2_{$cpt}"      ]);
-			$stmt->bindValue(":spe3_{$cpt}"      , $valeurBrut[":spe3_{$cpt}"      ]);
-			$stmt->bindValue(":speAbd_{$cpt}"    , $valeurBrut[":speAbd_{$cpt}"    ]);
-		}
-
-		$stmt->execute();
-
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		for ($cpt = 0; $cpt < count($specialites); $cpt++)
-		{
-			if (isset($rows[$cpt]))
+			for ($cpt = 0; $cpt < count($specialites); $cpt++)
 			{
-				$specialites[$cpt]->setSpecialiteId((int)$rows[$cpt]['specialite_id']);
+				$stmt->bindValue(":opt1_{$cpt}"      , $valeurBrut[":opt1_{$cpt}"      ]);
+				$stmt->bindValue(":opt2_{$cpt}"      , $valeurBrut[":opt2_{$cpt}"      ]);
+				$stmt->bindValue(":spe1_{$cpt}"      , $valeurBrut[":spe1_{$cpt}"      ]);
+				$stmt->bindValue(":spe2_{$cpt}"      , $valeurBrut[":spe2_{$cpt}"      ]);
+				$stmt->bindValue(":spe3_{$cpt}"      , $valeurBrut[":spe3_{$cpt}"      ]);
+				$stmt->bindValue(":speAbd_{$cpt}"    , $valeurBrut[":speAbd_{$cpt}"    ]);
+			}
+
+			$stmt->execute();
+
+			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			for ($cpt = 0; $cpt < count($specialites); $cpt++)
+			{
+				if (isset($rows[$cpt]))
+				{
+					$specialites[$cpt]->setSpecialiteId((int)$rows[$cpt]['specialite_id']);
+				}
+			}
+		} catch (PDOException $e) {
+			foreach ($specialites as $specialite) {
+				try {
+					$this->create($specialite);
+				} catch (PDOException $ex) {
+					// Ignorer les doublons
+				}
 			}
 		}
 	}

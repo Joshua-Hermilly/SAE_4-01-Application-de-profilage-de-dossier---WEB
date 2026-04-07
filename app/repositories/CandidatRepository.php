@@ -54,6 +54,8 @@ class CandidatRepository
 
 	public function creates(array $candidats)
 	{
+		if (empty($candidats)) { return; }
+
 		$valeurBrut = [];
 		$valeurBind = [];
 
@@ -83,7 +85,22 @@ class CandidatRepository
 				(candidat_code, candidat_nom, candidat_prenom, candidat_civilite, candidat_profil, candidat_boursier_code,
 				 candidat_note_lycee, candidat_note_fiche, candidat_note_globale, candidat_commentaire, candidat_annee,
 				 etablissement_id, groupe_id, formation_id, diplome_id)
-				VALUES " . implode(', ', $valeurBind);
+				VALUES " . implode(', ', $valeurBind) . "
+				ON CONFLICT (candidat_code) DO UPDATE SET
+				candidat_nom           = EXCLUDED.candidat_nom,
+				candidat_prenom        = EXCLUDED.candidat_prenom,
+				candidat_civilite      = EXCLUDED.candidat_civilite,
+				candidat_profil        = EXCLUDED.candidat_profil,
+				candidat_boursier_code = EXCLUDED.candidat_boursier_code,
+				candidat_note_lycee    = EXCLUDED.candidat_note_lycee,
+				candidat_note_fiche    = EXCLUDED.candidat_note_fiche,
+				candidat_note_globale  = EXCLUDED.candidat_note_globale,
+				candidat_commentaire   = EXCLUDED.candidat_commentaire,
+				candidat_annee         = EXCLUDED.candidat_annee,
+				etablissement_id       = EXCLUDED.etablissement_id,
+				groupe_id              = NULL,
+				formation_id           = EXCLUDED.formation_id,
+				diplome_id             = EXCLUDED.diplome_id";
 
 		$stmt = $this->pdo->prepare($sql);
 
@@ -124,6 +141,7 @@ class CandidatRepository
 				candidat_commentaire   = :commentaire,
 				etablissement_id       = :etablissement,
 				groupe_id              = :groupe,
+				formation_id           = :formation,
 				diplome_id             = :diplome
 				WHERE candidat_code = :code";
 
