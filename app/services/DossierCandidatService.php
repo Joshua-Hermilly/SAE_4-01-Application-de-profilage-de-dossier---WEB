@@ -37,4 +37,14 @@ class DossierCandidatService
 		return max(1, (int) ceil($this->dossierCandidatRepository->nbMaxDossier($filters) / 25));
 	}
 
+	public function nbDossier(array $filters = []): int
+	{
+		return $this->dossierCandidatRepository->nbMaxDossier($filters);
+	}
+
+	public function getAnnees(array $filters = []): array
+	{
+		return $this->dossierCandidatRepository->findAnnees($filters);
+	}
+
 }

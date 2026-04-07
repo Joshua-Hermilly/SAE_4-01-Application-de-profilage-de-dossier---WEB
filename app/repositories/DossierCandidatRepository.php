@@ -72,6 +72,16 @@ class DossierCandidatRepository
 		return (int) $stmt->fetchColumn();
 	}
 
+	public function findAnnees(array $filters = []): array
+	{
+		[$sql, $params] = $this->buildFilteredQuery($filters, 1, 1, true);
+		$sql = str_replace('SELECT COUNT(*)', 'SELECT DISTINCT C.candidat_annee', $sql) . " ORDER BY C.candidat_annee DESC";
+		$stmt = $this->pdo->prepare($sql);
+		foreach ($params as $key => $value) { $stmt->bindValue($key, $value); }
+		$stmt->execute();
+		return $stmt->fetchAll(PDO::FETCH_COLUMN);
+	}
+
 	private function buildFilteredQuery(array $filters, int $page, ?int $limit, bool $count = false): array
 	{
 		$select = $count
