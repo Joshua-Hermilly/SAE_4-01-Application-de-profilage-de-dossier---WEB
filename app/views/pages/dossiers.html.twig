@@ -2,10 +2,12 @@
 
 {% set assets = {
 	css: [
-		'/css/pages/dossiers.css',
+		'/css/responsive.css',
 		'/css/assets/filter.css',
 		'/css/assets/tableau.css',
 		'/css/assets/map.css',
+		'/css/assets/info.css',
+		'/css/assets/import-export.css',
 		'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
 		'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css',
 		'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css'
@@ -41,16 +43,24 @@
 	{# Contenu principal (toolbar + tableau) #}
 	<div id="main-content" class="d-flex h-100 p-2 flex-column overflow-hidden">	
 
-		<div class="d-flex justify-content-between align-items-center gap-2 py-2 w-100 ">
+		<div class="d-flex justify-content-between align-items-stretch gap-2 py-2 w-100 ">
 			{% include 'components/content/assets/filter_close.html.twig'
 			with
 			{
 			title: filterConfig.title | default('Filtrer'),
 			sections: filterConfig.sections | default([])
 			}%}
-			{% include 'components/content/assets/recherche.html.twig' %}
+
+			{% include 'components/content/assets/info.html.twig' 
+				with
+					{
+						nbEtu: infoConfig.nbEtu | default(0),
+						date: infoConfig.date | default([])
+					}
+			%}
+
 			{% if isAdmin %}
-			{% include 'components/content/assets/import-export.html.twig' %}
+				{% include 'components/content/assets/import-export.html.twig' %}
 			{% endif %}
 
 			{% include 'components/content/assets/map_close.html.twig' %}

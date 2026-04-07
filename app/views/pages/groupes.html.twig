@@ -2,7 +2,7 @@
 
 {% set assets = {
 	css: [
-		'/css/pages/dossiers.css',
+		'/css/responsive.css',
 		'/css/assets/filter.css',
 		'/css/assets/tableau.css',
 		'/css/assets/map.css',
@@ -45,7 +45,6 @@
 			title: filterConfig.title | default('Filtrer'),
 			sections: filterConfig.sections | default([])
 			}%}
-			{% include 'components/content/assets/recherche.html.twig' %}
 
 			{% include 'components/content/assets/map_close.html.twig' %}
 		</div>
