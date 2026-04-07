@@ -1,8 +1,8 @@
 const GIF_CHARGEMENT = `<img src="/image/chargement.gif" width="200" height="200" />`;
 
-const bloc = document.getElementById( "bloc"          );
+const bloc = document.getElementById( "card-block"    );
 const div  = document.getElementById( "chargement"    );
-const btn  = document.getElementById( "btnChargement" );
+const btn  = document.getElementById( "btn-action"    );
 
 btn.addEventListener('click', function (event)
 {

@@ -37,7 +37,7 @@ function creerHeader( headers, isAdmin )
 
 	for ( let cpt = 0; cpt < headers.length-1; cpt++ )
 	{
-		th = `<th scope="col" class="border-end">${headers[cpt]}</th>`;
+		th = `<th scope="col" >${headers[cpt]}</th>`;
 		trHeader.innerHTML+= th;
 	}
 

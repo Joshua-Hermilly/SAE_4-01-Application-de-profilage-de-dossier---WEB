@@ -1,177 +1,98 @@
-/* ============================================================
-   DOSSIERS PAGE - CSS MINIMAL (Bootstrap-first)
-============================================================ */
 
-:root {
-	--primary-color: #2158BD;
-	--dark-bg: #242423;
-	--light-bg: #f8f9fa;
-	--border-color: #dee2e6;
-	--header-dark: #2b2b2b;
-	--filter-width: 320px;
-	--map-width: 350px;
-}
-
-/* ============================================================
-   CONTENEUR PRINCIPAL
-============================================================ */
-
-#under-header {
-	width: 100%;
-	margin: 0;
-	padding: 0;
-	min-height: calc(100vh - 68px - 100px); /* 100vh - header height - footer height */
-	display: flex;
-	flex-direction: row;
-	position: relative;
-}
-
-#transparent{
-	background-color: transparent;
-	border: none;
-}
-
-#bloc {
-	background-color: var(--gris-fond-assets);
-	color: var(--blanc);
-	border: 1px solid var(--gris-select-assets);
-	border-radius: 15px;
-	text-align: center;
-	padding: 0 20px;
-	min-height: 70px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-#espacement {
-	margin: 20px 0;
-}
-
-#separateur {
-    border: none;
-    border-top: 1px solid var(--gris-text-fond-foncé);
-    margin: 20px 0;
-}
-
-#bouton {
-	background-color: var(--gris-select-assets);
-	color: var(--blanc);
-	border-radius: 15px;
-	border: none;
-	display: block;
-	margin: 0 auto;
-	cursor: pointer;
-}
-
-#bouton:hover {
-	background-color: var(--gris-text-fond-foncé);
-	border: 2px solid var(--gris-text-fond-foncé);
-	color: var(--noir-text-fond-claire);
-}
-
-#text {
-	color: var(--gris-text-fond-foncé);
-	text-decoration: none;
-	text-align: left;
-}
-
-#under-title {
-	color: var(--bleu-icon);
-	text-align: center;
-	display: block;
-}
-
-#specialite-checkboxes-specialite_spe,
-#specialite-checkboxes-specialite_opt,
-.specialite-checkboxes {
-	max-height: 220px;
-	overflow-y: auto;
-	padding-right: 0.25rem;
-}
-
-#specialite-checkboxes-specialite_spe #list-group-item,
-#specialite-checkboxes-specialite_spe .specialite-checkbox-item,
-#specialite-checkboxes-specialite_opt #list-group-item,
-#specialite-checkboxes-specialite_opt .specialite-checkbox-item,
-.specialite-checkboxes #list-group-item,
-.specialite-checkboxes .specialite-checkbox-item {
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	gap: 0.5rem;
-	width: 100%;
-	min-width: 0;
-	white-space: normal;
-	padding-top: 0.35rem;
-	padding-bottom: 0.35rem;
-}
-
-#specialite-checkboxes-specialite_spe input[type="checkbox"],
-#specialite-checkboxes-specialite_opt input[type="checkbox"],
-.specialite-checkboxes input[type="checkbox"],
-.form-check input[type="checkbox"] {
-	flex: 0 0 auto;
-	min-width: 20px;
-	min-height: 20px;
-	width: auto !important;
-	height: auto !important;
-}
-
-#specialite-checkboxes-specialite_spe #list-group-item span,
-#specialite-checkboxes-specialite_spe #list-group-item label,
-#specialite-checkboxes-specialite_spe .specialite-checkbox-item span,
-#specialite-checkboxes-specialite_opt #list-group-item span,
-#specialite-checkboxes-specialite_opt #list-group-item label,
-#specialite-checkboxes-specialite_opt .specialite-checkbox-item span,
-.specialite-checkboxes #list-group-item span,
-.specialite-checkboxes #list-group-item label,
-.specialite-checkboxes .specialite-checkbox-item span {
+#dossiers-layout {
 	flex: 1 1 auto;
-	min-width: 0;
-	word-break: break-word;
+	min-height: 0;
 }
 
-a#text:hover {
-	color: var(--bleu-icon);
-	text-decoration: underline;
-}
-
-/* ============================================================
-   FILTER CLOSE HEADER - Styles
-============================================================ */
-
-#filter_close_header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 20px;
-	margin: 0;
-	width: 100%;
+#main-content {
+	flex: 1 1 auto;
 }
 
 /* ============================================================
-   MAP CLOSE HEADER - Styles
+   RESPONSIVE : empiler filtre / tableau / carte sur petit écran
 ============================================================ */
 
-#map_close_header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 20px;
-	margin: 0;
-	width: 100%;
+/* Small screens (< lg = < 992px) : stacked layout */
+@media (max-width: 991.98px) {
+	html, body {
+		height: auto !important;
+		min-height: 100% !important;
+		overflow-y: auto !important;
+	}
+
+	#background {
+		height: auto !important;
+		min-height: 100vh !important;
+		overflow-y: auto !important;
+	}
+
+	#dossiers-layout {
+		flex-direction: column !important;
+		overflow: visible !important;
+		height: auto !important;
+		min-height: 0 !important;
+	}
+
+	#filter_sidebar {
+		height: auto !important;
+		max-height: none !important;
+		width: 100% !important;
+		padding: 15px !important;
+	}
+
+	#filter_sidebar #card-block {
+		min-height: auto !important;
+	}
+
+	#main-content {
+		min-height: 400px;
+		height: auto !important;
+		overflow: visible !important;
+		width: 100% !important;
+		min-width: 0 !important;
+		max-width: 100% !important;
+	}
+
+	/* Toolbar : wrap les éléments sur petit écran */
+	#main-content > .d-flex:first-child {
+		flex-wrap: wrap !important;
+		overflow: hidden !important;
+	}
+
+	/* Barre filtre fermée et carte fermée : pleine largeur sur petit écran */
+	#filter_close_bar,
+	#map_close_bar {
+		width: 100% !important;
+		max-width: 100% !important;
+		flex: 0 0 100% !important;
+	}
+
+	/* Barre de recherche : pleine largeur */
+	#main-content .rounded-pill {
+		max-width: 100% !important;
+		width: 100% !important;
+		flex: 1 1 100% !important;
+	}
+
+	#map_sidebar {
+		height: auto !important;
+		min-height: 350px;
+		width: 100% !important;
+		padding: 15px !important;
+	}
+
+	#map_sidebar #card-block {
+		min-height: 300px !important;
+	}
+
+	#map {
+		min-height: 300px;
+	}
 }
 
-/* ============================================================
-   MAP SIDEBAR - Styles
-============================================================ */
-
-#map_sidebar {
-	transition: width 0.3s ease, opacity 0.3s ease;
+/* Large screens (>= 992px) : horizontal layout */
+@media (min-width: 992px) {
+	#dossiers-layout {
+		overflow: hidden !important;
+	}
 }
-
-#map_sidebar.d-none {
-	width: 0 !important;
-}
-

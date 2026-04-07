@@ -1,56 +1,33 @@
-/**
- * Gestion des boutons de collapse/expand de la barre de filtres
- */
+document.addEventListener("DOMContentLoaded", () =>
+{
+	const btnClose = document.getElementById("filter_collapse_btn");
+	const btnOpen  = document.getElementById("filter_expand_btn"  );
+	const sidebar  = document.getElementById("filter_sidebar"     );
+	const closeBar = document.getElementById("filter_close_bar"   );
 
-document.addEventListener("DOMContentLoaded", function () {
+	if (btnClose) btnClose.addEventListener("click", (e) => { e.preventDefault(); GestionBtnClose(); });
+	if (btnOpen)  btnOpen.addEventListener ("click", (e) => { e.preventDefault(); GestionBtnOpen (); });
 
-    // ==========================================================
-    // RÉCUPÉRATION DES ÉLÉMENTS
-    // ==========================================================
+	initFiltre();
 
-    const collapseBtn = document.getElementById("filter_collapse_btn");
-    const expandBtn = document.getElementById("filter_expand_btn");
-    const sidebar = document.getElementById("filter_sidebar");
-    const closeBar = document.getElementById("filter_close_bar");
+	function initFiltre()
+	{
+		if (sidebar ) sidebar.classList.add    ("d-none");
 
+		if (closeBar) closeBar.classList.remove("d-none");
+	}
 
-    // ==========================================================
-    // INITIALISATION AU CHARGEMENT
-    // ==========================================================
-    // Par défaut : sidebar caché, closeBar visible
-    function initializeFilter() {
-        if (sidebar) {
-            sidebar.classList.add("d-none");
-        }
-        if (closeBar) {
-            closeBar.classList.remove("d-none");
-        }
-    }
+	function GestionBtnClose()
+	{
+		if (sidebar)  sidebar.classList.add    ("d-none");
 
-    // Initialiser au chargement
-    initializeFilter();
+		if (closeBar) closeBar.classList.remove("d-none");
+	}
 
+	function GestionBtnOpen()
+	{
+		if (sidebar)  sidebar.classList.remove("d-none");
 
-    // ==========================================================
-    // ÉVÉNEMENTS : COLLAPSE/EXPAND
-    // ==========================================================
-
-    // Bouton de collapse (fermer le filtre et afficher closeBar)
-    if (collapseBtn) {
-        collapseBtn.addEventListener("click", function (e) {
-            e.preventDefault();
-            if (sidebar) sidebar.classList.add("d-none");
-            if (closeBar) closeBar.classList.remove("d-none");
-        });
-    }
-
-    // Bouton d'expand (afficher le filtre et cacher closeBar)
-    if (expandBtn) {
-        expandBtn.addEventListener("click", function (e) {
-            e.preventDefault();
-            if (sidebar) sidebar.classList.remove("d-none");
-            if (closeBar) closeBar.classList.add("d-none");
-        });
-    }
-
+		if (closeBar) closeBar.classList.add("d-none");
+	}
 });

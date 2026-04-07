@@ -2,6 +2,8 @@
 
 require_once '../app/core/Controller.php';
 require_once '../app/services/GroupeFiltreService.php';
+require_once '../app/entities/Compte.php';
+
 
 class GroupeController extends Controller
 {
@@ -18,6 +20,6 @@ class GroupeController extends Controller
 		$filtreService = new GroupeFiltreService();
 		$filterConfig  = $filtreService->buildFilterConfig();
 
-		$this->view('pages/groupes', 'Groupes', ['filterConfig' => $filterConfig]);
+		$this->view('pages/groupes', 'Groupes', ['filterConfig' => $filterConfig, 'isAdmin' => $_SESSION['compte']->getCompteIsAdmin() ]);
 	}
 }

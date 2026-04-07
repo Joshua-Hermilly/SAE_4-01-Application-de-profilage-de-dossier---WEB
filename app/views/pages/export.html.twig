@@ -1,7 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% set css_page = '/css/pages/import_export.css' %}
-{% set is_admin = true %}
+{% set assets = {
+	css: ['/css/assets/auth.css'],
+	js: ['/js/chargement.js']
+} %}
+{% set is_admin   =  isAdmin %}
 
 {% block content %}
 	{% include 'components/content/formulaire/formulaire-export.html.twig' %}
