@@ -2,7 +2,7 @@
 
 {% set assets = {
 	css: [
-		'/css/pages/dossiers.css',
+		'/css/responsive.css',
 		'/css/assets/filter.css',
 		'/css/assets/tableau.css',
 		'/css/assets/map.css',
@@ -25,15 +25,6 @@
 
 {% block content %}
 	<div id="dossiers-layout" class="d-flex flex-column flex-lg-row w-100" style="flex: 1 1 auto; min-height: 0;">
-
-		{% include 'components/content/assets/filter_open.html.twig'
-			with
-			{
-				title: filterConfig.title | default('Filtrer'),
-				sections: filterConfig.sections | default([])
-			}
-		%}
-
 		<div id="main-content" class="d-flex flex-column overflow-hidden" style="flex: 1 1 auto; min-width: 0;">
 			<div class="d-flex align-items-center gap-2 py-2">
 				{# On garde seulement un bandeau vide pour aligner avec les autres pages (pas de filtres ni carte) #}
