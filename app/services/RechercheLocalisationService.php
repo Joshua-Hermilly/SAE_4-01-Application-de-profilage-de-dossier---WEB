@@ -159,7 +159,8 @@ class RechercheLocalisationService
 			+ cos($lat1) * cos($lat2) * sin($dLon / 2) ** 2;
 		$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
-		return $R * $c;
+		// Distance arrondie à 2 décimales (km)
+		return round($R * $c, 2);
 	}
 
 	/*-------------------------------*/
