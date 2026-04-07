@@ -287,6 +287,35 @@ class CandidatRepository
 		$stmt->execute();
 	}
 
+	public function removeGroupAssignmentsExcept(int $groupeId, array $codesToKeep): void
+	{
+		if (empty($codesToKeep))
+		{
+			$sql  = 'UPDATE CANDIDAT SET groupe_id = NULL WHERE groupe_id = :groupe_id';
+			$stmt = $this->pdo->prepare($sql);
+			$stmt->bindValue(':groupe_id', $groupeId, PDO::PARAM_INT);
+			$stmt->execute();
+			return;
+		}
+
+		$placeholders = [];
+		$params       = [':groupe_id' => $groupeId];
+		foreach (array_values($codesToKeep) as $index => $code)
+		{
+			$ph = ':keep_code_' . $index;
+			$placeholders[] = $ph;
+			$params[$ph] = (int) $code;
+		}
+
+		$sql = 'UPDATE CANDIDAT SET groupe_id = NULL
+			WHERE groupe_id = :groupe_id
+			  AND candidat_code NOT IN (' . implode(', ', $placeholders) . ')';
+
+		$stmt = $this->pdo->prepare($sql);
+		foreach ($params as $key => $value) { $stmt->bindValue($key, $value); }
+		$stmt->execute();
+	}
+
 	public function countCdtByEtb(int $etbId)
 	{
 		$sql = "SELECT COUNT(*) AS total FROM CANDIDAT WHERE etablissement_id = :etablissement_id";

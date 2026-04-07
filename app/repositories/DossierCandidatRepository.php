@@ -35,6 +35,8 @@ class DossierCandidatRepository
 			$row['specialite_spe1'],
 			$row['specialite_spe2'],
 			$row['groupe_couleur'],
+			isset($row['groupe_id' ]) ? (int) $row['groupe_id' ] : null,
+			$row['groupe_nom'] ?? null,
 		);
 	}
 
@@ -86,7 +88,7 @@ class DossierCandidatRepository
 	{
 		$select = $count
 			? 'SELECT COUNT(*)'
-			: 'SELECT C.candidat_code, C.candidat_civilite, C.candidat_boursier_code, C.candidat_note_lycee, C.candidat_note_fiche, C.candidat_note_globale, E.etablissement_nom, D.diplome_serie_code, S.specialite_spe1, S.specialite_spe2, G.groupe_couleur';
+			: 'SELECT C.candidat_code, C.candidat_civilite, C.candidat_boursier_code, C.candidat_note_lycee, C.candidat_note_fiche, C.candidat_note_globale, E.etablissement_nom, D.diplome_serie_code, S.specialite_spe1, S.specialite_spe2, G.groupe_couleur, G.groupe_id, G.groupe_nom';
 
 		$sql = $select . " FROM CANDIDAT AS C\n"
 			           . "LEFT JOIN ETABLISSEMENT AS E ON E.etablissement_id = C.etablissement_id\n"
@@ -113,6 +115,12 @@ class DossierCandidatRepository
 		{
 			$conditions[] = 'C.candidat_profil ILIKE :profil';
 			$params[':profil'] = '%' . $filters['profil'] . '%';
+		}
+
+		if (!empty($filters['nom_groupe']))
+		{
+			$conditions[] = 'G.groupe_nom = :nom_groupe';
+			$params[':nom_groupe'] = $filters['nom_groupe'];
 		}
 
 		if (!empty($filters['type_bac']))
