@@ -63,10 +63,7 @@ class GroupeService
 				$filtreRepo->linkGroupToCritere($groupe->getGroupeId(), $critere->getCritereId());
 			}
 
-			if (!empty($codes))
-			{
-				$candidatRepo->assignGroupToCodes($groupe->getGroupeId(), $codes);
-			}
+			if (!empty($codes)) { $candidatRepo->assignGroupToCodes($groupe->getGroupeId(), $codes); }
 
 			$pdo->commit();
 			return $this->GroupeRepository->findById($groupe->getGroupeId()) ?? $groupe;
@@ -85,10 +82,7 @@ class GroupeService
 
 		try
 		{
-			foreach ($groupesId as $GroupeId)
-			{
-				$this->GroupeRepository->supprimer($GroupeId);
-			}
+			foreach ($groupesId as $GroupeId) { $this->GroupeRepository->supprimer($GroupeId); }
 			$pdo->commit();
 			return true;
 		}
