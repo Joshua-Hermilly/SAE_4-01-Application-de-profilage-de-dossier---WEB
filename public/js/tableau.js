@@ -16,13 +16,8 @@ const pageAct  = document.getElementById( "pageAct"         );
 const btnDeb   = document.getElementById( "btnDeb"          );
 const btnFin   = document.getElementById( "btnFin"          );
 
-const btnSupr  = document.getElementById( "btnSupr"         );
-
 // Infos page
 const infos    = document.getElementById( "pagination-info" );
-
-// Bouton création de groupe (présent sur la page dossiers)
-const btnCreerGroupe = document.getElementById('btnCreerGroupe');
 
 // Détection du type de page
 const currentPath     = window.location.pathname.toLowerCase();
@@ -144,9 +139,6 @@ function creerBtnPage( maxPage, actPage )
 	btnSvt.style.color  = "#FFFFFFFF";
 	btnPrc.style.color  = "#FFFFFFFF";
 
-	//console.log(maxPage  )
-	//console.log(actPage+1)
-
 	if ( actPage >= maxPage    ) { btnSvt.disabled = true; btnSvt.style.color =  "#3f3f3f;"; }
 	if ( actPage ==         1  ) { btnPrc.disabled = true; btnPrc.style.color =  "#3d3b3b;"; }
 }
@@ -216,7 +208,7 @@ function selectionFaite(event)
 				sessionStorage.setItem( "cbTous"       , 'désélectionner' );
 
 				document.getElementById( "cbTous" ).checked = false;
-				event.target.checked                                 = false;
+				event.target.checked                        = false;
 			}
 		}
 		else
@@ -225,22 +217,6 @@ function selectionFaite(event)
 			else                        { sessionStorage.removeItem( event.target.id                ); event.target.checked = false; }
 		}
 	}
-}
-
-function getSelectedCodes()
-{
-	const codes = [];
-	const inputs = document.querySelectorAll('input.cb');
-	inputs.forEach((input) =>
-	{
-		if (input.id === 'cbTous') { return; }
-		if (input.checked)
-		{
-			const code = input.id.replace(/^cb/, '');
-			if (code) { codes.push(code); }
-		}
-	});
-	return codes;
 }
 
 /*------------------------*/
@@ -265,11 +241,7 @@ async function getData( indexPage, lien, filters = filtresCourant )
 		//console.log(donnees)
 		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
 
-		if ( donnees['erreur'] )
-		{
-			afficherErreur( donnees['erreur'] );
-			return;
-		}
+		if ( donnees['erreur'] ) { afficherErreur( donnees['erreur'] ); return; }
 
 		dvErreur.style.display = "none";
 		tableau .style.display = "";
@@ -324,154 +296,3 @@ if (filterForm)
 		chargerPage(1, filtresCourant);
 	});
 }
-
-if (btnCreerGroupe && isDossiersPage)
-{
-	btnCreerGroupe.addEventListener('click', () =>
-	{
-		const codes = getSelectedCodes();
-		const info  = document.getElementById('createGroupSelectionInfo');
-		if (info)
-		{
-			info.textContent = codes.length === 0
-				? "Aucun dossier sélectionné. Sélectionnez au moins un dossier."
-				: codes.length + " dossier(s) sélectionné(s).";
-		}
-
-		const modalEl = document.getElementById('createGroupModal');
-		if (!modalEl || typeof bootstrap === 'undefined') { return; }
-		const modal = new bootstrap.Modal(modalEl);
-		modal.show();
-	});
-}
-
-const createGroupForm = document.getElementById('createGroupForm');
-if (createGroupForm && isDossiersPage)
-{
-	createGroupForm.addEventListener('submit', async (event) =>
-	{
-		event.preventDefault();
-
-		const errorDiv   = document.getElementById('createGroupError');
-		if (errorDiv)
-		{
-			errorDiv.classList.add('d-none');
-			errorDiv.textContent = '';
-		}
-
-		const nomInput    = document.getElementById('createGroupNom');
-		const couleurInput= document.getElementById('createGroupCouleur');
-		const noteInput   = document.getElementById('createGroupNote');
-
-		const nom      = nomInput ? nomInput.value.trim() : '';
-		const couleur  = couleurInput && couleurInput.value ? couleurInput.value : '#FF8800';
-		const noteStr  = noteInput ? noteInput.value : '';
-		const note     = noteStr !== '' ? parseFloat(noteStr) : null;
-		const codes    = getSelectedCodes();
-		const filters  = Object.keys(filtresCourant).length ? filtresCourant : serialiserFiltres();
-
-		if (!nom)
-		{
-			if (errorDiv)
-			{
-				errorDiv.textContent = 'Le nom du groupe est obligatoire.';
-				errorDiv.classList.remove('d-none');
-			}
-			return;
-		}
-
-		if (!codes.length)
-		{
-			if (errorDiv)
-			{
-				errorDiv.textContent = 'Aucun dossier sélectionné. Sélectionnez au moins un dossier pour créer un groupe.';
-				errorDiv.classList.remove('d-none');
-			}
-			return;
-		}
-
-		try
-		{
-			const response = await fetch('./creerGroupe.php',
-			{
-				method : 'POST',
-				headers:
-				{
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(
-				{
-					nom,
-					couleur,
-					note_dossier: note,
-					codes,
-					filters
-				})
-			});
-
-			const data = await response.json();
-			if (!response.ok || !data.success)
-			{
-				if (errorDiv)
-				{
-					errorDiv.textContent = data.message || 'Erreur lors de la création du groupe.';
-					errorDiv.classList.remove('d-none');
-				}
-				return;
-			}
-
-			window.location.reload();
-
-			const modalEl = document.getElementById('createGroupModal');
-			if (modalEl && typeof bootstrap !== 'undefined')
-			{
-				const instance = bootstrap.Modal.getInstance(modalEl);
-				if (instance) { instance.hide(); }
-			}
-		}
-		catch (e)
-		{
-			console.error('Erreur lors de la création du groupe :', e);
-			if (errorDiv)
-			{
-				errorDiv.textContent = 'Erreur inattendue lors de la création du groupe.';
-				errorDiv.classList.remove('d-none');
-			}
-		}
-	});
-}
-
-btnSupr.addEventListener("click", async () =>
-{
-	const groupesId = getSelectedCodes();
-
-	if (groupesId.length === 0)
-	{
-		alert("Aucun élément sélectionné.");
-		return;
-	}
-
-	if (!confirm("Voulez-vous vraiment supprimer les éléments sélectionnés ?"))
-	{
-		return;
-	}
-
-	try
-	{
-		const response = await fetch('./supprimerGroupe.php',
-		{
-			method : 'POST',
-			headers:
-			{
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ groupesId })
-		});
-
-		window.location.reload();
-	}
-	catch (error)
-	{
-		console.error("Erreur lors de la suppression :", error);
-	}
-});

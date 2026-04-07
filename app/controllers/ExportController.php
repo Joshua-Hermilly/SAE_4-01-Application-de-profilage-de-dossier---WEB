@@ -28,7 +28,6 @@ class ExportController extends Controller
 			}
 
 			(new ExportService())->exportXLSX((int)$annee);
-			// La méthode exportXLSX fait déjà un exit();, on ne doit pas continuer vers la vue
 			return;
 		}
 
