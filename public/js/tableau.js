@@ -16,6 +16,8 @@ const pageAct  = document.getElementById( "pageAct"         );
 const btnDeb   = document.getElementById( "btnDeb"          );
 const btnFin   = document.getElementById( "btnFin"          );
 
+const btnSupr  = document.getElementById( "btnSupr"         );
+
 // Infos page
 const infos    = document.getElementById( "pagination-info" );
 
@@ -191,7 +193,6 @@ function selectionFaite(event)
 				sessionStorage.setItem( "cbTous" , 'selectionner' );
 				for ( let cpt = 0; cpt < lstCb.length; cpt++ )
 				{
-					// Ne pas cocher les cases désactivées (candidats déjà groupés)
 					if (lstCb[cpt].disabled) { continue; }
 					lstCb[cpt].checked = true;
 				}
@@ -419,6 +420,8 @@ if (createGroupForm && isDossiersPage)
 				return;
 			}
 
+			window.location.reload();
+
 			const modalEl = document.getElementById('createGroupModal');
 			if (modalEl && typeof bootstrap !== 'undefined')
 			{
@@ -437,3 +440,38 @@ if (createGroupForm && isDossiersPage)
 		}
 	});
 }
+
+btnSupr.addEventListener("click", async () =>
+{
+	const groupesId = getSelectedCodes();
+
+	if (groupesId.length === 0)
+	{
+		alert("Aucun élément sélectionné.");
+		return;
+	}
+
+	if (!confirm("Voulez-vous vraiment supprimer les éléments sélectionnés ?"))
+	{
+		return;
+	}
+
+	try
+	{
+		const response = await fetch('./supprimerGroupe.php',
+		{
+			method : 'POST',
+			headers:
+			{
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ groupesId })
+		});
+
+		window.location.reload();
+	}
+	catch (error)
+	{
+		console.error("Erreur lors de la suppression :", error);
+	}
+});

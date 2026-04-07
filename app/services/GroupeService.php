@@ -78,6 +78,27 @@ class GroupeService
 		}
 	}
 
+	public function supprimerGroupes($groupesId): bool
+	{
+		$pdo = Repository::getInstance()->getPDO();
+		$pdo->beginTransaction();
+
+		try
+		{
+			foreach ($groupesId as $GroupeId)
+			{
+				$this->GroupeRepository->supprimer($GroupeId);
+			}
+			$pdo->commit();
+			return true;
+		}
+		catch (\Throwable $e)
+		{
+			if ($pdo->inTransaction()) { $pdo->rollBack(); }
+			throw $e;
+		}
+	}
+
 	private function buildCriteresFromFilters(array $filters): array
 	{
 		$criteres = [];

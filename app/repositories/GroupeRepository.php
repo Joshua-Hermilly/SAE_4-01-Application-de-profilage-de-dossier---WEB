@@ -213,4 +213,23 @@ class GroupeRepository
 		}
 		return $names;
 	}
+
+	public function supprimer(mixed $GroupeId): void
+	{
+		$sqlDelete = "DELETE FROM FILTRE WHERE groupe_id = :id";
+		$stmtDelete = $this->pdo->prepare($sqlDelete);
+		$stmtDelete->bindValue(':id', $GroupeId, PDO::PARAM_INT);
+		$stmtDelete->execute();
+
+		$sqlUpdate = "UPDATE CANDIDAT SET groupe_id = NULL WHERE groupe_id = :id";
+		$stmtUpdate = $this->pdo->prepare($sqlUpdate);
+		$stmtUpdate->bindValue(':id', $GroupeId, PDO::PARAM_INT);
+		$stmtUpdate->execute();
+
+		$sqlDelete = "DELETE FROM GROUPE WHERE groupe_id = :id";
+		$stmtDelete = $this->pdo->prepare($sqlDelete);
+		$stmtDelete->bindValue(':id', $GroupeId, PDO::PARAM_INT);
+		$stmtDelete->execute();
+
+	}
 }
