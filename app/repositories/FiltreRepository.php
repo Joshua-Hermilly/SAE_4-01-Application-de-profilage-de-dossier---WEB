@@ -156,4 +156,12 @@ class FiltreRepository
 		$stmt->bindValue(':cid', $critereId, \PDO::PARAM_INT);
 		$stmt->execute();
 	}
+
+	public function deleteByGroupeId(int $groupeId): void
+	{
+		$sql  = "DELETE FROM FILTRE WHERE groupe_id = :gid";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':gid', $groupeId, \PDO::PARAM_INT);
+		$stmt->execute();
+	}
 }

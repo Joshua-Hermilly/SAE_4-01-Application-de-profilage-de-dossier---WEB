@@ -77,9 +77,13 @@ function creerTableau( headers, dossiers, isAdmin )
 		const tr = document.createElement( 'tr' );
 		tr.classList.add( 'ligne' );
 
-		// Détection d'un candidat déjà dans un groupe (couleur différente de la couleur par défaut)
-		const couleurBrute   = (dossiers[cptD]['Couleur'] || dossiers[cptD]['groupe_couleur'] || '').toLowerCase();
-		const dejaDansGroupe = isDossiersPage && couleurBrute !== '' && couleurBrute !== '#dedede';
+		// Informations de groupe pour la ligne courante
+		const couleurBrute      = (dossiers[cptD]['Couleur'] || dossiers[cptD]['groupe_couleur'] || '').toLowerCase();
+		const ligneGroupeId     = dossiers[cptD]['groupe_id'] ?? null;
+		const isEditGroupMode   = !!window.editGroupMode;
+		const currentEditGroup  = typeof window.editGroupId !== 'undefined' ? window.editGroupId : null;
+		const hasAnyGroupColor  = couleurBrute !== '' && couleurBrute !== '#dedede';
+		const dansGroupeCourant = isDossiersPage && ligneGroupeId !== null && String(ligneGroupeId) === String(currentEditGroup);
 
 		for ( let cptH = 0; cptH < headers.length-1; cptH++ )
 		{
@@ -113,13 +117,20 @@ function creerTableau( headers, dossiers, isAdmin )
 			input.id   =  "cb"+dossiers[cptD][headers[0]];
 			input.type = "checkbox";
 
-			if (dejaDansGroupe)
+			if (isEditGroupMode)
 			{
+				// En mode édition de groupe, les candidats du groupe courant sont cochés,
+				// les autres (sans groupe) sont décochés et modifiables.
+				input.checked = dansGroupeCourant;
+			}
+			else if (isDossiersPage && hasAnyGroupColor)
+			{
+				// Hors mode édition, un candidat déjà dans un groupe n'est pas sélectionnable
 				input.disabled = true;
 				input.checked  = false;
 				input.classList.add('opacity-50');
 				input.classList.add('bg-secondary');
-				input.title = 'Candidat déjà dans un groupe';
+				input.title = 'Candidat déjà dans un autre groupe';
 			}
 			else
 			{
@@ -134,13 +145,36 @@ function creerTableau( headers, dossiers, isAdmin )
 		if (isGroupePage)
 		{
 			const thEye = document.createElement('th');
-			const icon = document.createElement( 'i' );
+			const container = document.createElement('div');
+			container.className = 'd-flex gap-1 justify-content-center';
 
-			icon.className = "bi bi-eye-fill border border-dark rounded-1 p-1 text-center";
-			icon.style.cursor = "pointer";
-			icon.id = dossiers[cptD]['Id groupe'];
-			thEye.appendChild( icon );
-			tr.appendChild( thEye );
+			const idGroupe   = dossiers[cptD]['Id groupe'];
+			const nomGroupe  = dossiers[cptD]['Nom groupe']  || '';
+			const couleurGrp = dossiers[cptD]['Couleur']      || '';
+			const noteGroupe = (dossiers[cptD]['Note Dossier'] ?? dossiers[cptD]['Note dossier']) ?? '';
+
+			const iconVoir = document.createElement('i');
+			iconVoir.className = "bi bi-eye-fill border border-dark rounded-1 p-1 text-center";
+			iconVoir.style.cursor = 'pointer';
+			iconVoir.dataset.action       = 'voir-groupe';
+			iconVoir.dataset.groupeId     = idGroupe;
+			iconVoir.dataset.groupeNom    = nomGroupe;
+			iconVoir.dataset.groupeCouleur= couleurGrp;
+			iconVoir.dataset.groupeNote   = noteGroupe;
+
+			const iconEdit = document.createElement('i');
+			iconEdit.className = "bi bi-pencil-square border border-dark rounded-1 p-1 text-center";
+			iconEdit.style.cursor = 'pointer';
+			iconEdit.dataset.action        = 'modifier-groupe';
+			iconEdit.dataset.groupeId      = idGroupe;
+			iconEdit.dataset.groupeNom     = nomGroupe;
+			iconEdit.dataset.groupeCouleur = couleurGrp;
+			iconEdit.dataset.groupeNote    = noteGroupe;
+
+			container.appendChild(iconVoir);
+			container.appendChild(iconEdit);
+			thEye.appendChild(container);
+			tr.appendChild(thEye);
 		}
 
 		tBody.appendChild( tr );
@@ -307,10 +341,40 @@ function chargerPage(indexPage, filters = filtresCourant)
 
 function initialiserTableau()
 {
+	const preset = (typeof window.defaultFilters !== 'undefined' && window.defaultFilters) ? window.defaultFilters : null;
+	if (preset && Object.keys(preset).length > 0)
+	{
+		filtresCourant = { ...filtresCourant, ...preset };
+
+		if (filterForm)
+		{
+			for (const [key, value] of Object.entries(preset))
+			{
+				if (Array.isArray(value))
+				{
+					const inputs = filterForm.querySelectorAll(`[name="${key}[]"]`);
+					if (inputs.length > 0)
+					{
+						inputs.forEach((input) => { input.checked = value.includes(input.value); });
+						continue;
+					}
+				}
+				else
+				{
+					const field = filterForm.querySelector(`[name="${key}"]`);
+					if (field) { field.value = value; continue; }
+				}
+			}
+		}
+
+		chargerPage(1, filtresCourant);
+		return;
+	}
+
 	if (isDossiersPage)
 	{
-		const params     = new URLSearchParams(window.location.search);
-		const nomGroupe  = params.get('nom_groupe') || params.get('groupe');
+		const params    = new URLSearchParams(window.location.search);
+		const nomGroupe = params.get('nom_groupe') || params.get('groupe');
 		if (nomGroupe)
 		{
 			filtresCourant = { ...filtresCourant, nom_groupe: nomGroupe };
@@ -342,7 +406,44 @@ attacherPagination();
 /*------------------------*/
 /* Event                  */
 /*------------------------*/
-tableau.addEventListener( "click", (event) => selectionFaite (event) );
+tableau.addEventListener("click", (event) =>
+{
+	const target = event.target;
+
+	// Gestion des actions liées aux groupes (page groupes)
+	if (target instanceof HTMLElement && target.dataset && target.dataset.action)
+	{
+		const action        = target.dataset.action;
+		const groupeId      = target.dataset.groupeId     || null;
+		const groupeNom     = target.dataset.groupeNom    || '';
+		const groupeCouleur = target.dataset.groupeCouleur || '';
+		const groupeNote    = target.dataset.groupeNote   || '';
+
+		if (action === 'voir-groupe' && groupeNom)
+		{
+			const params = new URLSearchParams({
+				mode      : 'view_groupe',
+				groupe_id : groupeId,
+				groupe    : groupeNom
+			});
+			window.location.href = 'dossiers.php?' + params.toString();
+			return;
+		}
+
+		if (action === 'modifier-groupe' && groupeId)
+		{
+			const params = new URLSearchParams({
+				mode      : 'edit_groupe',
+				groupe_id : groupeId,
+				groupe    : groupeNom
+			});
+			window.location.href = 'dossiers.php?' + params.toString();
+			return;
+		}
+	}
+
+	selectionFaite(event);
+});
 
 if (filterForm)
 {
