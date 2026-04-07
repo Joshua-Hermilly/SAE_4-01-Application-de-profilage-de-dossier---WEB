@@ -25,6 +25,18 @@ class DossierFiltreService
 		$config = [
 			'title'    => 'Filtres des dossiers',
 			'sections' => [
+				'anneee' => [
+					'label'   => 'Année',
+					'filters' => [
+						[
+							'name'     => 'annee',
+							'label'    => 'Année de candidature',
+							'column'   => 'CANDIDAT.candidat_annee',
+							'type'     => 'select',
+							'options'  => [],
+						],
+					],
+				],
 				'candidat' => [
 					'label'   => 'Candidat',
 					'filters' => [
@@ -34,7 +46,6 @@ class DossierFiltreService
 							'column'      => 'CANDIDAT.candidat_civilite',
 							'type'        => 'select',
 							'options'     => [],
-							'bac_tags'    => ['general', 'technologique', 'professionnel'],
 						],
 						[
 							'name'        => 'boursier',
@@ -42,15 +53,13 @@ class DossierFiltreService
 							'column'      => 'CANDIDAT.candidat_boursier_code',
 							'type'        => 'select',
 							'options'     => [],
-							'bac_tags'    => ['general', 'technologique', 'professionnel'],
 						],
 						[
 							'name'        => 'profil',
 							'label'       => 'Profil',
 							'column'      => 'CANDIDAT.candidat_profil',
-							'type'        => 'text',
-							'placeholder' => 'Ex: En terminale',
-							'bac_tags'    => ['general', 'technologique', 'professionnel'],
+							'type'        => 'select',
+							'options'     => [],
 						],
 					],
 				],
@@ -123,7 +132,7 @@ class DossierFiltreService
 							'max'      => 20,
 						],
 					],
-				]
+				],
 			],
 		];
 

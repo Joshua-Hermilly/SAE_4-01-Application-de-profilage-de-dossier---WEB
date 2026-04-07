@@ -117,12 +117,6 @@ class DossierCandidatRepository
 			$params[':serie_bac'] = $filters['serie_bac'];
 		}
 
-		if (!empty($filters['departement']))
-		{
-			$conditions[] = 'E.etablissement_id IS NOT NULL AND E.localisation_id IS NOT NULL AND EXISTS (SELECT 1 FROM LOCALISATION L2 WHERE L2.localisation_id = E.localisation_id AND L2.localisation_departement = :departement)';
-			$params[':departement'] = $filters['departement'];
-		}
-
 		if (!empty($filters['specialite_spe']))
 		{
 			$specialites = is_array($filters['specialite_spe']) ? $filters['specialite_spe'] : [$filters['specialite_spe']];

@@ -2,6 +2,7 @@
 
 require_once '../app/repositories/CritereRepository.php';
 require_once '../app/repositories/GroupeRepository.php';
+require_once '../app/repositories/FiltreRepository.php';
 
 class GroupeFiltreService
 {
@@ -10,6 +11,7 @@ class GroupeFiltreService
 	/*-------------------------------*/
 	private CritereRepository $critereRepository;
 	private GroupeRepository  $groupeRepository;
+	private FiltreRepository  $filtreRepository;
 
 	/*-------------------------------*/
 	/*  Constructeur                 */
@@ -18,6 +20,7 @@ class GroupeFiltreService
 	{
 		$this->critereRepository = new CritereRepository();
 		$this->groupeRepository  = new GroupeRepository();
+		$this->filtreRepository  = new FiltreRepository();
 	}
 
 	/*-------------------------------*/
@@ -49,7 +52,7 @@ class GroupeFiltreService
 			$nomOptions[$trimmed] = $trimmed;
 		}
 
-		return [
+		$config = [
 			'title'    => 'Filtres des groupes',
 			'sections' => [
 				'groupe' => [
@@ -61,18 +64,6 @@ class GroupeFiltreService
 							'column'      => 'GROUPE.groupe_nom',
 							'type'        => 'select',
 							'options'     => $nomOptions,
-						],
-					],
-				],
-				'criteres' => [
-					'label'   => 'Critères associés',
-					'filters' => [
-						[
-							'name'    => 'critere',
-							'label'   => 'Critères',
-							'column'  => 'CRITERE.critere_filtre',
-							'type'    => 'multiselect',
-							'options' => $critereOptions,
 						],
 					],
 				],
@@ -92,5 +83,8 @@ class GroupeFiltreService
 				],
 			],
 		];
+
+		$this->filtreRepository->hydrateSelectFilters($config);
+		return $config;
 	}
 }

@@ -1,6 +1,7 @@
 <?php
 
 require_once '../app/core/Controller.php';
+require_once '../app/entities/Compte.php';
 
 class FormationController extends Controller
 {
@@ -14,6 +15,6 @@ class FormationController extends Controller
 			return;
 		}
 
-		$this->view('pages/formations', 'Formations');
+		$this->view('pages/formations', 'Formations' , ['isAdmin' => $_SESSION['compte']->getCompteIsAdmin()]);
 	}
 }

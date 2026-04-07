@@ -1,18 +1,9 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="/css/assets/tableau.css">
-
 {# Erreur lors du fetch #}
 <div id="erreur" class="card mb-5 alert alert-danger" style="display: none"></div>
 
-{# Il y a des candidat #}
-<div id="vide" class="card mb-5" style="display:none">
-	<p> Acune données, merci d'aller en importer.</p>
-	<a href="import.php">Import des données.</a>
-</div>
-
 {# Tableau #}
-<div id="tableau" class="card mb-5"  style="display:none">
-	<div class="card table-responsive">
+<div id="tableau" class="card"  style="display:none">
+	<div class="card table-responsive h-100">
 		<table  class="table" >
 			<thead class="table-dark" id="tHead">
 			<tr class="trHead" id="trHead"> </tr>
@@ -23,9 +14,9 @@
 		</table>
 	</div>
 
-	<div class="card-footer d-flex justify-content-between align-items-center bg-white">
+	<div id="card-footer" class="card-footer d-flex justify-content-between align-items-center bg-white">
 		<span class="text-muted small" id="pagination-info"></span>
-		<nav aria-label="Navigation des pages">
+		<nav>
 			<div class="d-flex align-items-center pagination pagination-sm mb-0">
 				<button id="btnDeb"  class=" text-dark border rounded-start" disabled>Début</button>
 				<button id="btnPrc"  class=" text-dark border              " disabled>Précédent</button>
@@ -37,4 +28,3 @@
 	</div>
 
 </div>
-<script src="/js/tableau.js"></script>

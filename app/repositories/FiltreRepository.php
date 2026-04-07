@@ -14,6 +14,10 @@ class FiltreRepository
 	public function getOptionQueries(): array
 	{
 		return [
+			'annee'           => [
+				'sql'   => $this->selectDistinct('CANDIDAT', 'candidat_annee'),
+				'label' => static fn(array $row): ?string => $row['val'] ?? null,
+			],
 			'civilite'        => [
 				'sql'   => $this->selectDistinct('CANDIDAT', 'candidat_civilite'),
 				'label' => static fn(array $row): ?string => $row['val'] ?? null,
@@ -29,6 +33,10 @@ class FiltreRepository
 						default => 'Boursier (' . $row['val'] . ')',
 					};
 				},
+			],
+			'profil'          => [
+				'sql'   => $this->selectDistinct('CANDIDAT', 'candidat_profil'),
+				'label' => static fn(array $row): ?string => $row['val'] ?? null,
 			],
 			'type_bac'        => [
 				'sql'   => $this->selectDistinct('DIPLOME', 'diplome_type_libelle'),
@@ -134,5 +142,14 @@ class FiltreRepository
 			}
 		}
 		unset($section, $filter);
+	}
+
+	public function linkGroupToCritere(int $groupeId, int $critereId): void
+	{
+		$sql  = "INSERT INTO FILTRE (groupe_id, critere_id) VALUES (:gid, :cid)";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':gid', $groupeId, \PDO::PARAM_INT);
+		$stmt->bindValue(':cid', $critereId, \PDO::PARAM_INT);
+		$stmt->execute();
 	}
 }

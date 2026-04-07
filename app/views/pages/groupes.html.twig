@@ -1,41 +1,58 @@
 {% extends 'base.html.twig' %}
 
-{% set css_page = '/css/pages/dossiers.css' %}
-{% set is_admin = true %}
+{% set assets = {
+	css: [
+		'/css/pages/dossiers.css',
+		'/css/assets/filter.css',
+		'/css/assets/tableau.css',
+		'/css/assets/map.css',
+		'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+		'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css',
+		'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css'
+	],
+	js: [
+		'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+		'https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js',
+		'/js/filter-bac.js',
+		'/js/filter-buttons.js',
+		'/js/tableau.js',
+		'/js/groupe.js',
+		'/js/map.js',
+		'/js/map-buttons.js'
+	]
+} %}
+{% set is_admin   =  isAdmin %}
 {% set pageActive = 'groupes' %}
 {% set fichierjs  = '/js/tableauGroupe.js' %}
 
 {% block content %}
-	<div id="dossiers-layout" class="d-flex w-100 overflow-hidden" style="flex: 1 1 auto; min-height: 0;">
+	
 
-		{% include 'components/content/assets/filter_open.html.twig'
+	{% include 'components/content/assets/filter_open.html.twig'
+		with
+		{
+			title: filterConfig.title | default('Filtrer'),
+			sections: filterConfig.sections | default([])
+		}
+	%}
+
+	<div id="main-content" class="d-flex h-100 p-2 flex-column overflow-hidden">	
+
+		<div class="d-flex justify-content-between align-items-center gap-2 py-2 w-100 ">
+			{% include 'components/content/assets/filter_close.html.twig'
 			with
 			{
-				title: filterConfig.title | default('Filtrer'),
-				sections: filterConfig.sections | default([])
-			}
-		%}
+			title: filterConfig.title | default('Filtrer'),
+			sections: filterConfig.sections | default([])
+			}%}
+			{% include 'components/content/assets/recherche.html.twig' %}
 
-		<div id="main-content" class="d-flex flex-column overflow-hidden" style="flex: 1 1 auto; min-width: 0;">
-
-			<div class="d-flex align-items-center gap-2 py-2">
-				{% include 'components/content/assets/filter_close.html.twig'
-					with
-					{
-						title: filterConfig.title | default('Filtrer'),
-						sections: filterConfig.sections | default([])
-					}
-				%}
-
-				{% include 'components/content/assets/recherche.html.twig' %}
-				<div class="ms-auto">
-					{% include 'components/content/assets/map_close.html.twig' %}
-				</div>
-			</div>
-
-			{% include 'components/content/assets/tableau.html.twig' %}
+			{% include 'components/content/assets/map_close.html.twig' %}
 		</div>
 
-		{% include 'components/content/assets/map_open.html.twig' %}
+		{% include 'components/content/assets/tableau.html.twig' %}
 	</div>
+
+	{% include 'components/content/assets/map_open.html.twig' %}
+
 {% endblock %}
