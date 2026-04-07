@@ -59,7 +59,7 @@ class CreerGroupeController extends Controller
 		{
 			$this->json([
 				'success' => false,
-				'message' => 'Erreur lors de la création du groupe : ' . $e->getMessage(),
+				'message' => 'Erreur lors de la création du groupe.',
 			], 500);
 		}
 	}
