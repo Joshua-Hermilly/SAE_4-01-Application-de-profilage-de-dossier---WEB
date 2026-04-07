@@ -16,10 +16,6 @@
 	padding: 0 20px;
 }
 
-#form-spacing {
-	margin: 20px 0;
-}
-
 #divider {
 	border: none;
 	border-top: 1px solid var(--gris-text-fond-foncé);
@@ -38,7 +34,6 @@
 
 #btn-action:hover {
 	background-color: var(--gris-text-fond-foncé);
-	border: 2px solid var(--gris-text-fond-foncé);
 	color: var(--noir-text-fond-claire);
 }
 
@@ -48,12 +43,11 @@
 }
 
 #text-title:hover {
-	color: var(--bleu-icon);
-	text-decoration: underline;
+	color: var(--gris-text-fond-foncé);
+	text-decoration: none;
 }
 
 .form-control {
-	background-color: var(--gris-select-assets);
 	color: var(--blanc);
 	border: 1px solid var(--gris-select-assets);
 	border-radius: 8px;
@@ -61,8 +55,6 @@
 }
 
 .form-control:focus {
-	background-color: var(--gris-select-assets);
-	color: var(--blanc);
 	border-color: var(--bleu-icon);
 	box-shadow: 0 0 0 0.2rem rgba(105, 158, 255, 0.25);
 }

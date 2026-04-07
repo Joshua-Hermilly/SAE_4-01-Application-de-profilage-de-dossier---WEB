@@ -1,4 +1,4 @@
-<div class="container min-vh-100 d-flex align-items-center">
+<div class="container mt-5 d-flex align-items-center justify-content-center">
 	<div class="row justify-content-center w-100">
 		<div class="col-md-6">
 
@@ -31,6 +31,15 @@
 							<label id="text-title" for="compte_mdp_confirm" class="form-label">Confirmer le mot de passe</label>
 							<input type="password" class="form-control" id="compte_mdp_confirm" name="compte_mdp_confirm" placeholder="Entrez à nouveau votre mot de passe" required>
 						</div>
+
+						<div id="form-spacing" class="mb-3">
+							<div class="form-check d-flex justify-content-center align-items-center gap-2">
+								<input class="form-check-input" type="checkbox" id="compte_admin" name="compte_admin" value="1">
+								<label class="form-check-label" for="compte_admin">Admin</label>
+							</div>
+						</div>
+
+						<hr id="divider">
 
 						<button id="btn-action" class="btn btn-login w-100" type="submit">Créer le compte</button>
 					</form>
