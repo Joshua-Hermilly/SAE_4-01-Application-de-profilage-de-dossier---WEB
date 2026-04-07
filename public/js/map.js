@@ -74,20 +74,26 @@ function ajouterMarqueur(etablissement)
     const lon = etablissement.etablissement_longitude;
 
     // Coordonnées ?
-    if (lat === null || lon === null)
+    if (lat === null || lon === null || (lat ==0 && lon==0))
 	{
         console.warn(`Pas de coordonnées pour: ${etablissement.etablissement_nom}`);
         return;
     }
 
     // Markeur
-    const marker     = L.marker([lat, lon]);
-	const nomEtab    = etablissement.etablissement_nom                    ;
-    const codePostal = etablissement.etablissement_code_postal;
-    const commune    = etablissement.etablissement_commune    ;
+    const marker      = L.marker([lat, lon]);
+	const nomEtab     = etablissement.etablissement_nom        ;
+    const codePostal  = etablissement.etablissement_code_postal;
+    const commune     = etablissement.etablissement_commune    ;
+    const nb_candidat = etablissement.nb_candidats             ;
 
     makCluster.addLayer(marker);
-    //marker.bindPopup(`<strong>${nomEtab}</strong><br/>${commune}${codePostal}`);
+    marker.bindPopup
+    (`
+        <p><strong>${nomEtab}</strong>                         </p>
+        <p>${codePostal} ${commune}                            </p>
+        <p><strong>Nombre d'étudiants : </strong>${nb_candidat}</p>
+    `);
 }
 
 /*------------------------*/
