@@ -27,7 +27,7 @@ class EtablissementRepository
 	// - - - - - - -
 	private function createEtablissementFromRow(array $row): Etablissement
 	{
-		$candidat = (new CandidatRepository())->findByEtablissementId( $row['etablissement_id'] );
+		$candidat = (new CandidatRepository())->countCdtByEtb( $row['etablissement_id'] );
 
 		return new Etablissement
 		(

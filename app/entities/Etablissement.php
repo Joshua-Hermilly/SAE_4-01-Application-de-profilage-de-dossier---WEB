@@ -17,6 +17,8 @@ class Etablissement implements JsonSerializable
 		private ?float        $etablissement_longitude,
 		private ?float        $etablissement_distance,
 
+		private ?int        $nb,
+
 		private ?array        $candidats  = []
 	) {}
 
@@ -33,7 +35,7 @@ class Etablissement implements JsonSerializable
 			'etablissement_latitude'    => $this->etablissement_latitude,
 			'etablissement_longitude'   => $this->etablissement_longitude,
 			'etablissement_distance'    => $this->etablissement_distance,
-			'nb_candidats'              => count( $this->candidats )
+			'nb_candidats'              => $this->nb
 		];
 	}
 
