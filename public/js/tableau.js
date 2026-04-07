@@ -288,7 +288,27 @@ function chargerPage(indexPage, filters = filtresCourant)
 	return getData(indexPage, lien, filters);
 }
 
-function initialiserTableau() { chargerPage(1); }
+function initialiserTableau()
+{
+	if (isDossiersPage)
+	{
+		const params     = new URLSearchParams(window.location.search);
+		const nomGroupe  = params.get('nom_groupe') || params.get('groupe');
+		if (nomGroupe)
+		{
+			filtresCourant = { ...filtresCourant, nom_groupe: nomGroupe };
+			if (filterForm)
+			{
+				const select = filterForm.querySelector('[name="nom_groupe"]');
+				if (select) { select.value = nomGroupe; }
+			}
+			chargerPage(1, filtresCourant);
+			return;
+		}
+	}
+
+	chargerPage(1);
+}
 document.addEventListener('DOMContentLoaded', initialiserTableau);
 
 function attacherPagination()
