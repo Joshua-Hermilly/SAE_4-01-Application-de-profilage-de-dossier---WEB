@@ -73,6 +73,10 @@ function creerTableau( headers, dossiers, isAdmin )
 		const tr = document.createElement( 'tr' );
 		tr.classList.add( 'ligne' );
 
+		// Détection d'un candidat déjà dans un groupe (couleur différente de la couleur par défaut)
+		const couleurBrute   = (dossiers[cptD]['Couleur'] || dossiers[cptD]['groupe_couleur'] || '').toLowerCase();
+		const dejaDansGroupe = isDossiersPage && couleurBrute !== '' && couleurBrute !== '#dedede';
+
 		for ( let cptH = 0; cptH < headers.length-1; cptH++ )
 		{
 			let valeur = dossiers[cptD][ headers[cptH] ];
@@ -97,16 +101,27 @@ function creerTableau( headers, dossiers, isAdmin )
 		if (isAdmin)
 		{
 			const th    = document.createElement( 'th'    );
-			const input    = document.createElement( 'input' );
+			const input = document.createElement( 'input' );
 			input.classList.add( "form-check-input" );
 			input.classList.add( "border-dark"      );
 			input.classList.add( "rounded-1"        );
 			input.classList.add( "cb"               );
-			input.id          =  "cb"+dossiers[cptD][headers[0]];
-			input.type        = "checkbox";
+			input.id   =  "cb"+dossiers[cptD][headers[0]];
+			input.type = "checkbox";
 
-			if ( sessionStorage.getItem( input.id         ) === "selectionner"                                         ) { input.checked = true; }
-			if ( sessionStorage.getItem( "cbTous"    ) &&  sessionStorage.getItem( input.id ) !== "désélectionner") { input.checked = true; }
+			if (dejaDansGroupe)
+			{
+				input.disabled = true;
+				input.checked  = false;
+				input.classList.add('opacity-50');
+				input.classList.add('bg-secondary');
+				input.title = 'Candidat déjà dans un groupe';
+			}
+			else
+			{
+				if ( sessionStorage.getItem( input.id ) === "selectionner"                                         ) { input.checked = true; }
+				if ( sessionStorage.getItem( "cbTous" ) &&  sessionStorage.getItem( input.id ) !== "désélectionner") { input.checked = true; }
+			}
 
 			th.appendChild( input );
 			tr.appendChild( th    );
@@ -174,7 +189,12 @@ function selectionFaite(event)
 			if ( event.target.checked )
 			{
 				sessionStorage.setItem( "cbTous" , 'selectionner' );
-				for ( let cpt = 0; cpt < lstCb.length; cpt++ ) { lstCb[cpt].checked = true; }
+				for ( let cpt = 0; cpt < lstCb.length; cpt++ )
+				{
+					// Ne pas cocher les cases désactivées (candidats déjà groupés)
+					if (lstCb[cpt].disabled) { continue; }
+					lstCb[cpt].checked = true;
+				}
 			}
 			else
 			{
