@@ -143,4 +143,13 @@ class FiltreRepository
 		}
 		unset($section, $filter);
 	}
+
+	public function linkGroupToCritere(int $groupeId, int $critereId): void
+	{
+		$sql  = "INSERT INTO FILTRE (groupe_id, critere_id) VALUES (:gid, :cid)";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':gid', $groupeId, \PDO::PARAM_INT);
+		$stmt->bindValue(':cid', $critereId, \PDO::PARAM_INT);
+		$stmt->execute();
+	}
 }
