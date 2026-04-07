@@ -249,7 +249,12 @@ async function getData( indexPage, lien, filters = filtresCourant )
 		creerTableau( donnees['headers'], donnees['data'   ], donnees['isAdmin'] );
 		creerBtnPage( donnees['maxPage'], donnees['actPage']                     );
 
-	} catch (error) { console.error('Erreur :', error); }
+	}
+	catch (error)
+	{
+		console.error('Erreur :', error);
+		afficherErreur('Erreur lors du chargement des données (formations).');
+	}
 }
 
 function getLienCourant()
