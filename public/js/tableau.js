@@ -59,6 +59,13 @@ function creerHeader( headers, isAdmin )
 		th      .appendChild( input );
 		trHeader.appendChild( th    );
 	}
+
+	if (isGroupePage)
+	{
+		const th = document.createElement('th');
+		th.textContent = "Détail";
+		trHeader.appendChild(th);
+	}
 }
 
 function creerTableau( headers, dossiers, isAdmin )
@@ -122,6 +129,18 @@ function creerTableau( headers, dossiers, isAdmin )
 
 			th.appendChild( input );
 			tr.appendChild( th    );
+		}
+
+		if (isGroupePage)
+		{
+			const thEye = document.createElement('th');
+			const icon = document.createElement( 'i' );
+
+			icon.className = "bi bi-eye-fill border border-dark rounded-1 p-1 text-center";
+			icon.style.cursor = "pointer";
+			icon.id = dossiers[cptD]['Id groupe'];
+			thEye.appendChild( icon );
+			tr.appendChild( thEye );
 		}
 
 		tBody.appendChild( tr );
@@ -238,7 +257,6 @@ async function getData( indexPage, lien, filters = filtresCourant )
 		});
 
 		const donnees = await response.json();
-		//console.log(donnees)
 		if (!response.ok) { throw new Error(`Erreur ${response.status}: ${donnees}`); }
 
 		if ( donnees['erreur'] ) { afficherErreur( donnees['erreur'] ); return; }
