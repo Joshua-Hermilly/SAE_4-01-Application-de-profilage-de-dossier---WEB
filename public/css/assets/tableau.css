@@ -21,11 +21,16 @@
 table {
     border-collapse: separate;
     border-spacing: 0;
-    height: 100%;
+    height: auto;
     width: 100%;
 }
 
+.ligne {
+    height: 56px;
+}
+
 .ligne th, .ligne td {
+    height: 56px;
     background-color: #dedede;
     color: black;
     border: none;
