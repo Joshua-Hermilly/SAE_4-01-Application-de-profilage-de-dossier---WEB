@@ -155,8 +155,6 @@ class ImportService
 	}
 
 
-
-
 	/*-------------------------------*/
 	/* Create                        */
 	/*-------------------------------*/
@@ -167,7 +165,7 @@ class ImportService
 			0,
 			$this->getCol($ligne, 'etab_nom'       ),
 			$this->getCol($ligne, 'pays'           ),
-			$this->getCol($ligne, 'commune_cp'     ),
+			$this->getCol($ligne, 'commune_cp') == '99999' ? null : $this->getCol($ligne, 'commune_cp'),
 			$this->getCol($ligne, 'commune_libelle'),
 			$this->getCol($ligne, 'departement'    ),
 			null,

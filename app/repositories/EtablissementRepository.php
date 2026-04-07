@@ -27,6 +27,8 @@ class EtablissementRepository
 	// - - - - - - -
 	private function createEtablissementFromRow(array $row): Etablissement
 	{
+		$candidat = (new CandidatRepository())->findByEtablissementId( $row['etablissement_id'] );
+
 		return new Etablissement
 		(
 			(int  )$row['etablissement_id'          ],
@@ -37,7 +39,8 @@ class EtablissementRepository
 			       $row['etablissement_departement' ],
 			(float)$row['etablissement_latitude'    ],
 			(float)$row['etablissement_longitude'   ],
-			(float)$row['etablissement_distance'    ]
+			(float)$row['etablissement_distance'    ],
+			       $candidat
 		);
 	}
 
@@ -56,7 +59,7 @@ class EtablissementRepository
 		$req->bindValue(':departement', $etablissement->getEtablissementDepartement());
 		$req->bindValue(':latitude'   , $etablissement->getEtablissementLatitude   ());
 		$req->bindValue(':longitude'  , $etablissement->getEtablissementLongitude  ());
-		$req->bindValue('distance'    , $etablissement->getEtablissementDistance   ());
+		$req->bindValue(':distance'   , $etablissement->getEtablissementDistance   ());
 
 		$req->execute();
 
@@ -129,9 +132,10 @@ public function creates(array $etablissements): void
 		$req->bindValue(':departement', $etablissement->getEtablissementDepartement());
 		$req->bindValue(':latitude'   , $etablissement->getEtablissementLatitude   ());
 		$req->bindValue(':longitude'  , $etablissement->getEtablissementLongitude  ());
-		$req->bindValue('distance'    , $etablissement->getEtablissementDistance   ());
+		$req->bindValue(':distance'   , $etablissement->getEtablissementDistance   ());
 		$req->execute();
 	}
+
 
 	// FIND
 	// - - - - - - -
@@ -186,26 +190,50 @@ public function creates(array $etablissements): void
 		return null;
 	}
 
-	public function updatePos(Etablissement $etablissement)
+    public function updatePos(Etablissement $etablissement)
+    {
+        $sql = "SELECT etablissement_id
+                FROM   ETABLISSEMENT
+                WHERE  etablissement_nom         IS NOT DISTINCT FROM :nom        AND
+                       etablissement_code_postal IS NOT DISTINCT FROM :codePostal AND
+                       etablissement_pays        IS NOT DISTINCT FROM :pays       AND
+                       etablissement_commune     IS NOT DISTINCT FROM :commune";
+
+        $req = $this->pdo->prepare($sql);
+
+        // On s'assure que si la chaîne est vide, on la passe en tant que null pour correspondre à la BDD
+        $req->bindValue(':nom'        , $etablissement->getEtablissementNom()        === '' ? null : $etablissement->getEtablissementNom());
+        $req->bindValue(':codePostal' , $etablissement->getEtablissementCodePostal() === '' ? null : $etablissement->getEtablissementCodePostal());
+        $req->bindValue(':commune'    , $etablissement->getEtablissementCommune()    === '' ? null : $etablissement->getEtablissementCommune());
+        $req->bindValue(':pays'       , $etablissement->getEtablissementPays()       === '' ? null : $etablissement->getEtablissementPays());
+
+        $req->execute();
+        $row = $req->fetch(PDO::FETCH_ASSOC);
+
+        if ($row)
+        {
+            // L'établissement existe, on met à jour UNIQUEMENT les coordonnées
+            $this->updatePositions(
+                (int) $row['etablissement_id'],
+                $etablissement->getEtablissementLatitude(),
+                $etablissement->getEtablissementLongitude()
+            );
+        }
+    }
+
+	public function updatePositions(int $id, ?float $latitude, ?float $longitude): void
 	{
-		$sql = "SELECT etablissement_id, etablissement_pays
-		        FROM   ETABLISSEMENT
-		        WHERE  etablissement_nom         = :nom        AND
-		               etablissement_code_postal = :codePostal AND
-		               etablissement_commune     = :commune";
+		$sql = "UPDATE ETABLISSEMENT 
+				SET etablissement_latitude = :latitude,
+					etablissement_longitude = :longitude
+				WHERE etablissement_id = :id";
 
 		$req = $this->pdo->prepare($sql);
-		$req->bindValue(':nom'        , $etablissement->getEtablissementNom       ());
-		$req->bindValue(':codePostal' , $etablissement->getEtablissementCodePostal());
-		$req->bindValue(':commune'    , $etablissement->getEtablissementCommune   ());
-
+		$req->bindValue(':id'       , $id);
+		$req->bindValue(':latitude' , $latitude);
+		$req->bindValue(':longitude', $longitude);
 		$req->execute();
-		$row = $req->fetch(PDO::FETCH_ASSOC);
-		if ( $row )
-		{
-			$etablissement->setEtablissementId  ((int) $row['etablissement_id'  ]);
-			$etablissement->setEtablissementPays(      $row['etablissement_pays']);
-			$this        ->update               ($etablissement                  );
-		}
 	}
+
+
 }

@@ -1,182 +1,198 @@
 <?php
-require_once '../app/core/Repository.php';
-require_once '../app/entities/DossierCandidat.php';
 
-class DossierCandidatRepository
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
+
+require_once '../app/repositories/EtablissementRepository.php';
+require_once '../app/entities/Etablissement.php';
+
+class RechercheLocalisationService
 {
 	/*-------------------------------*/
-	/*          Attributs            */
+	/* COLONNES                      */
 	/*-------------------------------*/
-	private $pdo;
+	public const COLONNE = ['Etablissement', 'Commune', 'Code Postal', 'Departement', 'Pays'];
 
 	/*-------------------------------*/
-	/*         Constructeur          */
+	/* Attributs                     */
+	/*-------------------------------*/
+	private $etablissementRepository;
+	private $ctpLigne;
+
+	/*-------------------------------*/
+	/* SHEET                         */
+	/*-------------------------------*/
+	private $sheet;
+	private $spreadsheet;
+
+	/*-------------------------------*/
+	/* CONSTRUCTEUR                  */
 	/*-------------------------------*/
 	public function __construct()
 	{
-		$this->pdo = Repository::getInstance()->getPDO();
+		$this->spreadsheet = new Spreadsheet();
+		$this->sheet = $this->spreadsheet->getActiveSheet();
+		$this->sheet->fromArray(self::COLONNE, null, "A1");
+
+		$this->etablissementRepository = new EtablissementRepository();
+		$this->ctpLigne = 2;
 	}
 
 	/*-------------------------------*/
-	/*            Méthodes           */
+	/* AJOUT                         */
 	/*-------------------------------*/
-	public function createDossierCandidatFromRow(array $row): DossierCandidat
+	public function addEtablissement(Etablissement $etablissement)
 	{
-		return new DossierCandidat
-		(
-			$row['candidat_code'],
-			$row['candidat_civilite'],
-			$row['candidat_boursier_code'],
-			round($row['candidat_note_lycee'  ] ?? -1, 2),
-			round($row['candidat_note_fiche'  ] ?? -1, 2),
-			round($row['candidat_note_globale'] ?? -1, 2),
-			$row['etablissement_nom'],
-			$row['diplome_serie_code'],
-			$row['specialite_spe1'],
-			$row['specialite_spe2'],
-			$row['groupe_couleur'],
-		);
+		$this->sheet->setCellValue('A' . $this->ctpLigne, $etablissement->getEtablissementNom());
+		$this->sheet->setCellValue('B' . $this->ctpLigne, $etablissement->getEtablissementCommune());
+		$this->sheet->setCellValue('C' . $this->ctpLigne, $etablissement->getEtablissementCodePostal());
+		$this->sheet->setCellValue('D' . $this->ctpLigne, $etablissement->getEtablissementDepartement());
+		$this->sheet->setCellValue('E' . $this->ctpLigne, $etablissement->getEtablissementPays());
+		$this->ctpLigne++;
 	}
 
-	public function findAll(): array
+	/*-------------------------------*/
+	/* REMPLISSAGE FINI              */
+	/*-------------------------------*/
+	public function remplissageTerminee(): string
 	{
-		[$sql, $params] = $this->buildFilteredQuery([], 1, null, false);
-		$stmt = $this->pdo->prepare($sql);
-		$stmt->execute();
+		$writer = new Csv($this->spreadsheet);
 
-		$result = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $result[] = $this->createDossierCandidatFromRow($row); }
-		return $result;
+		$writer->setDelimiter(';');
+		$writer->setEnclosure('"');
+		$writer->setLineEnding("\r\n");
+		$writer->setUseBOM(true);
+
+		ob_start();
+		$writer->save('php://output');
+		$csvContent = ob_get_clean();
+
+		return $csvContent;
 	}
 
-	public function findByPage(int $page, array $filters = [], int $limit = 25): array
+	/*-------------------------------*/
+	/* APPEL API GÉOPF               */
+	/*-------------------------------*/
+	public function appelerApi($fichier)
 	{
-		[$sql, $params] = $this->buildFilteredQuery($filters, $page, $limit, false);
-		$stmt = $this->pdo->prepare($sql);
-		foreach ($params as $key => $value) { $stmt->bindValue($key, $value); }
-		$stmt->execute();
+		set_time_limit(0);
 
-		$result = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $result[] = $this->createDossierCandidatFromRow($row); }
-		return $result;
+		$fichierEnvoie = new CURLStringFile($fichier, 'etablissements.csv', 'text/csv');
+		$postData      = [
+			'data'       => $fichierEnvoie,
+			'columns[0]' => 'Etablissement',
+			'columns[1]' => 'Commune',
+			'columns[2]' => 'Code Postal',
+			'columns[3]' => 'Departement',
+			'columns[4]' => 'Pays',
+		];
+
+		$ch = curl_init('https://data.geopf.fr/geocodage/search/csv');
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: text/csv']);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 600);
+
+		$csvGeocode = curl_exec($ch);
+		$erreur     = curl_errno($ch);
+
+		if ($erreur) { return false; }
+		return $csvGeocode;
 	}
 
-	public function findByFilters(array $filters, int $page = 1): array { return $this->findByPage($page, $filters); }
-
-	public function nbMaxDossier(array $filters = []): int
+	/*-------------------------------*/
+	/* APPEL API PHOTON (Fallback)   */
+	/*-------------------------------*/
+	private function appelerPhoton($commune, $codePostal, $pays)
 	{
-		[$sql, $params] = $this->buildFilteredQuery($filters, 1, 1, true);
-		$stmt = $this->pdo->prepare($sql);
-		foreach ($params as $key => $value) { $stmt->bindValue($key, $value); }
-		$stmt->execute();
-		return (int) $stmt->fetchColumn();
+		$elements = array_filter([trim($commune), trim($codePostal), trim($pays)]);
+
+		$adressePropre = implode(' ', $elements);
+		$recherche     = urlencode($adressePropre);
+
+		$url = "https://photon.komoot.io/api/?q={$recherche}&limit=1";
+
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_USERAGENT, 'ApplicationEtudiante_RechercheLocale');
+
+		$reponse = curl_exec($ch);
+		$erreur  = curl_errno($ch);
+
+		if ($erreur) { return false; }
+
+		$resultats = json_decode($reponse, true);
+
+		if (!empty($resultats['features']))
+		{
+			return [
+				'longitude' => $resultats['features'][0]['geometry']['coordinates'][0],
+				'latitude'  => $resultats['features'][0]['geometry']['coordinates'][1]
+			];
+		}
+
+		return false; // CORRECTION : était une récursion infinie
 	}
 
-	private function buildFilteredQuery(array $filters, int $page, ?int $limit, bool $count = false): array
+	/*-------------------------------*/
+	/* Maj Des POS                   */
+	/*-------------------------------*/
+	public function parcoursTableau($csvBrut)
 	{
-		$select = $count
-			? 'SELECT COUNT(*)'
-			: 'SELECT C.candidat_code, C.candidat_civilite, C.candidat_boursier_code, C.candidat_note_lycee, C.candidat_note_fiche, C.candidat_note_globale, E.etablissement_nom, D.diplome_serie_code, S.specialite_spe1, S.specialite_spe2, G.groupe_couleur';
+		if (!$csvBrut) { return; }
 
-		$sql = $select . " FROM CANDIDAT AS C\n"
-			           . "LEFT JOIN ETABLISSEMENT AS E ON E.etablissement_id = C.etablissement_id\n"
-			           . "LEFT JOIN DIPLOME       AS D ON D.diplome_id       = C.diplome_id      \n"
-			           . "LEFT JOIN SPECIALITE    AS S ON S.specialite_id    = D.specialite_id   \n"
-			           . "LEFT JOIN GROUPE        AS G ON G.groupe_id        = C.groupe_id       \n";
+		$fluxMemoire = fopen('php://temp', 'r+');
+		fwrite($fluxMemoire, $csvBrut);
+		rewind($fluxMemoire);
 
-		$conditions = [];
-		$params = [];
+		$delimiteur     = ';';
+		$entetes        = fgetcsv($fluxMemoire, 0, $delimiteur, '"', "\\");
+		$colonnesCibles = ['Etablissement', 'Commune', 'Code Postal', 'Departement', 'Pays', 'longitude', 'latitude', 'result_status'];
 
-		if (!empty($filters['civilite']))
+		while (($ligne = fgetcsv($fluxMemoire, 0, $delimiteur, '"', "\\")) !== false)
 		{
-			$conditions[] = 'C.candidat_civilite = :civilite';
-			$params[':civilite'] = $filters['civilite'];
-		}
-
-		if (isset($filters['boursier']) && ($filters['boursier'] !== '' || $filters['boursier'] === '0'))
-		{
-			$conditions[] = 'C.candidat_boursier_code = :boursier';
-			$params[':boursier'] = (int) $filters['boursier'];
-		}
-
-		if (!empty($filters['profil']))
-		{
-			$conditions[] = 'C.candidat_profil ILIKE :profil';
-			$params[':profil'] = '%' . $filters['profil'] . '%';
-		}
-
-		if (!empty($filters['type_bac']))
-		{
-			$conditions[] = 'D.diplome_type_libelle = :type_bac';
-			$params[':type_bac'] = $filters['type_bac'];
-		}
-
-		if (!empty($filters['serie_bac']))
-		{
-			$conditions[] = 'D.diplome_serie_code = :serie_bac';
-			$params[':serie_bac'] = $filters['serie_bac'];
-		}
-
-		if (!empty($filters['departement']))
-		{
-			$conditions[] = 'E.etablissement_id IS NOT NULL AND E.localisation_id IS NOT NULL AND EXISTS (SELECT 1 FROM LOCALISATION L2 WHERE L2.localisation_id = E.localisation_id AND L2.localisation_departement = :departement)';
-			$params[':departement'] = $filters['departement'];
-		}
-
-		if (!empty($filters['specialite_spe']))
-		{
-			$specialites = is_array($filters['specialite_spe']) ? $filters['specialite_spe'] : [$filters['specialite_spe']];
-			$specialiteParts = [];
-			foreach ($specialites as $index => $specialite)
+			if (count($entetes) === count($ligne))
 			{
-				$param = ':specialite_' . $index;
-				$specialiteParts[] = "(COALESCE(S.specialite_opt1, '') = $param OR COALESCE(S.specialite_opt2, '') = $param OR COALESCE(S.specialite_spe1, '') = $param OR COALESCE(S.specialite_spe2, '') = $param OR COALESCE(S.specialite_spe3, '') = $param OR COALESCE(S.specialite_speabd, '') = $param)";
-				$params[$param] = $specialite;
-			}
-			$conditions[] = '(' . implode(' OR ', $specialiteParts) . ')';
-		}
+				$etablissementActuel = array_combine($entetes, $ligne);
+				$attTableau          = [];
 
-		if (!empty($filters['specialite_opt']))
-		{
-			$options = is_array($filters['specialite_opt']) ? $filters['specialite_opt'] : [$filters['specialite_opt']];
-			$optionParts = [];
-			foreach ($options as $index => $option)
-			{
-				$param = ':option_' . $index;
-				$optionParts[] = "(COALESCE(S.specialite_opt1, '') = $param OR COALESCE(S.specialite_opt2, '') = $param)";
-				$params[$param] = $option;
-			}
-			$conditions[] = '(' . implode(' OR ', $optionParts) . ')';
-		}
+				foreach ($colonnesCibles as $colonne)
+				{
+					$attTableau[$colonne] = $etablissementActuel[$colonne] ?? null;
+				}
 
-		foreach (['note_lycee', 'note_fiche', 'note_globale'] as $noteFilter)
-		{
-			$minKey = $noteFilter . '_min';
-			$maxKey = $noteFilter . '_max';
-			if (isset($filters[$minKey]) && $filters[$minKey] !== '' && $filters[$minKey] !== null)
-			{
-				$conditions[] = 'C.candidat_' . $noteFilter . ' >= :' . $minKey;
-				$params[':' . $minKey] = (float) $filters[$minKey];
-			}
-			if (isset($filters[$maxKey]) && $filters[$maxKey] !== '' && $filters[$maxKey] !== null)
-			{
-				$conditions[] = 'C.candidat_' . $noteFilter . ' <= :' . $maxKey;
-				$params[':' . $maxKey] = (float) $filters[$maxKey];
+				if ($attTableau['result_status'] === 'not-found' || empty($attTableau['latitude']) || $attTableau['Pays'] !== 'France')
+				{
+					$coordonnees = $this->appelerPhoton($attTableau['Commune'], $attTableau['Code Postal'], $attTableau['Pays']);
+
+					usleep(1000000); // CORRECTION : le délai s'applique toujours après un appel Photon
+
+					if ($coordonnees)
+					{
+						$attTableau['latitude' ] = $coordonnees['latitude' ];
+						$attTableau['longitude'] = $coordonnees['longitude'];
+					}
+					else { continue; }
+				}
+
+				$etablissement = new Etablissement
+				(
+					0,
+					       $attTableau['Etablissement'],
+					       $attTableau['Pays'         ],
+					       $attTableau['Code Postal'  ],
+					       $attTableau['Commune'      ],
+					       $attTableau['Departement'  ],
+					(float)$attTableau['latitude'     ],
+					(float)$attTableau['longitude'    ],
+					null
+				);
+				$this->etablissementRepository->updatePos($etablissement);
 			}
 		}
-
-		if (!empty($conditions)) { $sql .= 'WHERE ' . implode(' AND ', $conditions) . "\n"; }
-
-		if ($count) { return [$sql, $params]; }
-
-		$sql .= "ORDER BY C.candidat_code\n";
-		if ($limit !== null)
-		{
-			$sql .= "LIMIT :limit\nOFFSET :offset";
-			$params[':offset'] = max(0, ($page - 1) * $limit);
-			$params[':limit'] = $limit;
-		}
-
-		return [$sql, $params];
+		fclose($fluxMemoire);
 	}
 }
