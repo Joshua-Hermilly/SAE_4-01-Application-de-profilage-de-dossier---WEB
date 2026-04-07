@@ -183,6 +183,8 @@ class RechercheLocalisationService
 					       $attTableau['Departement'  ],
 					(float)$attTableau['latitude'     ],
 					(float)$attTableau['longitude'    ],
+					null,
+					null,
 					null
 				);
 				$this->etablissementRepository->updatePos($etablissement);
