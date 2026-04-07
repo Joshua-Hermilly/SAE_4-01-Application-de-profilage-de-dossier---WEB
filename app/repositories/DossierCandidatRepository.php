@@ -105,6 +105,12 @@ class DossierCandidatRepository
 			$params[':profil'] = '%' . $filters['profil'] . '%';
 		}
 
+		if (!empty($filters['nom_groupe']))
+		{
+			$conditions[] = 'G.groupe_nom = :nom_groupe';
+			$params[':nom_groupe'] = $filters['nom_groupe'];
+		}
+
 		if (!empty($filters['type_bac']))
 		{
 			$conditions[] = 'D.diplome_type_libelle = :type_bac';
