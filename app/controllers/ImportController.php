@@ -1,6 +1,5 @@
 <?php
-// app/controllers/IndexController.php
-
+require_once '../app/entities/Compte.php';
 require_once '../app/core/Controller.php';
 require_once '../app/services/ImportService.php';
 
@@ -56,6 +55,6 @@ class ImportController extends Controller
 			}
 		}
 
-		$this->view('import', 'Importation', [ 'errors' => $errors]);
+		$this->view('import', 'Importation', [ 'errors' => $errors, 'isAdmin' => $_SESSION['compte']->getCompteIsAdmin() ]);
 	}
 }

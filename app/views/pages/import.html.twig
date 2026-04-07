@@ -4,7 +4,7 @@
 	css: ['/css/assets/auth.css'],
 	js: ['/js/chargement.js']
 } %}
-{% set is_admin = true %}
+{% set is_admin   =  isAdmin %}
 
 {% block content %}
 	{% include 'components/content/formulaire/formulaire-import.html.twig' %}
