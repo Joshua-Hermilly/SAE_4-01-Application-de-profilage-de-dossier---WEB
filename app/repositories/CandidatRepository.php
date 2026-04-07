@@ -187,10 +187,7 @@ class CandidatRepository
 		$stmt = $this->pdo->query($sql);
 
 		$result = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
-		{
-			$result[] = $this->createCandidatFromRow($row);
-		}
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $result[] = $this->createCandidatFromRow($row); }
 		return $result;
 	}
 
@@ -202,10 +199,7 @@ class CandidatRepository
 		$stmt->execute();
 
 		$result = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
-		{
-			$result[] = $this->createCandidatFromRow($row);
-		}
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $result[] = $this->createCandidatFromRow($row); }
 		return $result;
 	}
 
@@ -217,10 +211,7 @@ class CandidatRepository
 		$stmt->execute();
 
 		$result = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
-		{
-			$result[] = $this->createCandidatFromRow($row);
-		}
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $result[] = $this->createCandidatFromRow($row); }
 		return $result;
 	}
 
@@ -232,10 +223,7 @@ class CandidatRepository
 		$stmt->execute();
 
 		$result = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
-		{
-			$result[] = $this->createCandidatFromRow($row);
-		}
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $result[] = $this->createCandidatFromRow($row); }
 		return $result;
 
 	}
@@ -248,10 +236,7 @@ class CandidatRepository
 		$stmt->execute();
 
 		$result = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
-		{
-			$result[] = $this->createCandidatFromRow($row);
-		}
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { $result[] = $this->createCandidatFromRow($row); }
 		return $result;
 
 	}
@@ -269,12 +254,18 @@ class CandidatRepository
 			$params[$ph] = (int) $code;
 		}
 
-		$sql = 'UPDATE CANDIDAT SET groupe_id = :groupe_id WHERE candidat_code IN (' . implode(', ', $placeholders) . ')';
+		$sql = 'UPDATE CANDIDAT AS c
+			SET groupe_id = :groupe_id,
+				candidat_note_globale =
+					(2.0/11.0) * COALESCE(c.candidat_note_lycee, 0)
+					+ (1.0/11.0) * COALESCE(c.candidat_note_fiche, 0)
+					+ (8.0/11.0) * COALESCE(g.groupe_note_dossier, 0)
+			FROM GROUPE AS g
+			WHERE c.candidat_code IN (' . implode(', ', $placeholders) . ')
+			  AND g.groupe_id = :groupe_id';
+		
 		$stmt = $this->pdo->prepare($sql);
-		foreach ($params as $key => $value)
-		{
-			$stmt->bindValue($key, $value);
-		}
+		foreach ($params as $key => $value) { $stmt->bindValue($key, $value); }
 		$stmt->execute();
 	}
 }
