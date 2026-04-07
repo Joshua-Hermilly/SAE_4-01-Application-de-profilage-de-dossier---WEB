@@ -255,4 +255,26 @@ class CandidatRepository
 		return $result;
 
 	}
+
+	public function assignGroupToCodes(int $groupeId, array $codes): void
+	{
+		if (empty($codes)) { return; }
+
+		$placeholders = [];
+		$params       = [':groupe_id' => $groupeId];
+		foreach (array_values($codes) as $index => $code)
+		{
+			$ph = ':code_' . $index;
+			$placeholders[]   = $ph;
+			$params[$ph] = (int) $code;
+		}
+
+		$sql = 'UPDATE CANDIDAT SET groupe_id = :groupe_id WHERE candidat_code IN (' . implode(', ', $placeholders) . ')';
+		$stmt = $this->pdo->prepare($sql);
+		foreach ($params as $key => $value)
+		{
+			$stmt->bindValue($key, $value);
+		}
+		$stmt->execute();
+	}
 }

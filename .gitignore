@@ -19,3 +19,4 @@ composer.lock
 Thumbs.db
 
 # Project specific
+*test*

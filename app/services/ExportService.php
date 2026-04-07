@@ -42,12 +42,14 @@ class ExportService
 
 		$writer = new Xlsx($spreadsheet);
 
+		if (ob_get_length()) { ob_end_clean(); }
+
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		header('Content-Disposition: attachment; filename="Total Promotion ' . ($annee - 1) . '-' . $annee . '.xlsx"');
 		header('Cache-Control: max-age=0');
 
 		$writer->save('php://output');
-		//exit();
+		exit();
 	}
 
 	private function getHeader( $annee )
