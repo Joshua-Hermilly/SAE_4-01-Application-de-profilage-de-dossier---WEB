@@ -27,8 +27,9 @@ class ExportController extends Controller
 				return;
 			}
 
-			 (new ExportService())->exportXLSX((int)$annee);
-
+			(new ExportService())->exportXLSX((int)$annee);
+			// La méthode exportXLSX fait déjà un exit();, on ne doit pas continuer vers la vue
+			return;
 		}
 
 		$this->view('export', 'Exportation', ['errors' => $errors]);
