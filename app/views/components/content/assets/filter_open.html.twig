@@ -105,7 +105,9 @@
 
 						<div class="d-grid gap-2 mt-3">
 							<button type="submit" class="btn btn-primary">Appliquer</button>
+							{% if isAdmin %}
 							<button type="button" class="btn btn-outline-light">Créer un groupe</button>
+							{% endif %}
 						</div>
 
 					</form>
