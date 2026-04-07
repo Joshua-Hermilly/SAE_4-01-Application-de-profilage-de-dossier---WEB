@@ -2,7 +2,6 @@
 
 require_once '../app/core/Repository.php';
 require_once '../app/entities/Etablissement.php';
-require_once '../app/repositories/CandidatRepository.php';
 
 class EtablissementRepository
 {
@@ -27,20 +26,20 @@ class EtablissementRepository
 	// - - - - - - -
 	private function createEtablissementFromRow(array $row): Etablissement
 	{
-		$candidat = (new CandidatRepository())->countCdtByEtb( $row['etablissement_id'] );
-
+		$nb = null;
+		if (array_key_exists('nb_candidats', $row)) { $nb = (int)$row['nb_candidats']; }
 		return new Etablissement
 		(
-			(int  )$row['etablissement_id'          ],
-			       $row['etablissement_nom'         ],
-			       $row['etablissement_pays'        ],
-			       $row['etablissement_code_postal' ],
-			       $row['etablissement_commune'     ],
-			       $row['etablissement_departement' ],
-			(float)$row['etablissement_latitude'    ],
-			(float)$row['etablissement_longitude'   ],
-			(float)$row['etablissement_distance'    ],
-			       $candidat
+			(int)$row['etablissement_id'         ],
+			      $row['etablissement_nom'        ],
+			      $row['etablissement_pays'       ],
+			      $row['etablissement_code_postal'],
+			      $row['etablissement_commune'    ],
+			      $row['etablissement_departement'],
+			$row['etablissement_latitude' ] !== null ? (float)$row['etablissement_latitude' ] : null,
+			$row['etablissement_longitude'] !== null ? (float)$row['etablissement_longitude'] : null,
+			$row['etablissement_distance' ] !== null ? (float)$row['etablissement_distance' ] : null,
+			$nb
 		);
 	}
 
@@ -153,7 +152,18 @@ public function creates(array $etablissements): void
 
 	public function findAll()
 	{
-		$sql = "SELECT * FROM etablissement";
+		$sql = "SELECT e.*, COUNT(c.candidat_code) AS nb_candidats
+		        FROM ETABLISSEMENT e
+		        LEFT JOIN CANDIDAT c ON c.etablissement_id = e.etablissement_id
+		        GROUP BY e.etablissement_id,
+		                 e.etablissement_nom,
+		                 e.etablissement_pays,
+		                 e.etablissement_code_postal,
+		                 e.etablissement_commune,
+		                 e.etablissement_departement,
+		                 e.etablissement_latitude,
+		                 e.etablissement_longitude,
+		                 e.etablissement_distance";
 		$stmt = $this->pdo->query($sql);
 
 		$result = [];
@@ -166,13 +176,25 @@ public function creates(array $etablissements): void
 
 	public function findByDistance($distance)
 	{
-		$sql = "SELECT * FROM ETABLISEEMENT WHERE distance <= :distance";
-		$sql = $this->pdo->prepare($sql);
-		$sql->bindValue(':distance', $distance);
-		$sql->execute();
+		$sql = "SELECT e.*, COUNT(c.candidat_code) AS nb_candidats
+		        FROM ETABLISSEMENT e
+		        LEFT JOIN CANDIDAT c ON c.etablissement_id = e.etablissement_id
+		        WHERE e.etablissement_distance <= :distance
+		        GROUP BY e.etablissement_id,
+		                 e.etablissement_nom,
+		                 e.etablissement_pays,
+		                 e.etablissement_code_postal,
+		                 e.etablissement_commune,
+		                 e.etablissement_departement,
+		                 e.etablissement_latitude,
+		                 e.etablissement_longitude,
+		                 e.etablissement_distance";
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->bindValue(':distance', $distance);
+		$stmt->execute();
 
 		$result = [];
-		while ($row = $sql->fetch(PDO::FETCH_ASSOC))
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
 			$result[] = $this->createEtablissementFromRow($row);
 		}
@@ -181,7 +203,7 @@ public function creates(array $etablissements): void
 
 	public function findMaxDistance()
 	{
-		$sql = "SELECT MAX(etablissement_distance) FROM ETABLISEEMENT";
+		$sql = "SELECT MAX(etablissement_distance) AS max_distance FROM ETABLISSEMENT";
 		$req = $this->pdo->prepare($sql);
 		$req->execute();
 
