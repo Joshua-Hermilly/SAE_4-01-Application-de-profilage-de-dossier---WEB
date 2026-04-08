@@ -457,10 +457,13 @@ if (filterForm)
 	});
 }
 
-document.getElementById( "btnDst" ).addEventListener( "click", () =>
+document.getElementById("btnDst").addEventListener("click", (event) =>
 {
-	const distance = sessionStorage.getItem('distance');
 	event.preventDefault();
+
+	const sliderDistance = document.getElementById('scDist');
+	if (sliderDistance && sliderDistance.value !== '') { sessionStorage.setItem('distance', sliderDistance.value); }
+
 	filtresCourant = serialiserFiltres();
 	chargerPage(1, filtresCourant);
-})
+});
