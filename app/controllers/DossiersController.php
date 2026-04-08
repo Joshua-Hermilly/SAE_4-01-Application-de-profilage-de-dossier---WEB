@@ -13,6 +13,12 @@ class DossiersController extends Controller
 	{
 		if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
+		if (empty($_SESSION['compte']))
+		{
+			$this->redirectTo('login.php');
+			return;
+		}
+
 		$filtreService = new DossierFiltreService();
 		$filterConfig  = $filtreService->buildFilterConfig();
 
