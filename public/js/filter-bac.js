@@ -91,12 +91,12 @@ document.addEventListener("DOMContentLoaded", function ()
         }
         let found = false;
         specialiteCheckboxes.forEach(checkbox =>
-                                     {
-                                         if (checkbox.getAttribute("data-code") === serieValue && checkbox.name === "specialite_opt[]")
-                                         {
-                                             found = true;
-                                         }
-                                     });
+		{
+			if (checkbox.getAttribute("data-code") === serieValue && checkbox.name === "specialite_opt[]")
+			{
+				found = true;
+			}
+		});
         return found;
     }
 
@@ -111,26 +111,26 @@ document.addEventListener("DOMContentLoaded", function ()
         {
             showSpecialiteSection();
             specialiteCheckboxes.forEach(checkbox =>
-                                         {
-                                             if (checkbox.name === "specialite_spe[]")
-                                             {
-                                                 const speCode = checkbox.getAttribute("data-code");
-                                                const container = checkbox.closest("p") || checkbox.parentElement;
-                                                 if (!container)
-                                                 {
-                                                     return;
-                                                 }
-                                                 if (speCode === selectedSerieCode)
-                                                 {
-                                                     container.style.display = "flex";
-                                                 }
-                                                 else
-                                                 {
-                                                     container.style.display = "none";
-                                                     checkbox.checked = false;
-                                                 }
-                                             }
-                                         });
+			{
+				if (checkbox.name === "specialite_spe[]")
+				{
+					const speCode = checkbox.getAttribute("data-code");
+				const container = checkbox.closest("p") || checkbox.parentElement;
+					if (!container)
+					{
+						return;
+					}
+					if (speCode === selectedSerieCode)
+					{
+						container.style.display = "flex";
+					}
+					else
+					{
+						container.style.display = "none";
+						checkbox.checked = false;
+					}
+				}
+			});
         }
         if (!selectedSerieCode || !serieHasOptions(selectedSerieCode))
         {
@@ -140,26 +140,26 @@ document.addEventListener("DOMContentLoaded", function ()
         {
             showOptionSection();
             specialiteCheckboxes.forEach(checkbox =>
-                                         {
-                                             if (checkbox.name === "specialite_opt[]")
-                                             {
-                                                 const optCode = checkbox.getAttribute("data-code");
-                                                const container = checkbox.closest("p") || checkbox.parentElement;
-                                                 if (!container)
-                                                 {
-                                                     return;
-                                                 }
-                                                 if (optCode === selectedSerieCode)
-                                                 {
-                                                     container.style.display = "flex";
-                                                 }
-                                                 else
-                                                 {
-                                                     container.style.display = "none";
-                                                     checkbox.checked = false;
-                                                 }
-                                             }
-                                         });
+			{
+				if (checkbox.name === "specialite_opt[]")
+				{
+					const optCode = checkbox.getAttribute("data-code");
+				const container = checkbox.closest("p") || checkbox.parentElement;
+					if (!container)
+					{
+						return;
+					}
+					if (optCode === selectedSerieCode)
+					{
+						container.style.display = "flex";
+					}
+					else
+					{
+						container.style.display = "none";
+						checkbox.checked = false;
+					}
+				}
+			});
         }
     }
 
@@ -167,16 +167,16 @@ document.addEventListener("DOMContentLoaded", function ()
     {
         const inputs = bloc.querySelectorAll("input, select, textarea");
         inputs.forEach(input =>
-                       {
-                           if (input.type === "checkbox" || input.type === "radio")
-                           {
-                               input.checked = false;
-                           }
-                           else
-                           {
-                               input.value = "";
-                           }
-                       });
+		{
+			if (input.type === "checkbox" || input.type === "radio")
+			{
+				input.checked = false;
+			}
+			else
+			{
+				input.value = "";
+			}
+		});
     }
 
     function onTypeBacChange()
@@ -190,10 +190,10 @@ document.addEventListener("DOMContentLoaded", function ()
         hideOptionSection();
         const blocs = document.querySelectorAll(".bac-filter");
         blocs.forEach(bloc =>
-                      {
-                          bloc.style.display = "none";
-                          resetBloc(bloc);
-                      });
+		{
+			bloc.style.display = "none";
+			resetBloc(bloc);
+		});
         if (val)
         {
             const blocToShow = document.querySelector(`[data-bac-type="${val}"]`);

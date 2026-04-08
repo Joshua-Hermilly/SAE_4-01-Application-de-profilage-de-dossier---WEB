@@ -134,5 +134,5 @@ btnDst.addEventListener('click', () =>
 
 scDist.addEventListener('input', () =>
 {
-   txtDst.textContent = scDist.value + " Km.";
+   txtDst.textContent = "Distance : " + scDist.value + " Km.";
 });
