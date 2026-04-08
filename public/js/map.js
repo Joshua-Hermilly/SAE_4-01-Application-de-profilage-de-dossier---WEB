@@ -43,6 +43,7 @@ function initSide( max )
 {
     scDist.min = 1;
     scDist.max = max;
+    if ( scDist.classList.contains( "true") ) { scDist.value = max; }
 }
 
 /*------------------------*/
