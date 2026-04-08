@@ -293,6 +293,23 @@ async function getData( indexPage, lien, filters = filtresCourant )
 		creerTableau( donnees['headers'], donnees['data'   ], donnees['isAdmin'] );
 		creerBtnPage( donnees['maxPage'], donnees['actPage']                     );
 
+		if (isDossiersPage && donnees.nbEtu !== undefined)
+		{
+			const infoRightNbEtu = document.getElementById('nbEtu');
+			if (infoRightNbEtu)
+			{
+				infoRightNbEtu.textContent = donnees.nbEtu;
+			}
+		}
+		if (isDossiersPage && donnees.annees !== undefined)
+		{
+			const infoDates = document.getElementById('AnneesSelect');
+			if (infoDates)
+			{
+				infoDates.textContent = donnees.annees.length > 0 ? donnees.annees.join("-") : 'Aucune';
+			}
+		}
+
 	}
 	catch (error)
 	{
@@ -365,6 +382,7 @@ function initialiserTableau()
 
 	chargerPage(1);
 }
+
 document.addEventListener('DOMContentLoaded', initialiserTableau);
 
 function attacherPagination()
