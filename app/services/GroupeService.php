@@ -10,6 +10,7 @@ require_once '../app/repositories/FiltreRepository.php';
 require_once '../app/repositories/CandidatRepository.php';
 require_once '../app/repositories/DossierCandidatRepository.php';
 require_once '../app/services/DossierFiltreService.php';
+require_once '../app/services/CodeService.php';
 
 class GroupeService
 {
@@ -74,7 +75,8 @@ class GroupeService
 				$filtreRepo->linkGroupToCritere($groupe->getGroupeId(), $critere->getCritereId());
 			}
 
-			$codesEffectifs = $this->resoudreCodesSelection($codes, $filters);
+			$codeService   = new CodeService();
+			$codesEffectifs = $codeService->resoudreCodesCandidats($codes, $filters);
 			if (!empty($codesEffectifs)) { $candidatRepo->assignGroupToCodes($groupe->getGroupeId(), $codesEffectifs); }
 
 			$pdo->commit();
@@ -118,7 +120,8 @@ class GroupeService
 				$filtreRepo->linkGroupToCritere($groupeId, $critere->getCritereId());
 			}
 
-			$codesEffectifs = $this->resoudreCodesSelection($codes, $filters);
+			$codeService   = new CodeService();
+			$codesEffectifs = $codeService->resoudreCodesCandidats($codes, $filters);
 			$candidatRepo->removeGroupAssignmentsExcept($groupeId, $codesEffectifs);
 			if (!empty($codesEffectifs)) { $candidatRepo->assignGroupToCodes($groupeId, $codesEffectifs); }
 
@@ -132,14 +135,16 @@ class GroupeService
 		}
 	}
 
-	public function supprimerGroupes($groupesId): bool
+	public function supprimerGroupes($groupesId, array $filtres = []): bool
 	{
 		$pdo = Repository::getInstance()->getPDO();
 		$pdo->beginTransaction();
 
 		try
 		{
-			foreach ($groupesId as $GroupeId) { $this->GroupeRepository->supprimer($GroupeId); }
+			$codeService = new CodeService();
+			$idsEffectifs = $codeService->resoudreCodesGroupes($groupesId, $filtres);
+			foreach ($idsEffectifs as $GroupeId) { $this->GroupeRepository->supprimer($GroupeId); }
 			$pdo->commit();
 			return true;
 		}
@@ -148,54 +153,6 @@ class GroupeService
 			if ($pdo->inTransaction()) { $pdo->rollBack(); }
 			throw $e;
 		}
-	}
-
-	private function resoudreCodesSelection(array $codesBruts, array $filtres = []): array
-	{
-		if (empty($codesBruts)) { return []; }
-
-		$modeTous = in_array('*', $codesBruts, true);
-
-		if (!$modeTous)
-		{
-			$codes = [];
-			foreach ($codesBruts as $code)
-			{
-				if (!is_string($code) || $code === '') { continue; }
-				if ($code[0] === '!') { continue; }
-				$codes[] = (int) $code;
-			}
-			return array_values(array_unique($codes));
-		}
-
-		$codesNegatifs = [];
-		foreach ($codesBruts as $code)
-		{
-			if (!is_string($code)) { continue; }
-			if (strlen($code) > 0 && $code[0] === '!')
-			{
-				$val = substr($code, 1);
-				if ($val !== '') { $codesNegatifs[] = (int) $val; }
-			}
-		}
-
-		$dossierRepo = new DossierCandidatRepository();
-		$tousCodes   = $dossierRepo->findCodesByFilters($filtres);
-
-		if (empty($codesNegatifs))
-		{
-			return array_values(array_unique(array_map('intval', $tousCodes)));
-		}
-
-		$exclus = array_flip($codesNegatifs);
-		$resultat = [];
-		foreach ($tousCodes as $code)
-		{
-			$codeInt = (int) $code;
-			if (!isset($exclus[$codeInt])) { $resultat[] = $codeInt; }
-		}
-
-		return array_values(array_unique($resultat));
 	}
 
 	private function buildCriteresFromFilters(array $filters): array

@@ -157,6 +157,21 @@ class GroupeRepository
 		return $result;
 	}
 
+	public function findIdsByFilters(array $filters = []): array
+	{
+		[$sql, $params] = $this->buildFilteredQuery($filters, 1, null, false);
+		$stmt = $this->pdo->prepare($sql);
+		foreach ($params as $key => $value) { $stmt->bindValue($key, $value); }
+		$stmt->execute();
+
+		$ids = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			if (isset($row['groupe_id'])) { $ids[] = (int) $row['groupe_id']; }
+		}
+		return $ids;
+	}
+
 	public function nbMaxDossier(array $filters = []): int
 	{
 		[$sql, $params] = $this->buildFilteredQuery($filters, 1, null, true);
