@@ -177,6 +177,17 @@ class DossierCandidatRepository
 			}
 		}
 
+		if (isset($filters['distance_min']) && $filters['distance_min'] !== '' && $filters['distance_min'] !== null)
+		{
+			$conditions[] = 'E.etablissement_distance >= :distance_min';
+			$params[':distance_min'] = (float) $filters['distance_min'];
+		}
+		if (isset($filters['distance_max']) && $filters['distance_max'] !== '' && $filters['distance_max'] !== null)
+		{
+			$conditions[] = 'E.etablissement_distance <= :distance_max';
+			$params[':distance_max'] = (float) $filters['distance_max'];
+		}
+
 		if (!empty($conditions)) { $sql .= 'WHERE ' . implode(' AND ', $conditions) . "\n"; }
 
 		if ($count) { return [$sql, $params]; }
