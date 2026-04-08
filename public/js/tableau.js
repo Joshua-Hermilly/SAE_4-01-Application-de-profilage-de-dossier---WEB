@@ -97,8 +97,8 @@ function creerTableau( headers, dossiers, isAdmin )
 			{
 				let color = dossiers[cptD]['Couleur'] || dossiers[cptD]['groupe_couleur'];
 				th = `<th>
-					      <span class="badge border border-dark text-dark rounded-2 p-2" style="background-color: ${color}" >${valeur}</span>
-				     </th>`;
+						  <span class="badge border border-dark text-dark rounded-2 p-2" style="background-color: ${color}" >${valeur}</span>
+					 </th>`;
 			}
 			else if ( valeur === "NaN" || valeur === "Non définie" ) { th = `<th style="color: gray">${valeur}</th>`; }
 			else                                                     { th = `<th>${valeur}</th>`;                     }
@@ -338,6 +338,9 @@ function chargerPage(indexPage, filters = filtresCourant)
 
 function initialiserTableau()
 {
+	// on enlève le filtre de distance pour éviter de fausser l'affichage total avec ceux qui n'ont pas de distance
+	if (typeof isDossiersPage !== 'undefined' && isDossiersPage) { sessionStorage.removeItem('distance'); }
+
 	const preset = (typeof window.defaultFilters !== 'undefined' && window.defaultFilters) ? window.defaultFilters : null;
 	if (preset && Object.keys(preset).length > 0)
 	{
