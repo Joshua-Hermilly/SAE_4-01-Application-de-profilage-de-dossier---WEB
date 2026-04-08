@@ -8,6 +8,7 @@ require_once '../app/repositories/GroupeRepository.php';
 require_once '../app/repositories/CritereRepository.php';
 require_once '../app/repositories/FiltreRepository.php';
 require_once '../app/repositories/CandidatRepository.php';
+require_once '../app/repositories/DossierCandidatRepository.php';
 require_once '../app/services/DossierFiltreService.php';
 
 class GroupeService
@@ -62,9 +63,9 @@ class GroupeService
 			$groupe = new Groupe(0, $nom, $couleur, $noteDossier, [], []);
 			$this->GroupeRepository->create($groupe);
 
-			$critereRepo = new CritereRepository();
-			$filtreRepo  = new FiltreRepository();
-			$candidatRepo= new CandidatRepository();
+			$critereRepo  = new CritereRepository();
+			$filtreRepo   = new FiltreRepository();
+			$candidatRepo = new CandidatRepository();
 
 			$criteres = $this->buildCriteresFromFilters($filters);
 			foreach ($criteres as $critere)
@@ -73,7 +74,8 @@ class GroupeService
 				$filtreRepo->linkGroupToCritere($groupe->getGroupeId(), $critere->getCritereId());
 			}
 
-			if (!empty($codes)) { $candidatRepo->assignGroupToCodes($groupe->getGroupeId(), $codes); }
+			$codesEffectifs = $this->resoudreCodesSelection($codes, $filters);
+			if (!empty($codesEffectifs)) { $candidatRepo->assignGroupToCodes($groupe->getGroupeId(), $codesEffectifs); }
 
 			$pdo->commit();
 			return $this->GroupeRepository->findById($groupe->getGroupeId()) ?? $groupe;
@@ -116,8 +118,9 @@ class GroupeService
 				$filtreRepo->linkGroupToCritere($groupeId, $critere->getCritereId());
 			}
 
-			$candidatRepo->removeGroupAssignmentsExcept($groupeId, $codes);
-			if (!empty($codes)) { $candidatRepo->assignGroupToCodes($groupeId, $codes); }
+			$codesEffectifs = $this->resoudreCodesSelection($codes, $filters);
+			$candidatRepo->removeGroupAssignmentsExcept($groupeId, $codesEffectifs);
+			if (!empty($codesEffectifs)) { $candidatRepo->assignGroupToCodes($groupeId, $codesEffectifs); }
 
 			$pdo->commit();
 			return $this->GroupeRepository->findById($groupeId) ?? $groupe;
@@ -145,6 +148,54 @@ class GroupeService
 			if ($pdo->inTransaction()) { $pdo->rollBack(); }
 			throw $e;
 		}
+	}
+
+	private function resoudreCodesSelection(array $codesBruts, array $filtres = []): array
+	{
+		if (empty($codesBruts)) { return []; }
+
+		$modeTous = in_array('*', $codesBruts, true);
+
+		if (!$modeTous)
+		{
+			$codes = [];
+			foreach ($codesBruts as $code)
+			{
+				if (!is_string($code) || $code === '') { continue; }
+				if ($code[0] === '!') { continue; }
+				$codes[] = (int) $code;
+			}
+			return array_values(array_unique($codes));
+		}
+
+		$codesNegatifs = [];
+		foreach ($codesBruts as $code)
+		{
+			if (!is_string($code)) { continue; }
+			if (strlen($code) > 0 && $code[0] === '!')
+			{
+				$val = substr($code, 1);
+				if ($val !== '') { $codesNegatifs[] = (int) $val; }
+			}
+		}
+
+		$dossierRepo = new DossierCandidatRepository();
+		$tousCodes   = $dossierRepo->findCodesByFilters($filtres);
+
+		if (empty($codesNegatifs))
+		{
+			return array_values(array_unique(array_map('intval', $tousCodes)));
+		}
+
+		$exclus = array_flip($codesNegatifs);
+		$resultat = [];
+		foreach ($tousCodes as $code)
+		{
+			$codeInt = (int) $code;
+			if (!isset($exclus[$codeInt])) { $resultat[] = $codeInt; }
+		}
+
+		return array_values(array_unique($resultat));
 	}
 
 	private function buildCriteresFromFilters(array $filters): array

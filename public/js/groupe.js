@@ -3,19 +3,19 @@
 /*------------------------*/
 function getSelectedCodes()
 {
-	const codes   = [];
-	const cbTous  = sessionStorage.getItem('cbTous') === 'true';
+	const codes  = [];
+	const cbTous = sessionStorage.getItem('cbTous') === 'selectionner';
 
 	if ( cbTous ) { codes.push('*'); }
 
-	for (let cpt = 0; cpt< sessionStorage.length; cpt++)
+	for (let cpt = 0; cpt < sessionStorage.length; cpt++)
 	{
-		const key = sessionStorage.key( cpt );
-		if (key === 'cbTous') { continue; }
+		const cle = sessionStorage.key(cpt);
+		if (cle === 'cbTous') { continue; }
 
-		const value = sessionStorage.getItem(key);
-		if      ( value === 'selectionner'   || cbTous ) { codes.push( key       ); }
-		else if ( value === 'désélectionner' && cbTous ) { codes.push( '!' + key ); }
+		const etat = sessionStorage.getItem(cle);
+		if      (etat === 'selectionner'   || cbTous) { codes.push(      cle); }
+		else if (etat === 'désélectionner' && cbTous) { codes.push('!' + cle); }
 	}
 
 	return codes;
@@ -32,23 +32,27 @@ function initCreationGroupe()
 			const info  = document.getElementById('createGroupSelectionInfo');
 			if (info)
 			{
+				const modeTous   = codes.includes('*');
+				const exclus     = codes.filter(c => typeof c === 'string' && c.startsWith('!'));
+				const nbExclus   = exclus.length;
+				const nbTotal    = codes.length - (modeTous ? 1 : 0) - nbExclus;
+
 				if (codes.length === 0)
 				{
 					info.textContent = 'Aucun dossier sélectionné.';
 				}
-				else if (codes.includes('*') && ! codes.includes('!'))
+				else if (modeTous && nbExclus === 0)
 				{
 					info.textContent = 'Tous les dossiers sont sélectionnés.';
 				}
-				else if (codes.includes('*') && codes.filter(c => c.startsWith('!')).length > 0)
+				else if (modeTous && nbExclus > 0)
 				{
-					const deselectionnes = codes.filter(c => c.startsWith('!')).map(c => c.substring(1));
-					info.textContent = `Tous les dossiers sont sélectionnés sauf : ${deselectionnes.join(', ')}.`;
+					const deselectionnes = exclus.map(c => c.substring(1));
+					info.textContent = 'Tous les dossiers sont sélectionnés sauf : ' + deselectionnes.join(', ') + '.';
 				}
 				else
 				{
-					const deselectionnes = codes.filter(c => c.startsWith('!')).map(c => c.substring(1)).length;
-					info.textContent = `Il y a ${codes.length - deselectionnes} dossier(s) sélectionné(s).`;
+					info.textContent = 'Il y a ' + nbTotal + ' dossier(s) sélectionné(s).';
 				}
 			}
 
@@ -126,20 +130,13 @@ function initCreationGroupe()
 
 			try
 			{
-				const reponse = await fetch('./creerGroupe.php',
-				{
-					method : 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body   : JSON.stringify
-					({ nom: nomGroupe, couleur, note_dossier: note, codes, filters: filtres })
-				});
-
-				const donnees = await reponse.json();
-				if (!reponse.ok || !donnees.success)
+				const resultat = await creerGroupe(nomGroupe, couleur, note, codes, filtres);
+				const donnees  = resultat.donnees;
+				if (!resultat.ok || !donnees || !donnees.success)
 				{
 					if (errorDiv)
 					{
-						errorDiv.textContent = donnees.message || 'Erreur lors de la création du groupe.';
+						errorDiv.textContent = (donnees && donnees.message) ? donnees.message : 'Erreur lors de la création du groupe.';
 						errorDiv.classList.remove('d-none');
 					}
 					definirEtatSoumission(false);
@@ -184,16 +181,10 @@ function initSuppressionGroupe()
 
 		try
 		{
-			await fetch('./supprimerGroupe.php',
-			{
-				method : 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ groupesId })
-			});
-
+			await supprimerGroupes(groupesId);
 			window.location.reload();
 		}
-		catch (error) { console.error('Erreur lors de la suppression :', error); }
+		catch (e) { console.error('Erreur lors de la suppression :', e); }
 	});
 }
 
@@ -256,26 +247,13 @@ function initEditionGroupe()
 
 			try
 			{
-				const response = await fetch('./modifierGroupe.php',
-				{
-					method : 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body   : JSON.stringify({
-						groupe_id   : groupeId,
-						nom         : nom,
-						couleur     : couleur,
-						note_dossier: note,
-						codes       : codes,
-						filters     : filters
-					})
-				});
-
-				const data = await response.json();
-				if (!response.ok || !data.success)
+					const resultatMaj = await modifierGroupe(groupeId, nom, couleur, note, codes, filters);
+					const data        = resultatMaj.donnees;
+				if (!resultatMaj.ok || !data || !data.success)
 				{
 					if (errorDiv)
 					{
-						errorDiv.textContent = data.message || 'Erreur lors de la mise à jour du groupe.';
+						errorDiv.textContent = (data && data.message) ? data.message : 'Erreur lors de la mise à jour du groupe.';
 						errorDiv.classList.remove('d-none');
 					}
 					return;
@@ -301,17 +279,57 @@ function initEditionGroupe()
 /*------------------------*/
 function creerGroupe(nom, couleur, note, codes, filtres)
 {
-
+	return fetch('./creerGroupe.php',
+	{
+		method : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body   : JSON.stringify({ nom: nom, couleur: couleur, note_dossier: note, codes: codes, filters: filtres })
+	})
+	.then(function(reponse)
+	{
+		return reponse.json().then(function(donnees)
+		{
+			return { ok: reponse.ok, donnees: donnees };
+		});
+	});
 }
 
 function modifierGroupe(groupeId, nom, couleur, note, codes, filtres)
 {
-
+	return fetch('./modifierGroupe.php',
+	{
+		method : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body   : JSON.stringify({
+			groupe_id   : groupeId,
+			nom         : nom,
+			couleur     : couleur,
+			note_dossier: note,
+			codes       : codes,
+			filters     : filtres
+		})
+	})
+	.then(function(reponse)
+	{
+		return reponse.json().then(function(donnees)
+		{
+			return { ok: reponse.ok, donnees: donnees };
+		});
+	});
 }
 
 function supprimerGroupes(groupesId)
 {
-
+	return fetch('./supprimerGroupe.php',
+	{
+		method : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body   : JSON.stringify({ groupesId: groupesId })
+	})
+	.then(function(reponse)
+	{
+		return reponse.json().catch(function() { return null; });
+	});
 }
 
 

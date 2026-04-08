@@ -86,6 +86,15 @@ class DossierCandidatRepository
 		return $stmt->fetchAll(PDO::FETCH_COLUMN);
 	}
 
+	public function findCodesByFilters(array $filters = []): array
+	{
+		[$sql, $params] = $this->buildFilteredQuery($filters, 1, null, false);
+		$stmt = $this->pdo->prepare($sql);
+		foreach ($params as $key => $value) { $stmt->bindValue($key, $value); }
+		$stmt->execute();
+		return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+	}
+
 	private function buildFilteredQuery(array $filters, int $page, ?int $limit, bool $count = false): array
 	{
 		$select = $count
@@ -141,7 +150,7 @@ class DossierCandidatRepository
 		{
 			$specialites = is_array($filters['specialite_spe']) ? $filters['specialite_spe'] : [$filters['specialite_spe']];
 			$conditionsSpecialitesObligatoires = [];
-			$paramsListeAutorisee             = [];
+			$paramsListeAutorisee              = [];
 
 			foreach ($specialites as $index => $specialite)
 			{
