@@ -19,7 +19,7 @@
 					<form method="POST" action="creerCompte.php">
 						<div id="form-spacing" class="mb-3">
 							<label id="text-title" for="compte_identifiant" class="form-label">Identifiant</label>
-							<input type="text" class="form-control" id="compte_identifiant" name="compte_identifiant" placeholder="Entrez votre identifiant" required>
+							<input type="text" class="form-control" id="compte_identifiant" name="compte_identifiant" placeholder="Entrez votre identifiant" value="{{ oldData.compte_identifiant|default('') }}" required>
 						</div>
 
 						<div id="form-spacing" class="mb-3">
@@ -34,7 +34,7 @@
 
 						<div id="form-spacing" class="mb-3">
 							<div class="form-check d-flex justify-content-center align-items-center gap-2">
-								<input class="form-check-input" type="checkbox" id="compte_admin" name="compte_admin" value="1">
+								<input class="form-check-input" type="checkbox" id="compte_admin" name="compte_admin" value="1" {% if oldData.compte_admin|default(false) %}checked{% endif %}>
 								<label class="form-check-label" for="compte_admin">Admin</label>
 							</div>
 						</div>

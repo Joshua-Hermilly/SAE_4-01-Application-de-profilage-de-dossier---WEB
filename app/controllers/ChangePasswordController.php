@@ -21,6 +21,9 @@ class ChangePasswordController extends Controller
 
 		$data   = [];
 		$errors = [];
+		$oldData = [
+			'compte_identifiant' => '',
+		];
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST')
 		{
@@ -29,9 +32,9 @@ class ChangePasswordController extends Controller
 			$compte_mdp         =      $this->getPostParam('compte_mdp'        , '' );
 			$compte_mdp_confirm =      $this->getPostParam('compte_mdp_confirm', '' );
 
-			$oldData = array(
-				'compte_identifiant' => $compte_identifiant
-			);
+			$oldData = [
+				'compte_identifiant' => $compte_identifiant,
+			];
 
 			// --- Validation ---
 			$CompteRepo = new CompteRepository();
@@ -57,17 +60,19 @@ class ChangePasswordController extends Controller
 				$passwordHash = password_hash($compte_mdp, PASSWORD_DEFAULT);
 
 				$CompteRepo->changePassword($compte_identifiant, $passwordHash);
-
-				$this->redirectTo('admin.php');
+				$this->redirectTo('dossiers.php');
 				return;
-			} else
-			{
-				$data['errors' ] = $errors;
-				$data['oldData'] = $oldData;
 			}
 
 		}
 
-		$this->view('pages/changePassword', 'Changement de mots de passe', [ 'errors' => $errors]) ;
+		$this->view(
+			'pages/changePassword',
+			'Changement de mots de passe',
+			[
+				'errors'  => $errors,
+				'oldData' => $oldData,
+			]
+		);
 	}
 }

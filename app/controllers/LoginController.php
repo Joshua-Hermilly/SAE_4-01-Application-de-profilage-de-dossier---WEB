@@ -31,8 +31,7 @@ class LoginController extends Controller
 
 				// Stocker l'objet Account dans la session
 				$_SESSION['compte'] = $compte;
-
-				$compte->getCompteIsAdmin() ? $this->redirectTo('admin.php') : $this->redirectTo('index.php');
+				$this->redirectTo('dossiers.php');
 				return;
 			}
 

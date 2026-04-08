@@ -21,6 +21,10 @@ class CreerCompteController extends Controller
 
 		$data   = [];
 		$errors = [];
+		$oldData = [
+			'compte_identifiant' => '',
+			'compte_admin'       => false,
+		];
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST')
 		{
@@ -30,9 +34,10 @@ class CreerCompteController extends Controller
 			$compte_mdp_confirm =      $this->getPostParam('compte_mdp_confirm', '' );
 			$isAdmin            =      $this->getPostParam('compte_admin'      , '' ) === '1';
 
-			$oldData = array(
-				'compte_identifiant' => $compte_identifiant
-			);
+			$oldData = [
+				'compte_identifiant' => $compte_identifiant,
+				'compte_admin'       => $isAdmin,
+			];
 
 			// --- Validation ---
 			$CompteRepo = new CompteRepository();
@@ -65,8 +70,7 @@ class CreerCompteController extends Controller
 				$compte->setCompteIsAdmin($isAdmin);
 
 				$CompteRepo->create($compte);
-
-				$this->redirectTo('admin.php');
+				$this->redirectTo('dossiers.php');
 				return;
 			} else
 			{
@@ -76,6 +80,14 @@ class CreerCompteController extends Controller
 
 		}
 
-		$this->view('pages/creerCompte', 'Inscription', [ 'errors' => $errors, 'isAdmin' => $_SESSION['compte']->getCompteIsAdmin() ]) ;
+		$this->view(
+			'pages/creerCompte',
+			'Inscription',
+			[
+				'errors'  => $errors,
+				'oldData' => $oldData,
+				'isAdmin' => $_SESSION['compte']->getCompteIsAdmin(),
+			]
+		);
 	}
 }

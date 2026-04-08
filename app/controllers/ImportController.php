@@ -22,6 +22,9 @@ class ImportController extends Controller
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST' )
 		{
+			// augmenter limite de temps
+			set_time_limit(300);
+
 			//année
 			$annee     = $_POST['annee_promotion'];
 

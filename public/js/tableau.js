@@ -162,17 +162,20 @@ function creerTableau( headers, dossiers, isAdmin )
 			iconVoir.dataset.groupeCouleur= couleurGrp;
 			iconVoir.dataset.groupeNote   = noteGroupe;
 
-			const iconEdit = document.createElement('i');
-			iconEdit.className = "bi bi-pencil-square border border-dark rounded-1 p-1 text-center";
-			iconEdit.style.cursor = 'pointer';
-			iconEdit.dataset.action        = 'modifier-groupe';
-			iconEdit.dataset.groupeId      = idGroupe;
-			iconEdit.dataset.groupeNom     = nomGroupe;
-			iconEdit.dataset.groupeCouleur = couleurGrp;
-			iconEdit.dataset.groupeNote    = noteGroupe;
-
 			container.appendChild(iconVoir);
-			container.appendChild(iconEdit);
+			
+			if (isAdmin)
+			{
+				const iconEdit = document.createElement('i');
+				iconEdit.className = "bi bi-pencil-square border border-dark rounded-1 p-1 text-center";
+				iconEdit.style.cursor = 'pointer';
+				iconEdit.dataset.action        = 'modifier-groupe';
+				iconEdit.dataset.groupeId      = idGroupe;
+				iconEdit.dataset.groupeNom     = nomGroupe;
+				iconEdit.dataset.groupeCouleur = couleurGrp;
+				iconEdit.dataset.groupeNote    = noteGroupe;
+				container.appendChild(iconEdit);
+			}
 			thEye.appendChild(container);
 			tr.appendChild(thEye);
 		}

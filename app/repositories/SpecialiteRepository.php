@@ -42,6 +42,22 @@ class SpecialiteRepository
 
 	public function creates(array $specialites): void
 	{
+		if (empty($specialites)) { return; }
+
+		$taillePartie = 500;
+		$total        = count($specialites);
+
+		for ($offset = 0; $offset < $total; $offset += $taillePartie)
+		{
+			$partie = array_slice($specialites, $offset, $taillePartie);
+			$this->insertChunk($partie);
+		}
+	}
+
+	private function insertChunk(array $specialites): void
+	{
+		if (empty($specialites)) { return; }
+
 		$valeurBrut = [];
 		$valeurBind = [];
 
@@ -61,38 +77,35 @@ class SpecialiteRepository
 		$sql = "INSERT INTO SPECIALITE
 				(specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_spe3, specialite_speabd)
 				VALUES " . implode(', ', $valeurBind) . "
+				ON CONFLICT ON CONSTRAINT specialite_unique DO UPDATE SET
+					specialite_opt1   = EXCLUDED.specialite_opt1,
+					specialite_opt2   = EXCLUDED.specialite_opt2,
+					specialite_spe1   = EXCLUDED.specialite_spe1,
+					specialite_spe2   = EXCLUDED.specialite_spe2,
+					specialite_spe3   = EXCLUDED.specialite_spe3,
+					specialite_speAbd = EXCLUDED.specialite_speAbd
 				RETURNING specialite_id";
 
-		try {
-			$stmt = $this->pdo->prepare($sql);
+		$stmt = $this->pdo->prepare($sql);
 
-			for ($cpt = 0; $cpt < count($specialites); $cpt++)
+		for ($cpt = 0; $cpt < count($specialites); $cpt++)
+		{
+			$stmt->bindValue(":opt1_{$cpt}"      , $valeurBrut[":opt1_{$cpt}"      ]);
+			$stmt->bindValue(":opt2_{$cpt}"      , $valeurBrut[":opt2_{$cpt}"      ]);
+			$stmt->bindValue(":spe1_{$cpt}"      , $valeurBrut[":spe1_{$cpt}"      ]);
+			$stmt->bindValue(":spe2_{$cpt}"      , $valeurBrut[":spe2_{$cpt}"      ]);
+			$stmt->bindValue(":spe3_{$cpt}"      , $valeurBrut[":spe3_{$cpt}"      ]);
+			$stmt->bindValue(":speAbd_{$cpt}"    , $valeurBrut[":speAbd_{$cpt}"    ]);
+		}
+
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		for ($cpt = 0; $cpt < count($specialites); $cpt++)
+		{
+			if (isset($rows[$cpt]))
 			{
-				$stmt->bindValue(":opt1_{$cpt}"      , $valeurBrut[":opt1_{$cpt}"      ]);
-				$stmt->bindValue(":opt2_{$cpt}"      , $valeurBrut[":opt2_{$cpt}"      ]);
-				$stmt->bindValue(":spe1_{$cpt}"      , $valeurBrut[":spe1_{$cpt}"      ]);
-				$stmt->bindValue(":spe2_{$cpt}"      , $valeurBrut[":spe2_{$cpt}"      ]);
-				$stmt->bindValue(":spe3_{$cpt}"      , $valeurBrut[":spe3_{$cpt}"      ]);
-				$stmt->bindValue(":speAbd_{$cpt}"    , $valeurBrut[":speAbd_{$cpt}"    ]);
-			}
-
-			$stmt->execute();
-
-			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-			for ($cpt = 0; $cpt < count($specialites); $cpt++)
-			{
-				if (isset($rows[$cpt]))
-				{
-					$specialites[$cpt]->setSpecialiteId((int)$rows[$cpt]['specialite_id']);
-				}
-			}
-		} catch (PDOException $e) {
-			foreach ($specialites as $specialite) {
-				try {
-					$this->create($specialite);
-				} catch (PDOException $ex) {
-					// Ignorer les doublons
-				}
+				$specialites[$cpt]->setSpecialiteId((int)$rows[$cpt]['specialite_id']);
 			}
 		}
 	}
