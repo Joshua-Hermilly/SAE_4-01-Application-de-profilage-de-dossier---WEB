@@ -119,13 +119,10 @@ function creerTableau( headers, dossiers, isAdmin )
 
 			if (isEditGroupMode)
 			{
-				// En mode édition de groupe, les candidats du groupe courant sont cochés,
-				// les autres (sans groupe) sont décochés et modifiables.
 				input.checked = dansGroupeCourant;
 			}
 			else if (isDossiersPage && hasAnyGroupColor)
 			{
-				// Hors mode édition, un candidat déjà dans un groupe n'est pas sélectionnable
 				input.disabled = true;
 				input.checked  = false;
 				input.classList.add('opacity-50');
@@ -304,6 +301,23 @@ async function getData( indexPage, lien, filters = filtresCourant )
 		creerTableau( donnees['headers'], donnees['data'   ], donnees['isAdmin'] );
 		creerBtnPage( donnees['maxPage'], donnees['actPage']                     );
 
+		if (isDossiersPage && donnees.nbEtu !== undefined)
+		{
+			const infoRightNbEtu = document.getElementById('nbEtu');
+			if (infoRightNbEtu)
+			{
+				infoRightNbEtu.textContent = donnees.nbEtu;
+			}
+		}
+		if (isDossiersPage && donnees.annees !== undefined)
+		{
+			const infoDates = document.getElementById('AnneesSelect');
+			if (infoDates)
+			{
+				infoDates.textContent = donnees.annees.length > 0 ? donnees.annees.join("-") : 'Aucune';
+			}
+		}
+
 	}
 	catch (error)
 	{
@@ -376,6 +390,7 @@ function initialiserTableau()
 
 	chargerPage(1);
 }
+
 document.addEventListener('DOMContentLoaded', initialiserTableau);
 
 function attacherPagination()
