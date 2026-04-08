@@ -26,9 +26,6 @@ class GroupeService
 		$this->GroupeRepository = new GroupeRepository();
 	}
 
-	/**
-	 * Retourne un groupe par son id (ou null s'il n'existe pas).
-	 */
 	public function findById(int $id): ?Groupe
 	{
 		return $this->GroupeRepository->findById($id);
@@ -98,7 +95,6 @@ class GroupeService
 			$groupe = $this->GroupeRepository->findById($groupeId);
 			if (!$groupe) { throw new RuntimeException('Groupe introuvable'); }
 
-			// Si aucun nouveau nom n'est fourni, on conserve le nom actuel
 			$finalNom = ($nom !== '') ? $nom : $groupe->getGroupeNom();
 			// Forcer la note éventuelle dans l'intervalle [0,20]
 			if ($noteDossier !== null) { $noteDossier = max(0.0, min(20.0, $noteDossier)); }
@@ -120,7 +116,6 @@ class GroupeService
 				$filtreRepo->linkGroupToCritere($groupeId, $critere->getCritereId());
 			}
 
-			// Synchroniser les candidats du groupe
 			$candidatRepo->removeGroupAssignmentsExcept($groupeId, $codes);
 			if (!empty($codes)) { $candidatRepo->assignGroupToCodes($groupeId, $codes); }
 

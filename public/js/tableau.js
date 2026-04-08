@@ -329,7 +329,6 @@ function chargerPage(indexPage, filters = filtresCourant)
 
 function initialiserTableau()
 {
-	// on enlève le filtre de distance pour éviter de fausser l'affichage total avec ceux qui n'ont pas de distance
 	if (typeof isDossiersPage !== 'undefined' && isDossiersPage) { sessionStorage.removeItem('distance'); }
 
 	const preset = (typeof window.defaultFilters !== 'undefined' && window.defaultFilters) ? window.defaultFilters : null;
