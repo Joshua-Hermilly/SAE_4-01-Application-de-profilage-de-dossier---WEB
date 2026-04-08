@@ -43,14 +43,14 @@ class FormationSupRepository
 		$taillePartie = 500;
 		$total        = count($formationSups);
 
-		for ($offset = 0; $offset < $total; $offset += $taillePartie)
+		for ($cptFormSup = 0; $cptFormSup < $total; $cptFormSup += $taillePartie)
 		{
-			$partie = array_slice($formationSups, $offset, $taillePartie);
-			$this->insertChunk($partie);
+			$partie = array_slice($formationSups, $cptFormSup, $taillePartie);
+			$this->insererPartie($partie);
 		}
 	}
 
-	private function insertChunk(array $formationSups): void
+	private function insererPartie(array $formationSups): void
 	{
 		if (empty($formationSups)) { return; }
 
