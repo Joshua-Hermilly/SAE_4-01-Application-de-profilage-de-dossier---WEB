@@ -13,8 +13,8 @@ class RechercheLocalisationService
 	/*-------------------------------*/
 	public const COLONNE = ['Etablissement', 'Commune', 'Code Postale', 'Departement', 'Pays'];
 
-	private const IUT_LAT = 45.188529;
-	private const IUT_LON = 5.724524;
+	private const IUT_LAT = 49.51627358707744;
+	private const IUT_LON = 0.1625817429307139;
 
 	/*-------------------------------*/
 	/* Attributs                     */
@@ -178,19 +178,22 @@ class RechercheLocalisationService
 					}
 				}
 
+				$latitude  = (float) $attTableau['latitude'];
+				$longitude = (float) $attTableau['longitude'];
+				$distance  = $this->calculerDistanceIut($latitude, $longitude);
+
 				$etablissement = new Etablissement(
-						0,
-						$attTableau['Etablissement'],
-						$attTableau['Pays'],
-						$attTableau['Code Postale'],
-						$attTableau['Commune'],
-						$attTableau['Departement'],
-						(float)$attTableau['latitude'],
-						(float)$attTableau['longitude'],
-						null,
-						null,
-						null
-					);
+					0,
+					$attTableau['Etablissement'],
+					$attTableau['Pays'],
+					$attTableau['Code Postale'],
+					$attTableau['Commune'],
+					$attTableau['Departement'],
+					$latitude,
+					$longitude,
+					$distance,
+					null
+				);
 				$this->etablissementRepository->updatePos($etablissement);
 			}
 		}

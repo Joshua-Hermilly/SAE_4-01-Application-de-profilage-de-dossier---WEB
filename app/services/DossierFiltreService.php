@@ -145,6 +145,20 @@ class DossierFiltreService
 						],
 					],
 				],
+				'Distance' => [
+					'label'   => 'Distance',
+					'filters' => [
+						[
+							'name'     => 'distance',
+							'label'    => 'Distance du domicile à l\'établissement',
+							'column'   => 'etablissement_distance',
+							'type'     => 'number',
+							'operator' => '>=',
+							'min'      => 0,
+							'max'      => 10000,
+						],
+					],
+				],
 			],
 		];
 

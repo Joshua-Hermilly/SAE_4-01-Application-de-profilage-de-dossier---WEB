@@ -117,18 +117,7 @@ function creerTableau( headers, dossiers, isAdmin )
 			input.id   =  "cb"+dossiers[cptD][headers[0]];
 			input.type = "checkbox";
 
-			if (isEditGroupMode)
-			{
-				input.checked = dansGroupeCourant;
-			}
-			else if (isDossiersPage && hasAnyGroupColor)
-			{
-				input.disabled = true;
-				input.checked  = false;
-				input.classList.add('opacity-50');
-				input.classList.add('bg-secondary');
-				input.title = 'Candidat déjà dans un autre groupe';
-			}
+			if (isEditGroupMode) { input.checked = dansGroupeCourant; }
 			else
 			{
 				if ( sessionStorage.getItem( input.id ) === "selectionner"                                         ) { input.checked = true; }
@@ -159,17 +148,20 @@ function creerTableau( headers, dossiers, isAdmin )
 			iconVoir.dataset.groupeCouleur= couleurGrp;
 			iconVoir.dataset.groupeNote   = noteGroupe;
 
-			const iconEdit = document.createElement('i');
-			iconEdit.className = "bi bi-pencil-square border border-dark rounded-1 p-1 text-center";
-			iconEdit.style.cursor = 'pointer';
-			iconEdit.dataset.action        = 'modifier-groupe';
-			iconEdit.dataset.groupeId      = idGroupe;
-			iconEdit.dataset.groupeNom     = nomGroupe;
-			iconEdit.dataset.groupeCouleur = couleurGrp;
-			iconEdit.dataset.groupeNote    = noteGroupe;
-
 			container.appendChild(iconVoir);
-			container.appendChild(iconEdit);
+			
+			if (isAdmin)
+			{
+				const iconEdit = document.createElement('i');
+				iconEdit.className = "bi bi-pencil-square border border-dark rounded-1 p-1 text-center";
+				iconEdit.style.cursor = 'pointer';
+				iconEdit.dataset.action        = 'modifier-groupe';
+				iconEdit.dataset.groupeId      = idGroupe;
+				iconEdit.dataset.groupeNom     = nomGroupe;
+				iconEdit.dataset.groupeCouleur = couleurGrp;
+				iconEdit.dataset.groupeNote    = noteGroupe;
+				container.appendChild(iconEdit);
+			}
 			thEye.appendChild(container);
 			tr.appendChild(thEye);
 		}

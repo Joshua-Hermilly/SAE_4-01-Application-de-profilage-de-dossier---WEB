@@ -38,6 +38,22 @@ class FormationSupRepository
 
 	public function creates(array $formationSups)
 	{
+		if (empty($formationSups)) { return; }
+
+		$taillePartie = 500;
+		$total        = count($formationSups);
+
+		for ($offset = 0; $offset < $total; $offset += $taillePartie)
+		{
+			$partie = array_slice($formationSups, $offset, $taillePartie);
+			$this->insertChunk($partie);
+		}
+	}
+
+	private function insertChunk(array $formationSups): void
+	{
+		if (empty($formationSups)) { return; }
+
 		$valeurBrut = [];
 		$valeurBind = [];
 
@@ -55,32 +71,22 @@ class FormationSupRepository
 				VALUES " . implode(', ', $valeurBind) . "
 				RETURNING formation_id";
 
-		try {
-			$stmt = $this->pdo->prepare($sql);
+		$stmt = $this->pdo->prepare($sql);
 
-			for ($cpt = 0; $cpt < count($formationSups); $cpt++)
+		for ($cpt = 0; $cpt < count($formationSups); $cpt++)
+		{
+			$stmt->bindValue(":nom{$cpt}", $valeurBrut[":nom{$cpt}"]);
+			$stmt->bindValue(":lib{$cpt}", $valeurBrut[":lib{$cpt}"]);
+		}
+
+		$stmt->execute();
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		for ($cpt = 0; $cpt < count($formationSups); $cpt++)
+		{
+			if (isset($rows[$cpt]))
 			{
-				$stmt->bindValue(":nom{$cpt}", $valeurBrut[":nom{$cpt}"]);
-				$stmt->bindValue(":lib{$cpt}", $valeurBrut[":lib{$cpt}"]);
-			}
-
-			$stmt->execute();
-
-			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-			for ($cpt = 0; $cpt < count($formationSups); $cpt++)
-			{
-				if (isset($rows[$cpt]))
-				{
-					$formationSups[$cpt]->setFormationId((int) $rows[$cpt]['formation_id']);
-				}
-			}
-		} catch (PDOException $e) {
-			foreach ($formationSups as $formationSup) {
-				try {
-					$this->create($formationSup);
-				} catch (PDOException $ex) {
-					// Ignorer les doublons
-				}
+				$formationSups[$cpt]->setFormationId((int) $rows[$cpt]['formation_id']);
 			}
 		}
 	}

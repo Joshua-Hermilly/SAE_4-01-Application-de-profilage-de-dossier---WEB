@@ -7,5 +7,5 @@ if (btnExport) btnExport.addEventListener   ("click", () => changerPage("export.
 
 function changerPage(page)
 {
-	this.window.location.href = page;
+	window.location.href = page;
 }

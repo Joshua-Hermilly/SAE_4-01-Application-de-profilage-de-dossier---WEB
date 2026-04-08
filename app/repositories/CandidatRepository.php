@@ -56,6 +56,20 @@ class CandidatRepository
 	{
 		if (empty($candidats)) { return; }
 
+		$taillePartie = 500;
+		$total        = count($candidats);
+
+		for ($offset = 0; $offset < $total; $offset += $taillePartie)
+		{
+			$partie = array_slice($candidats, $offset, $taillePartie);
+			$this->insertChunk($partie);
+		}
+	}
+
+	private function insertChunk(array $candidats): void
+	{
+		if (empty($candidats)) { return; }
+
 		$valeurBrut = [];
 		$valeurBind = [];
 
