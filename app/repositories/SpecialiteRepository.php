@@ -47,14 +47,14 @@ class SpecialiteRepository
 		$taillePartie = 500;
 		$total        = count($specialites);
 
-		for ($offset = 0; $offset < $total; $offset += $taillePartie)
+		for ($cptSpe = 0; $cptSpe < $total; $cptSpe += $taillePartie)
 		{
-			$partie = array_slice($specialites, $offset, $taillePartie);
-			$this->insertChunk($partie);
+			$partie = array_slice($specialites, $cptSpe, $taillePartie);
+			$this->insererPartie($partie);
 		}
 	}
 
-	private function insertChunk(array $specialites): void
+	private function insererPartie(array $specialites): void
 	{
 		if (empty($specialites)) { return; }
 

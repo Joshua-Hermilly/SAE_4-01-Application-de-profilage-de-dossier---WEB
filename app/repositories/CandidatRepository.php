@@ -59,14 +59,14 @@ class CandidatRepository
 		$taillePartie = 500;
 		$total        = count($candidats);
 
-		for ($offset = 0; $offset < $total; $offset += $taillePartie)
+		for ($cptCdt = 0; $cptCdt < $total; $cptCdt += $taillePartie)
 		{
-			$partie = array_slice($candidats, $offset, $taillePartie);
-			$this->insertChunk($partie);
+			$partie = array_slice($candidats, $cptCdt, $taillePartie);
+			$this->insererPartie($partie);
 		}
 	}
 
-	private function insertChunk(array $candidats): void
+	private function insererPartie(array $candidats): void
 	{
 		if (empty($candidats)) { return; }
 

@@ -54,14 +54,14 @@ class DiplomeRepository
 		$taillePartie = 500;
 		$total        = count($diplomes);
 
-		for ($offset = 0; $offset < $total; $offset += $taillePartie)
+		for ($cptDpl = 0; $cptDpl < $total; $cptDpl += $taillePartie)
 		{
-			$partie = array_slice($diplomes, $offset, $taillePartie);
-			$this->insertChunk($partie);
+			$partie = array_slice($diplomes, $cptDpl, $taillePartie);
+			$this->insererPartie($partie);
 		}
 	}
 
-	private function insertChunk(array $diplomes): void
+	private function insererPartie(array $diplomes): void
 	{
 		if (empty($diplomes)) { return; }
 
