@@ -25,7 +25,7 @@ class DossierFiltreService
 		$config = [
 			'title'    => 'Filtres des dossiers',
 			'sections' => [
-				'anneee' => [
+				'annee' => [
 					'label'   => 'Année',
 					'filters' => [
 						[

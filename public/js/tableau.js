@@ -27,6 +27,33 @@ const isDossiersPage  = currentPath.includes("dossiers.php"  );
 
 let filtresCourant = {};
 
+// Métadonnées spécifiques à la page (modes groupe + filtres par défaut)
+const metadataEl = document.getElementById('page-metadata');
+let defaultFilters = null;
+let editGroupMode  = false;
+let viewGroupMode  = false;
+let editGroupId    = null;
+
+if (metadataEl)
+{
+	const rawDefault = metadataEl.dataset.defaultFilters;
+	if (rawDefault)
+	{
+		try      { defaultFilters = JSON.parse(rawDefault); }
+		catch(e) { console.error('Erreur lors du parsing de defaultFilters :', e); }
+	}
+
+	editGroupMode = metadataEl.dataset.editGroupMode === '1';
+	viewGroupMode = metadataEl.dataset.viewGroupMode === '1';
+	editGroupId   = metadataEl.dataset.editGroupId || null;
+
+	// Expose éventuellement sur window pour d'autres scripts
+	window.editGroupMode  = editGroupMode;
+	window.viewGroupMode  = viewGroupMode;
+	window.editGroupId    = editGroupId;
+	window.defaultFilters = defaultFilters;
+}
+
 
 /*------------------------*/
 /* Fonctions              */
@@ -80,8 +107,8 @@ function creerTableau( headers, dossiers, isAdmin )
 		// Informations de groupe pour la ligne courante
 		const couleurBrute      = (dossiers[cptD]['Couleur'] || dossiers[cptD]['groupe_couleur'] || '').toLowerCase();
 		const ligneGroupeId     = dossiers[cptD]['groupe_id'] ?? null;
-		const isEditGroupMode   = !!window.editGroupMode;
-		const currentEditGroup  = typeof window.editGroupId !== 'undefined' ? window.editGroupId : null;
+		const isEditGroupMode   = !!editGroupMode;
+		const currentEditGroup  = editGroupId !== null ? editGroupId : null;
 		const hasAnyGroupColor  = couleurBrute !== '' && couleurBrute !== '#dedede';
 		const dansGroupeCourant = isDossiersPage && ligneGroupeId !== null && String(ligneGroupeId) === String(currentEditGroup);
 
@@ -339,10 +366,10 @@ function chargerPage(indexPage, filters = filtresCourant)
 function initialiserTableau()
 {
 	// on enlève le filtre de distance pour éviter de fausser l'affichage total avec ceux qui n'ont pas de distance
-	if (typeof isDossiersPage !== 'undefined' && isDossiersPage) { sessionStorage.removeItem('distance'); }
+	if (isDossiersPage) { sessionStorage.removeItem('distance'); }
 
-	const preset = (typeof window.defaultFilters !== 'undefined' && window.defaultFilters) ? window.defaultFilters : null;
-	if (preset && Object.keys(preset).length > 0)
+	const preset = (defaultFilters && Object.keys(defaultFilters).length > 0) ? defaultFilters : null;
+	if (preset)
 	{
 		filtresCourant = { ...filtresCourant, ...preset };
 
@@ -362,30 +389,17 @@ function initialiserTableau()
 				else
 				{
 					const field = filterForm.querySelector(`[name="${key}"]`);
-					if (field) { field.value = value; continue; }
+					if (field)
+					{
+						field.value = value;
+						continue;
+					}
 				}
 			}
 		}
 
 		chargerPage(1, filtresCourant);
 		return;
-	}
-
-	if (isDossiersPage)
-	{
-		const params    = new URLSearchParams(window.location.search);
-		const nomGroupe = params.get('nom_groupe') || params.get('groupe');
-		if (nomGroupe)
-		{
-			filtresCourant = { ...filtresCourant, nom_groupe: nomGroupe };
-			if (filterForm)
-			{
-				const select = filterForm.querySelector('[name="nom_groupe"]');
-				if (select) { select.value = nomGroupe; }
-			}
-			chargerPage(1, filtresCourant);
-			return;
-		}
 	}
 
 	chargerPage(1);

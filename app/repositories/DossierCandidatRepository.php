@@ -107,6 +107,12 @@ class DossierCandidatRepository
 			$params[':civilite'] = $filters['civilite'];
 		}
 
+		if (!empty($filters['annee']))
+		{
+			$conditions[] = 'C.candidat_annee = :annee';
+			$params[':annee'] = $filters['annee'];
+		}
+
 		if (isset($filters['boursier']) && ($filters['boursier'] !== '' || $filters['boursier'] === '0'))
 		{
 			$conditions[] = 'C.candidat_boursier_code = :boursier';

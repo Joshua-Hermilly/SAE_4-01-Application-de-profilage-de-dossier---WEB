@@ -11,8 +11,6 @@ document.addEventListener("DOMContentLoaded", function ()
     {
         const speLabel = document.querySelector('[data-filter-name="specialite_spe"] > p');
         const speBlock = document.getElementById("specialite-checkboxes-specialite_spe");
-
-        console.log(speLabel)
         if (speLabel) speLabel.style.display = "none";
         if (speBlock) speBlock.style.display = "none";
 

@@ -4,12 +4,12 @@ require_once '../app/repositories/DossierCandidatRepository.php';
 
 class DossierInfoService
 {
-	public function getInfos($filterConfig): array
+	public function getInfos(array $filters = []): array
 	{
 
 		$dossierCandidatRepo = new DossierCandidatRepository();
-		$nombreCandidats = $dossierCandidatRepo->nbMaxDossier($filterConfig);
-		$anneesPossibles = $dossierCandidatRepo->findAnnees($filterConfig);
+		$nombreCandidats = $dossierCandidatRepo->nbMaxDossier($filters);
+		$anneesPossibles = $dossierCandidatRepo->findAnnees  ($filters);
 
 		return $config = [
 			'nbEtu'    => $nombreCandidats,

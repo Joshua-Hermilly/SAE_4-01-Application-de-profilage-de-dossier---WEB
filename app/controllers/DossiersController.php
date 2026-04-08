@@ -16,8 +16,8 @@ class DossiersController extends Controller
 		$filtreService = new DossierFiltreService();
 		$filterConfig  = $filtreService->buildFilterConfig();
 
-		$infoService   = new DossierInfoService($filterConfig);
-		$infoConfig    = $infoService->getInfos($filterConfig);
+		$infoService   = new DossierInfoService();
+		$infoConfig    = $infoService->getInfos([]);
 
 		$editGroupId    = isset($_GET['groupe_id']) ? (int) $_GET['groupe_id'] : null;
 		$editGroupName  = $_GET['groupe'] ?? $_GET['nom_groupe'] ?? null;

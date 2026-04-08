@@ -1,7 +1,6 @@
 <?php
 
 require_once '../app/repositories/CritereRepository.php';
-require_once '../app/repositories/GroupeRepository.php';
 require_once '../app/repositories/FiltreRepository.php';
 
 class GroupeFiltreService
@@ -10,7 +9,6 @@ class GroupeFiltreService
 	/*  Repositories                 */
 	/*-------------------------------*/
 	private CritereRepository $critereRepository;
-	private GroupeRepository  $groupeRepository;
 	private FiltreRepository  $filtreRepository;
 
 	/*-------------------------------*/
@@ -19,7 +17,6 @@ class GroupeFiltreService
 	public function __construct()
 	{
 		$this->critereRepository = new CritereRepository();
-		$this->groupeRepository  = new GroupeRepository();
 		$this->filtreRepository  = new FiltreRepository();
 	}
 
@@ -28,29 +25,9 @@ class GroupeFiltreService
 	/*-------------------------------*/
 	public function buildFilterConfig(): array
 	{
-		$criteres   = $this->critereRepository->findAll();
 		$noteBounds = $this->critereRepository->getGlobalMinMax();
-		$nomsGroupe = $this->groupeRepository ->getDistinctNames();
-
-		$critereOptions = [];
-		foreach ($criteres as $critere)
-		{
-			$label = $critere->getCritereLibelle();
-			$value = $critere->getCritereFiltre();
-			if ($label === null || $label === '' || $value === null || $value === '') { continue; }
-			$critereOptions[$value] = $label;
-		}
-
-		$minNote = $noteBounds['min'] ?? 0;
-		$maxNote = $noteBounds['max'] ?? 20;
-
-		$nomOptions = [];
-		foreach ($nomsGroupe as $nom)
-		{
-			$trimmed = trim((string) $nom);
-			if ($trimmed === '') { continue; }
-			$nomOptions[$trimmed] = $trimmed;
-		}
+		$minNote   = $noteBounds['min'] ?? 0;
+		$maxNote   = $noteBounds['max'] ?? 20;
 
 		$config = [
 			'title'    => 'Filtres des groupes',
@@ -63,7 +40,7 @@ class GroupeFiltreService
 							'label'       => 'Nom du groupe',
 							'column'      => 'GROUPE.groupe_nom',
 							'type'        => 'select',
-							'options'     => $nomOptions,
+							'options'     => [],
 						],
 					],
 				],

@@ -31,6 +31,14 @@
 
 {% block content %}
 
+	{# Métadonnées de page pour le JS (modes groupe + filtres par défaut) #}
+	<div id="page-metadata"
+	     data-default-filters="{{ defaultFilters|json_encode|e('html_attr') }}"
+	     data-edit-group-mode="{{ editGroupMode ? '1' : '0' }}"
+	     data-view-group-mode="{{ viewGroupMode ? '1' : '0' }}"
+	     data-edit-group-id="{{ editGroupId is not null ? editGroupId : '' }}">
+	</div>
+
 	{# Sidebar filtre (gauche, caché par défaut) #}
 	{% include 'components/content/assets/filter_open.html.twig'
 		with
@@ -39,13 +47,6 @@
 		sections: filterConfig.sections | default([])
 		}
 	%}
-
-	{# Valeurs de filtres par défaut pour un groupe (voir / éditer) #}
-	{% if defaultFilters is defined %}
-		<script>
-			window.defaultFilters = {{ defaultFilters|json_encode|raw }};
-		</script>
-	{% endif %}
 
 	{# Contenu principal (toolbar + tableau) #}
 	<div id="main-content" class="d-flex h-100 p-2 flex-column overflow-hidden">	
