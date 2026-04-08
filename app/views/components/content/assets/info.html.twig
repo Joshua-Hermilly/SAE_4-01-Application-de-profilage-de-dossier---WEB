@@ -3,7 +3,7 @@
 		<p class="mb-0 text-primary fw-semibold flex-shrink-0">Année(s) sélectionnée(s) :</p>
 		<p id="AnneesSelect" class="info-dates mb-0 text-light w-100">
 			{% if date is iterable %}
-				{{ date|join("\t")|default('Aucune') }}
+				{{ date|join("-")|default('Aucune') }}
 			{% else %}
 				{{ date|default('Aucune') }}
 			{% endif %}
