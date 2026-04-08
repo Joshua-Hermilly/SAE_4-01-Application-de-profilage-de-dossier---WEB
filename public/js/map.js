@@ -13,36 +13,36 @@ const vue        = 6;
 /*------------------------*/
 /* VARIABLES              */
 /*------------------------*/
-let   map            = null;
-let   localisations = [];
-let   makCluster     = null;
+let map           = null;
+let makCluster    = null;
+let localisations = [];
 
 /*------------------------*/
 /* INITIALISER LA CARTE   */
 /*------------------------*/
 function initMap()
 {
-    if (map !== null) {	return; }
+	if (map !== null) {	return; }
 
-    // MAP
-    map = L.map('map').setView([latHavre, lonHavre], vue);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        maxZoom: 19
-    }).addTo(map);
+	// MAP
+	map = L.map('map').setView([latHavre, lonHavre], vue);
+	L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+	{
+		attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+		maxZoom: 19
+	}).addTo(map);
 
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-    {
-        maxZoom: 19
-    }).addTo(map);
+	L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+	{
+		maxZoom: 19
+	}).addTo(map);
 
 }
 
 function initSide( max )
 {
-    scDist.min = 1;
-    scDist.max = max;
+	scDist.min = 1;
+	scDist.max = max;
 }
 
 /*------------------------*/
@@ -50,43 +50,40 @@ function initSide( max )
 /*------------------------*/
 async function getCarte(distance)
 {
-    try
-    {
-        const response = await fetch('./carte.php?distance=' + distance,
-        {
-            method: 'GET',
-            headers:
-            {
-                'Token'       : 'SAE-4.01_WEB_TOKEN',
-                'Content-Type': 'application/json'
-            }
-        });
+	try
+	{
+		const response = await fetch('./carte.php?distance=' + distance,
+		{
+			method: 'GET',
+			headers:
+			{
+				'Token'       : 'SAE-4.01_WEB_TOKEN',
+				'Content-Type': 'application/json'
+			}
+		});
 
-        if (!response.ok) {  throw new Error(`Erreur HTTP ${response.status}`);  }
+		if (!response.ok) {  throw new Error(`Erreur HTTP ${response.status}`);  }
 
-        const donnees = await response.json();
-        if (donnees.erreur) { console.error('Erreur API:', donnees.erreur); return; }
+		const donnees = await response.json();
+		if (donnees.erreur) { console.error('Erreur API:', donnees.erreur); return; }
 
-        console.log(donnees);
+		console.log(donnees);
 
-        initSide(donnees.max_distance);
+		initSide(donnees.max_distance);
 
-        if (makCluster)
-        {
-            makCluster.clearLayers();
-            map.removeLayer(makCluster);
-        }
-        makCluster = L.markerClusterGroup().addTo(map);
+		if (makCluster)
+		{
+			makCluster.clearLayers();
+			map.removeLayer(makCluster);
+		}
+		makCluster = L.markerClusterGroup().addTo(map);
 
-        if (Array.isArray(donnees.etablissements) && donnees.etablissements.length > 0)
-        {
-            donnees.etablissements.forEach(etablissement =>
-            {
-                ajouterMarqueur(etablissement);
-            });
-        }
+		if (Array.isArray(donnees.etablissements) && donnees.etablissements.length > 0)
+		{
+			donnees.etablissements.forEach(etablissement => { ajouterMarqueur(etablissement); });
+		}
 
-    } catch (error) {  console.error('Erreur api -- getCarte:', error); }
+	} catch (error) {  console.error('Erreur api -- getCarte:', error); }
 }
 
 /*------------------------*/
@@ -94,45 +91,41 @@ async function getCarte(distance)
 /*------------------------*/
 function ajouterMarqueur(etablissement)
 {
-    const lat = etablissement.etablissement_latitude;
-    const lon = etablissement.etablissement_longitude;
+	const lat = etablissement.etablissement_latitude;
+	const lon = etablissement.etablissement_longitude;
 
-    // Coordonnées ?
-    if (lat === null || lon === null || (lat == 0 && lon == 0))
-    {
-        //console.warn(`Pas de coordonnées pour: ${etablissement.etablissement_nom}`);
-        return;
-    }
+	// Coordonnées ?
+	if (lat === null || lon === null || (lat == 0 && lon == 0)) { return; }
 
-    const marker      = L.marker([lat, lon]);
-    const nomEtab     = etablissement.etablissement_nom        ;
-    const codePostal  = etablissement.etablissement_code_postal;
-    const commune     = etablissement.etablissement_commune    ;
-    const nb_candidat = etablissement.nb_candidats             ;
+	const marker      = L.marker([lat, lon]);
+	const nb_candidat = etablissement.nb_candidats             ;
+	const nomEtab     = etablissement.etablissement_nom        ;
+	const commune     = etablissement.etablissement_commune    ;
+	const codePostal  = etablissement.etablissement_code_postal;
 
-    makCluster.addLayer(marker);
-    marker.bindPopup
-    (`
-        <p><strong>${nomEtab}</strong></p>
-        <p>${codePostal} ${commune}</p>
-        <p><strong>Nombre d'étudiants : </strong>${nb_candidat}</p>
-    `);
+	makCluster.addLayer(marker);
+	marker.bindPopup
+	(`
+		<p><strong>${nomEtab}</strong></p>
+		<p>${codePostal} ${commune}</p>
+		<p><strong>Nombre d'étudiants : </strong>${nb_candidat}</p>
+	`);
 }
 
 /*------------------------*/
 /* ÉVÉNEMENTS             */
 /*------------------------*/
-initMap ();
+initMap (  );
 getCarte(-1);
 
 
 btnDst.addEventListener('click', () =>
 {
-    sessionStorage.setItem('distance', scDist.value);
-    getCarte(scDist.value);
+	sessionStorage.setItem('distance', scDist.value);
+	getCarte(scDist.value);
 })
 
 scDist.addEventListener('input', () =>
 {
-   txtDst.textContent = "Distance : " + scDist.value + " Km.";
+	txtDst.textContent = "Distance : " + scDist.value + " Km.";
 });
