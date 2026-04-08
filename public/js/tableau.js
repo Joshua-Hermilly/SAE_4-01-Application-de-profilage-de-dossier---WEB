@@ -267,7 +267,11 @@ function selectionFaite(event)
 async function getData( indexPage, lien, filters = filtresCourant )
 {
 	const distance = sessionStorage.getItem('distance');
-	if (distance) { filters.distance = distance; }
+	if (distance)
+	{
+		filters.max = distance;
+		filters.min = 1;
+	}
 
 	try
 	{
@@ -402,8 +406,6 @@ attacherPagination();
 tableau.addEventListener("click", (event) =>
 {
 	const target = event.target;
-
-	// Gestion des actions liées aux groupes (page groupes)
 	if (target instanceof HTMLElement && target.dataset && target.dataset.action)
 	{
 		const action        = target.dataset.action;
