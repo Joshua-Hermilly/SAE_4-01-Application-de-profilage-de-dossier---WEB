@@ -103,10 +103,12 @@
 
 					<div class="d-grid gap-2 mt-3">
 						<button type="submit" class="btn btn-primary">Appliquer</button>
-						{% if pageActive == 'dossiers' %}
-						<button type="button" class="btn btn-outline-light" id="btnCreerGroupe" data-action="creer-groupe">Créer un groupe</button>
-						{% else %}
-						<button type="button" class="btn btn-outline-light" id="btnSupr" data-action="suppr-groupe">Supprimer Groupe</button>
+						{% if isAdmin %}
+							{% if pageActive == 'dossiers' %}
+							<button type="button" class="btn btn-outline-light" id="btnCreerGroupe" data-action="creer-groupe">Créer un groupe</button>
+							{% else %}
+							<button type="button" class="btn btn-outline-light" id="btnSupr" data-action="suppr-groupe">Supprimer Groupe</button>
+							{% endif %}
 						{% endif %}
 					</div>
 				</form>

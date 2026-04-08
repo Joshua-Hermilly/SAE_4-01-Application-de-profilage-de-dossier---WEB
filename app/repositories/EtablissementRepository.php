@@ -93,8 +93,10 @@ public function creates(array $etablissements): void
 			VALUES " . implode(', ', $values) . "
 			RETURNING etablissement_id";
 
-	try {
+	try
+	{
 		$stmt = $this->pdo->prepare($sql);
+
 		foreach ($valeurBind as $key => $value)
 		{
 			$stmt->bindValue($key, $value);
@@ -107,14 +109,15 @@ public function creates(array $etablissements): void
 			$etablissements[$cpt]->setEtablissementId((int) $row['etablissement_id']);
 			$cpt++;
 		}
-	} catch (PDOException $e) {
-		// En cas d'erreur (ex: doublon), insérer un par un
-		foreach ($etablissements as $etablissement) {
-			try {
+	} catch (PDOException $e)
+	{
+		foreach ($etablissements as $etablissement)
+		{
+			try
+			{
 				$this->create($etablissement);
-			} catch (PDOException $ex) {
-				// Ignorer les doublons
 			}
+			catch (PDOException $ex) {}
 		}
 	}
 }
