@@ -27,7 +27,7 @@ const isDossiersPage  = currentPath.includes("dossiers.php"  );
 
 let filtresCourant = {};
 
-// Métadonnées spécifiques à la page (modes groupe + filtres par défaut)
+// Métadonnées spécifiques à la page
 const metadataEl = document.getElementById('page-metadata');
 let defaultFilters = null;
 let editGroupMode  = false;
@@ -45,13 +45,7 @@ if (metadataEl)
 
 	editGroupMode = metadataEl.dataset.editGroupMode === '1';
 	viewGroupMode = metadataEl.dataset.viewGroupMode === '1';
-	editGroupId   = metadataEl.dataset.editGroupId || null;
-
-	// Expose éventuellement sur window pour d'autres scripts
-	window.editGroupMode  = editGroupMode;
-	window.viewGroupMode  = viewGroupMode;
-	window.editGroupId    = editGroupId;
-	window.defaultFilters = defaultFilters;
+	editGroupId   = metadataEl.dataset.editGroupId     || null;
 }
 
 
