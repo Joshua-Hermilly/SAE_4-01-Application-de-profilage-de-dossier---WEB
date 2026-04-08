@@ -43,6 +43,7 @@ function initSide( max )
 {
 	scDist.min = 1;
 	scDist.max = max;
+	if ( scDist.classList.contains( "true") ) { scDist.value = max; }
 }
 
 /*------------------------*/
@@ -67,7 +68,7 @@ async function getCarte(distance)
 		const donnees = await response.json();
 		if (donnees.erreur) { console.error('Erreur API:', donnees.erreur); return; }
 
-		console.log(donnees);
+		//console.log(donnees);
 
 		initSide(donnees.max_distance);
 
