@@ -62,8 +62,7 @@ CREATE TABLE SPECIALITE
 	specialite_spe1   VARCHAR(255),
 	specialite_spe2   VARCHAR(255),
 	specialite_spe3   VARCHAR(255),
-	specialite_speAbd VARCHAR(255),
-	CONSTRAINT specialite_unique UNIQUE (specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_spe3, specialite_speAbd)
+	specialite_speAbd VARCHAR(255)
 );
 
 -- Table DIPLOME (FK vers SPECIALITE)
@@ -75,7 +74,6 @@ CREATE TABLE DIPLOME
 	diplome_serie_code    VARCHAR(255),
 	diplome_serie_libelle VARCHAR(255),
 	specialite_id         INT NOT NULL,
-	CONSTRAINT diplome_unique UNIQUE (diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle, specialite_id),
 	FOREIGN KEY (specialite_id) REFERENCES SPECIALITE (specialite_id)
 );
 
@@ -84,8 +82,7 @@ CREATE TABLE FORMATION_SUP
 (
 	formation_id  SERIAL PRIMARY KEY,
 	formation_nom VARCHAR(255) NULL,
-	formation_lib VARCHAR(255) NULL,
-	CONSTRAINT formation_sup_unique UNIQUE (formation_nom, formation_lib)
+	formation_lib VARCHAR(255) NULL
 );
 
 -- Table CANDIDAT

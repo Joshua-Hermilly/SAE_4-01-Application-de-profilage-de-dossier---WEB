@@ -69,9 +69,6 @@ class FormationSupRepository
 		$sql = "INSERT INTO FORMATION_SUP
 				(formation_nom, formation_lib)
 				VALUES " . implode(', ', $valeurBind) . "
-				ON CONFLICT ON CONSTRAINT formation_sup_unique DO UPDATE SET
-					formation_nom = EXCLUDED.formation_nom,
-					formation_lib = EXCLUDED.formation_lib
 				RETURNING formation_id";
 
 		$stmt = $this->pdo->prepare($sql);

@@ -77,13 +77,6 @@ class SpecialiteRepository
 		$sql = "INSERT INTO SPECIALITE
 				(specialite_opt1, specialite_opt2, specialite_spe1, specialite_spe2, specialite_spe3, specialite_speabd)
 				VALUES " . implode(', ', $valeurBind) . "
-				ON CONFLICT ON CONSTRAINT specialite_unique DO UPDATE SET
-					specialite_opt1   = EXCLUDED.specialite_opt1,
-					specialite_opt2   = EXCLUDED.specialite_opt2,
-					specialite_spe1   = EXCLUDED.specialite_spe1,
-					specialite_spe2   = EXCLUDED.specialite_spe2,
-					specialite_spe3   = EXCLUDED.specialite_spe3,
-					specialite_speAbd = EXCLUDED.specialite_speAbd
 				RETURNING specialite_id";
 
 		$stmt = $this->pdo->prepare($sql);

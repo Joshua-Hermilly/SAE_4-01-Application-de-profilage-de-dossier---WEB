@@ -83,12 +83,6 @@ class DiplomeRepository
 		$sql = "INSERT INTO DIPLOME
 				(diplome_type_code, diplome_type_libelle, diplome_serie_code, diplome_serie_libelle, specialite_id)
 				VALUES " . implode(', ', $valeurBind) . "
-				ON CONFLICT ON CONSTRAINT diplome_unique DO UPDATE SET
-					diplome_type_code     = EXCLUDED.diplome_type_code,
-					diplome_type_libelle  = EXCLUDED.diplome_type_libelle,
-					diplome_serie_code    = EXCLUDED.diplome_serie_code,
-					diplome_serie_libelle = EXCLUDED.diplome_serie_libelle,
-					specialite_id         = EXCLUDED.specialite_id
 				RETURNING diplome_id";
 
 		$stmt = $this->pdo->prepare($sql);
