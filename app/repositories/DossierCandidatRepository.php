@@ -1,6 +1,7 @@
 <?php
 require_once '../app/core/Repository.php';
 require_once '../app/entities/DossierCandidat.php';
+require_once '../app/repositories/EtablissementRepository.php';
 
 class DossierCandidatRepository
 {
@@ -98,7 +99,7 @@ class DossierCandidatRepository
 			           . "LEFT JOIN GROUPE        AS G ON G.groupe_id        = C.groupe_id       \n";
 
 		$conditions = [];
-		$params = [];
+		$params     = [];
 
 		if (!empty($filters['civilite']))
 		{
@@ -193,15 +194,28 @@ class DossierCandidatRepository
 			}
 		}
 
-		if (isset($filters['distance_min']) && $filters['distance_min'] !== '' && $filters['distance_min'] !== null)
-		{
-			$conditions[] = 'E.etablissement_distance >= :distance_min';
-			$params[':distance_min'] = (float) $filters['distance_min'];
-		}
+		$appliquerFiltreDistance = true;
 		if (isset($filters['distance_max']) && $filters['distance_max'] !== '' && $filters['distance_max'] !== null)
 		{
-			$conditions[] = 'E.etablissement_distance <= :distance_max';
-			$params[':distance_max'] = (float) $filters['distance_max'];
+			$distanceMaxFiltre = (float) $filters['distance_max'];
+			$etabRepo          = new EtablissementRepository();
+			$distanceMaxRepo   = (float) $etabRepo->findMaxDistance();
+
+			if (round($distanceMaxFiltre) >= round($distanceMaxRepo)) { $appliquerFiltreDistance = false; }
+		}
+
+		if ($appliquerFiltreDistance)
+		{
+			if (isset($filters['distance_min']) && $filters['distance_min'] !== '' && $filters['distance_min'] !== null)
+			{
+				$conditions[] = 'E.etablissement_distance >= :distance_min';
+				$params[':distance_min'] = (float) $filters['distance_min'];
+			}
+			if (isset($filters['distance_max']) && $filters['distance_max'] !== '' && $filters['distance_max'] !== null)
+			{
+				$conditions[] = 'E.etablissement_distance <= :distance_max';
+				$params[':distance_max'] = (float) $filters['distance_max'];
+			}
 		}
 
 		if (!empty($conditions)) { $sql .= 'WHERE ' . implode(' AND ', $conditions) . "\n"; }
