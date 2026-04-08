@@ -275,7 +275,7 @@ class ImportService
 
 		$spe1 = trim(($parties[0] ?? '')) ?: null;
 		$spe2 = trim(($parties[1] ?? '')) ?: null;
-		$spe3 = trim(($parties[3] ?? '')) ?: null;
+		$spe3 = trim(($parties[2] ?? '')) ?: null;
 
 		$specialite = new Specialite
 		(

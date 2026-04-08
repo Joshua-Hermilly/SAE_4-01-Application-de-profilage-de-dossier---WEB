@@ -116,6 +116,7 @@ class DossierGetController extends Controller
 			'Diplome'              ,
 			'Spécicalite 1'        ,
 			'Spécicalite 2'        ,
+			'Spécicalite 3'        ,
 			'Couleur'
 		];
 	}

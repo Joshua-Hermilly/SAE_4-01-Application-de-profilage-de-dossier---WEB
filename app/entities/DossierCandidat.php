@@ -24,6 +24,7 @@ class DossierCandidat implements JsonSerializable
 		// Specialite
 		private ?string $specicalite_spe1,
 		private ?string $specicalite_spe2,
+		private ?string $specicalite_spe3,
 
 		// Groupe
 		private ?string $groupe_couleur = "#dedede",
@@ -48,6 +49,7 @@ class DossierCandidat implements JsonSerializable
 			'Diplome'              ,
 			'Spécicalite 1'        ,
 			'Spécicalite 2'        ,
+			'Spécicalite 3'        ,
 			'Couleur'
 		];
 	}
@@ -71,6 +73,7 @@ class DossierCandidat implements JsonSerializable
 			'Diplome'              => $this->diplome_libelle       ,
 			'Spécicalite 1'        => $this->specicalite_spe1      ,
 			'Spécicalite 2'        => $this->specicalite_spe2      ,
+			'Spécicalite 3'        => $this->specicalite_spe3      ,
 				'Couleur'              => $this->groupe_couleur        ,
 				'groupe_id'            => $this->groupe_id             ,
 				'groupe_nom'           => $this->groupe_nom            ,
