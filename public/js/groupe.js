@@ -21,7 +21,6 @@ function getSelectedCodes()
 
 function initCreationGroupe()
 {
-	// Bouton création de groupe (présent sur la page dossiers)
 	const btnCreerGroupe = document.getElementById('btnCreerGroupe');
 	if (btnCreerGroupe)
 	{
@@ -43,12 +42,12 @@ function initCreationGroupe()
 		});
 	}
 
-	const createGroupForm = document.getElementById('createGroupForm');
-	if (createGroupForm)
+	const formulaireCreationGroupe = document.getElementById('createGroupForm');
+	if (formulaireCreationGroupe)
 	{
-		createGroupForm.addEventListener('submit', async (event) =>
+		formulaireCreationGroupe.addEventListener('submit', async (evenement) =>
 		{
-			event.preventDefault();
+			evenement.preventDefault();
 
 			const errorDiv = document.getElementById('createGroupError');
 			if (errorDiv)
@@ -57,20 +56,27 @@ function initCreationGroupe()
 				errorDiv.textContent = '';
 			}
 
-			const nomInput     = document.getElementById('createGroupNom');
-			const couleurInput = document.getElementById('createGroupCouleur');
-			const noteInput    = document.getElementById('createGroupNote');
+			const boutonCreerGroupe = document.querySelector('#createGroupModal .modal-footer button[type="submit"]');
+			const definirEtatSoumission = (enCours) =>
+			{
+				if (!boutonCreerGroupe) { return; }
+				boutonCreerGroupe.disabled = enCours;
+			};
 
-			const nom     = nomInput ? nomInput.value.trim() : '';
-			const couleur = couleurInput && couleurInput.value ? couleurInput.value : '#FF8800';
-			const noteStr = noteInput ? noteInput.value : '';
-			const note    = noteStr !== '' ? parseFloat(noteStr) : null;
-			const codes   = getSelectedCodes();
-			const filters = (typeof filtresCourant !== 'undefined' && Object.keys(filtresCourant).length)
+			const champNom     = document.getElementById('createGroupNom');
+			const champCouleur = document.getElementById('createGroupCouleur');
+			const champNote    = document.getElementById('createGroupNote');
+
+			const nomGroupe = champNom ? champNom.value.trim() : '';
+			const couleur   = champCouleur && champCouleur.value ? champCouleur.value : '#FF8800';
+			const texteNote = champNote ? champNote.value : '';
+			const note      = texteNote !== '' ? parseFloat(texteNote) : null;
+			const codes     = getSelectedCodes();
+			const filtres   = (typeof filtresCourant !== 'undefined' && Object.keys(filtresCourant).length)
 				? filtresCourant
 				: (typeof serialiserFiltres === 'function' ? serialiserFiltres() : {});
 
-			if (!nom)
+			if (!nomGroupe)
 			{
 				if (errorDiv)
 				{
@@ -99,24 +105,26 @@ function initCreationGroupe()
 				}
 				return;
 			}
+			definirEtatSoumission(true);
 
 			try
 			{
-				const response = await fetch('./creerGroupe.php',
+				const reponse = await fetch('./creerGroupe.php',
 				{
 					method : 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ nom, couleur, note_dossier: note, codes, filters })
+					body   : JSON.stringify({ nom: nomGroupe, couleur, note_dossier: note, codes, filters: filtres })
 				});
 
-				const data = await response.json();
-				if (!response.ok || !data.success)
+				const donnees = await reponse.json();
+				if (!reponse.ok || !donnees.success)
 				{
 					if (errorDiv)
 					{
-						errorDiv.textContent = data.message || 'Erreur lors de la création du groupe.';
+						errorDiv.textContent = donnees.message || 'Erreur lors de la création du groupe.';
 						errorDiv.classList.remove('d-none');
 					}
+					definirEtatSoumission(false);
 					return;
 				}
 
@@ -129,14 +137,15 @@ function initCreationGroupe()
 					if (instance) { instance.hide(); }
 				}
 			}
-			catch (e)
+			catch (erreur)
 			{
-				console.error('Erreur lors de la création du groupe :', e);
+				console.error('Erreur lors de la création du groupe :', erreur);
 				if (errorDiv)
 				{
 					errorDiv.textContent = 'Erreur inattendue lors de la création du groupe.';
 					errorDiv.classList.remove('d-none');
 				}
+				definirEtatSoumission(false);
 			}
 		});
 	}
@@ -184,10 +193,7 @@ function initEditionGroupe()
 
 	if (btnCancel)
 	{
-		btnCancel.addEventListener('click', () =>
-		{
-			window.location.href = 'groupes.php';
-		});
+		btnCancel.addEventListener('click', () => { window.location.href = 'groupes.php'; });
 	}
 
 	if (btnSave)

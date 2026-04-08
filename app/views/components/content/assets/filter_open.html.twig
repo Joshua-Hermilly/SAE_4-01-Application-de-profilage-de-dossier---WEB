@@ -114,10 +114,10 @@
 				{# Modale de création de groupe #}
 				<div class="modal fade" id="createGroupModal" tabindex="-1" aria-labelledby="createGroupModalLabel" aria-hidden="true">
 					<div class="modal-dialog modal-dialog-centered">
-						<div class="modal-content">
-							<div class="modal-header">
+						<div class="modal-content bg-dark text-light">
+							<div class="modal-header border-secondary">
 								<h5 class="modal-title" id="createGroupModalLabel">Créer un groupe</h5>
-								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+								<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
 							</div>
 							<div class="modal-body">
 								<div id="createGroupError" class="alert alert-danger d-none" role="alert"></div>
@@ -125,23 +125,23 @@
 
 								<form id="createGroupForm">
 									<div class="mb-3">
-										<label for="createGroupNom" class="form-label">Nom du groupe</label>
+										<label for="createGroupNom" class="form-label text-light">Nom du groupe</label>
 										<input type="text" class="form-control" id="createGroupNom" name="nom" placeholder="Ex : Groupe A" required>
 									</div>
 
 									<div class="mb-3">
-										<label for="createGroupCouleur" class="form-label">Couleur</label>
+										<label for="createGroupCouleur" class="form-label text-light">Couleur</label>
 										<input type="color" class="form-control form-control-color" id="createGroupCouleur" name="couleur" value="#FF8800" title="Choisissez une couleur">
 									</div>
 
 									<div class="mb-3">
-										<label for="createGroupNote" class="form-label">Note dossier (optionnel)</label>
+										<label for="createGroupNote" class="form-label text-light">Note dossier (optionnel)</label>
 										<input type="number" class="form-control" id="createGroupNote" name="note_dossier" min="0" max="20" step="0.1" placeholder="Ex : 15">
-										<div class="form-text">Permet de définir une note de référence pour ce groupe.</div>
+										<div class="form-text text-secondary">Permet de définir une note de référence pour ce groupe.</div>
 									</div>
 								</form>
 							</div>
-							<div class="modal-footer">
+							<div class="modal-footer border-secondary">
 								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
 								<button type="submit" form="createGroupForm" class="btn btn-primary">Créer le groupe</button>
 							</div>
