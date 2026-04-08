@@ -1,20 +1,22 @@
 /*------------------------*/
-/* Gestion des groupes    */
+/* Fonctions              */
 /*------------------------*/
-
 function getSelectedCodes()
 {
-	const codes  = [];
-	const inputs = document.querySelectorAll('input.cb');
+	const codes   = [];
+	const cbTous  = sessionStorage.getItem('cbTous') === 'true';
 
-	inputs.forEach((input) =>
+	if ( cbTous ) { codes.push('*'); }
+
+	for (let cpt = 0; cpt< sessionStorage.length; cpt++)
 	{
-		if (input.id === 'cbTous' || input.disabled) { return; }
-		if (!input.checked) { return; }
+		const key = sessionStorage.key( cpt );
+		if (key === 'cbTous') { continue; }
 
-		const code = input.id.replace(/^cb/, '');
-		if (code) { codes.push(code); }
-	});
+		const value = sessionStorage.getItem(key);
+		if      ( value === 'selectionner'   || cbTous ) { codes.push( key       ); }
+		else if ( value === 'désélectionner' && cbTous ) { codes.push( '!' + key ); }
+	}
 
 	return codes;
 }
@@ -30,9 +32,24 @@ function initCreationGroupe()
 			const info  = document.getElementById('createGroupSelectionInfo');
 			if (info)
 			{
-				info.textContent = codes.length === 0
-					? "Aucun dossier sélectionné. Sélectionnez au moins un dossier."
-					: codes.length + " dossier(s) sélectionné(s).";
+				if (codes.length === 0)
+				{
+					info.textContent = 'Aucun dossier sélectionné.';
+				}
+				else if (codes.includes('*') && ! codes.includes('!'))
+				{
+					info.textContent = 'Tous les dossiers sont sélectionnés.';
+				}
+				else if (codes.includes('*') && codes.filter(c => c.startsWith('!')).length > 0)
+				{
+					const deselectionnes = codes.filter(c => c.startsWith('!')).map(c => c.substring(1));
+					info.textContent = `Tous les dossiers sont sélectionnés sauf : ${deselectionnes.join(', ')}.`;
+				}
+				else
+				{
+					const deselectionnes = codes.filter(c => c.startsWith('!')).map(c => c.substring(1)).length;
+					info.textContent = `Il y a ${codes.length - deselectionnes} dossier(s) sélectionné(s).`;
+				}
 			}
 
 			const modalEl = document.getElementById('createGroupModal');
@@ -63,9 +80,9 @@ function initCreationGroupe()
 				boutonCreerGroupe.disabled = enCours;
 			};
 
-			const champNom     = document.getElementById('createGroupNom');
+			const champNom     = document.getElementById('createGroupNom'    );
 			const champCouleur = document.getElementById('createGroupCouleur');
-			const champNote    = document.getElementById('createGroupNote');
+			const champNote    = document.getElementById('createGroupNote'   );
 
 			const nomGroupe = champNom ? champNom.value.trim() : '';
 			const couleur   = champCouleur && champCouleur.value ? champCouleur.value : '#FF8800';
@@ -113,7 +130,8 @@ function initCreationGroupe()
 				{
 					method : 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body   : JSON.stringify({ nom: nomGroupe, couleur, note_dossier: note, codes, filters: filtres })
+					body   : JSON.stringify
+					({ nom: nomGroupe, couleur, note_dossier: note, codes, filters: filtres })
 				});
 
 				const donnees = await reponse.json();
@@ -188,7 +206,6 @@ function initEditionGroupe()
 	const noteInput  = document.getElementById('editGroupNote');
 	const errorDiv   = document.getElementById('editGroupError');
 
-	// Si les éléments d'édition ne sont pas présents, on ne fait rien
 	if (!btnSave || !btnCancel || !nameInput || !colorInput || !noteInput) { return; }
 
 	if (btnCancel)
@@ -279,7 +296,29 @@ function initEditionGroupe()
 	}
 }
 
-document.addEventListener('DOMContentLoaded', () =>
+/*------------------------*/
+/* Fetch                  */
+/*------------------------*/
+function creerGroupe(nom, couleur, note, codes, filtres)
+{
+
+}
+
+function modifierGroupe(groupeId, nom, couleur, note, codes, filtres)
+{
+
+}
+
+function supprimerGroupes(groupesId)
+{
+
+}
+
+
+/*------------------------*/
+/* Event                  */
+/*------------------------*/
+window.addEventListener( 'load' , () =>
 {
 	if (typeof isDossiersPage !== 'undefined' && isDossiersPage)
 	{

@@ -24,9 +24,6 @@ class GroupeService
 		$this->GroupeRepository = new GroupeRepository();
 	}
 
-	/**
-	 * Retourne un groupe par son id (ou null s'il n'existe pas).
-	 */
 	public function findById(int $id): ?Groupe
 	{
 		return $this->GroupeRepository->findById($id);
@@ -57,7 +54,6 @@ class GroupeService
 
 		try
 		{
-			// Forcer la note éventuelle dans l'intervalle [0,20]
 			if ($noteDossier !== null)
 			{
 				$noteDossier = max(0.0, min(20.0, $noteDossier));
@@ -102,9 +98,7 @@ class GroupeService
 				throw new RuntimeException('Groupe introuvable');
 			}
 
-			// Si aucun nouveau nom n'est fourni, on conserve le nom actuel
 			$finalNom = ($nom !== '') ? $nom : $groupe->getGroupeNom();
-			// Forcer la note éventuelle dans l'intervalle [0,20]
 			if ($noteDossier !== null)
 			{
 				$noteDossier = max(0.0, min(20.0, $noteDossier));
@@ -118,7 +112,6 @@ class GroupeService
 			$filtreRepo   = new FiltreRepository();
 			$candidatRepo = new CandidatRepository();
 
-			// Réinitialiser les critères liés au groupe puis les reconstruire à partir des filtres actuels
 			$filtreRepo->deleteByGroupeId($groupeId);
 			$criteres = $this->buildCriteresFromFilters($filters);
 			foreach ($criteres as $critere)
@@ -127,7 +120,6 @@ class GroupeService
 				$filtreRepo->linkGroupToCritere($groupeId, $critere->getCritereId());
 			}
 
-			// Synchroniser les candidats du groupe
 			$candidatRepo->removeGroupAssignmentsExcept($groupeId, $codes);
 			if (!empty($codes)) { $candidatRepo->assignGroupToCodes($groupeId, $codes); }
 

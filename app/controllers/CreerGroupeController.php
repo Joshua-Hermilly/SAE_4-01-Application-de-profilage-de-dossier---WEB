@@ -49,7 +49,8 @@ class CreerGroupeController extends Controller
 			$service = new GroupeService();
 			$groupe  = $service->creerGroupeDepuisSelection($nom, $couleur, $note, $codes, $filters);
 
-			$this->json([
+			$this->json
+			([
 				'success' => true,
 				'message' => 'Groupe créé avec succès',
 				'groupe'  => $groupe->__serialize(),
@@ -57,7 +58,8 @@ class CreerGroupeController extends Controller
 		}
 		catch (Throwable $e)
 		{
-			$this->json([
+			$this->json
+			([
 				'success' => false,
 				'message' => 'Erreur lors de la création du groupe.',
 			], 500);

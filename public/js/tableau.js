@@ -269,7 +269,6 @@ async function getData( indexPage, lien, filters = filtresCourant )
 	const distance = sessionStorage.getItem('distance');
 	if (distance)
 	{
-		// Filtre de distance : de 0 jusqu'à la valeur du slider
 		filters.distance_min = 0;
 		filters.distance_max = Number(distance);
 	}
@@ -338,7 +337,6 @@ function chargerPage(indexPage, filters = filtresCourant)
 
 function initialiserTableau()
 {
-	// on enlève le filtre de distance pour éviter de fausser l'affichage total avec ceux qui n'ont pas de distance
 	if (typeof isDossiersPage !== 'undefined' && isDossiersPage) { sessionStorage.removeItem('distance'); }
 
 	const preset = (typeof window.defaultFilters !== 'undefined' && window.defaultFilters) ? window.defaultFilters : null;
