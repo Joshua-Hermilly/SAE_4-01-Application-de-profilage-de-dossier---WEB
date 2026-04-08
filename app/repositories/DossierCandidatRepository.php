@@ -34,6 +34,7 @@ class DossierCandidatRepository
 			$row['diplome_serie_code'],
 			$row['specialite_spe1'],
 			$row['specialite_spe2'],
+			$row['specialite_spe3'],
 			$row['groupe_couleur'],
 			isset($row['groupe_id' ]) ? (int) $row['groupe_id' ] : null,
 			$row['groupe_nom'] ?? null,
@@ -88,7 +89,7 @@ class DossierCandidatRepository
 	{
 		$select = $count
 			? 'SELECT COUNT(*)'
-			: 'SELECT C.candidat_code, C.candidat_civilite, C.candidat_boursier_code, C.candidat_note_lycee, C.candidat_note_fiche, C.candidat_note_globale, E.etablissement_nom, D.diplome_serie_code, S.specialite_spe1, S.specialite_spe2, G.groupe_couleur, G.groupe_id, G.groupe_nom';
+			: 'SELECT C.candidat_code, C.candidat_civilite, C.candidat_boursier_code, C.candidat_note_lycee, C.candidat_note_fiche, C.candidat_note_globale, E.etablissement_nom, D.diplome_serie_code, S.specialite_spe1, S.specialite_spe2, S.specialite_spe3, G.groupe_couleur, G.groupe_id, G.groupe_nom';
 
 		$sql = $select . " FROM CANDIDAT AS C\n"
 			           . "LEFT JOIN ETABLISSEMENT AS E ON E.etablissement_id = C.etablissement_id\n"
@@ -138,14 +139,29 @@ class DossierCandidatRepository
 		if (!empty($filters['specialite_spe']))
 		{
 			$specialites = is_array($filters['specialite_spe']) ? $filters['specialite_spe'] : [$filters['specialite_spe']];
-			$specialiteParts = [];
+			$conditionsSpecialitesObligatoires = [];
+			$paramsListeAutorisee             = [];
+
 			foreach ($specialites as $index => $specialite)
 			{
-				$param = ':specialite_' . $index;
-				$specialiteParts[] = "(COALESCE(S.specialite_opt1, '') = $param OR COALESCE(S.specialite_opt2, '') = $param OR COALESCE(S.specialite_spe1, '') = $param OR COALESCE(S.specialite_spe2, '') = $param OR COALESCE(S.specialite_spe3, '') = $param OR COALESCE(S.specialite_speabd, '') = $param)";
-				$params[$param] = $specialite;
+				$paramObligatoire = ':specialite_obligatoire_' . $index;
+				$conditionsSpecialitesObligatoires[] = "(S.specialite_spe1 = $paramObligatoire OR S.specialite_spe2 = $paramObligatoire OR S.specialite_spe3 = $paramObligatoire)";
+				$params[$paramObligatoire] = $specialite;
+
+				$paramAutorisee   = ':specialite_autorisee_' . $index;
+				$paramsListeAutorisee[] = $paramAutorisee;
+				$params[$paramAutorisee] = $specialite;
 			}
-			$conditions[] = '(' . implode(' OR ', $specialiteParts) . ')';
+
+			if (!empty($conditionsSpecialitesObligatoires))
+			{
+				$listeIn = implode(', ', $paramsListeAutorisee);
+				$conditionListeAutorisee = "( (S.specialite_spe1 IS NULL OR S.specialite_spe1 IN ($listeIn))"
+					                       . " AND (S.specialite_spe2 IS NULL OR S.specialite_spe2 IN ($listeIn))"
+					                       . " AND (S.specialite_spe3 IS NULL OR S.specialite_spe3 IN ($listeIn)) )";
+
+				$conditions[] = '(' . $conditionListeAutorisee . ' AND ' . implode(' AND ', $conditionsSpecialitesObligatoires) . ')';
+			}
 		}
 
 		if (!empty($filters['specialite_opt']))
