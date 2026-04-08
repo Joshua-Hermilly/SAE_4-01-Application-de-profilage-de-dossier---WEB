@@ -14,5 +14,5 @@ if (btnCreerCompte) btnCreerCompte.addEventListener("click", () => changerPage("
 
 function changerPage(page)
 {
-	this.window.location.href = page;
+	window.location.href = page;
 }
