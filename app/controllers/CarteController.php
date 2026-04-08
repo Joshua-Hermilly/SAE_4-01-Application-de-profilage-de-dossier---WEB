@@ -29,10 +29,11 @@ class CarteController extends Controller
 
 		if ( $distance !== null )
 		{
-			$max = $serviceCarte->getMaxDistance();
+			$max = round((float) $serviceCarte->getMaxDistance());
 
-			if ( $distance == -1 )
+			if ( $distance == -1 || $distance == $max)
 			{
+				
 				$this->json([
 					'etablissements' => $serviceCarte->findAll(),
 					'max_distance'   => $serviceCarte->getMaxDistance(),
