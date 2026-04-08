@@ -262,7 +262,7 @@ async function getData( indexPage, lien, filters = filtresCourant )
 			const infoDates = document.getElementById('AnneesSelect');
 			if (infoDates)
 			{
-				infoDates.textContent = donnees.annees.length > 0 ? donnees.annees.join("\t") : 'Aucune';
+				infoDates.textContent = donnees.annees.length > 0 ? donnees.annees.join("-") : 'Aucune';
 			}
 		}
 
