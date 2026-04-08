@@ -266,10 +266,10 @@ function selectionFaite(event)
 /*------------------------*/
 async function getData( indexPage, lien, filters = filtresCourant )
 {
+	//console.log(sessionStorage)
 	const distance = sessionStorage.getItem('distance');
 	if (distance)
 	{
-		// Filtre de distance : de 0 jusqu'à la valeur du slider
 		filters.distance_min = 0;
 		filters.distance_max = Number(distance);
 	}
