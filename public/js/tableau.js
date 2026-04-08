@@ -117,21 +117,7 @@ function creerTableau( headers, dossiers, isAdmin )
 			input.id   =  "cb"+dossiers[cptD][headers[0]];
 			input.type = "checkbox";
 
-			if (isEditGroupMode)
-			{
-				// En mode édition de groupe, les candidats du groupe courant sont cochés,
-				// les autres (sans groupe) sont décochés et modifiables.
-				input.checked = dansGroupeCourant;
-			}
-			else if (isDossiersPage && hasAnyGroupColor)
-			{
-				// Hors mode édition, un candidat déjà dans un groupe n'est pas sélectionnable
-				input.disabled = true;
-				input.checked  = false;
-				input.classList.add('opacity-50');
-				input.classList.add('bg-secondary');
-				input.title = 'Candidat déjà dans un autre groupe';
-			}
+			if (isEditGroupMode) { input.checked = dansGroupeCourant; }
 			else
 			{
 				if ( sessionStorage.getItem( input.id ) === "selectionner"                                         ) { input.checked = true; }
