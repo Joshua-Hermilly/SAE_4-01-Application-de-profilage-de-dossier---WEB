@@ -26,10 +26,17 @@ function initMap()
 
     // MAP
     map = L.map('map').setView([latHavre, lonHavre], vue);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
         attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
         maxZoom: 19
     }).addTo(map);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+    {
+        maxZoom: 19
+    }).addTo(map);
+
 }
 
 function initSide( max )
@@ -127,5 +134,5 @@ btnDst.addEventListener('click', () =>
 
 scDist.addEventListener('input', () =>
 {
-   txtDst.textContent = scDist.value;
+   txtDst.textContent = scDist.value + " Km.";
 });
