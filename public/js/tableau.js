@@ -264,6 +264,7 @@ function selectionFaite(event)
 /*------------------------*/
 async function getData( indexPage, lien, filters = filtresCourant )
 {
+	//console.log(sessionStorage)
 	const distance = sessionStorage.getItem('distance');
 	if (distance)
 	{
