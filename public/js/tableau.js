@@ -269,8 +269,9 @@ async function getData( indexPage, lien, filters = filtresCourant )
 	const distance = sessionStorage.getItem('distance');
 	if (distance)
 	{
-		filters.max = distance;
-		filters.min = 1;
+		// Filtre de distance : de 0 jusqu'à la valeur du slider
+		filters.distance_min = 0;
+		filters.distance_max = Number(distance);
 	}
 
 	try
@@ -448,6 +449,9 @@ if (filterForm)
 		if (bouton && bouton.dataset && bouton.dataset.action === 'creer-groupe') { return; }
 
 		event.preventDefault();
+
+		const sliderDistance = document.getElementById('scDist');
+		if (sliderDistance && sliderDistance.value !== '') { sessionStorage.setItem('distance', sliderDistance.value); }
 		filtresCourant = serialiserFiltres();
 		chargerPage(1, filtresCourant);
 	});
