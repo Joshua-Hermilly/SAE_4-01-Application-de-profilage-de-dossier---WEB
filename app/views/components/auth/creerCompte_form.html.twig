@@ -1,0 +1,51 @@
+<div class="container mt-5 d-flex align-items-center justify-content-center">
+	<div class="row justify-content-center w-100">
+		<div class="col-md-6">
+
+			<div id="block-register" class="card">
+				<div class="card-body body p-4">
+					<h2 id="text-title" class="card-title">Créer un compte</h2>
+
+					{% if errors %}
+						<div class="alert alert-danger text-start">
+							<ul>
+								{% for error in errors %}
+									<li >{{ error }}</li>
+								{% endfor %}
+							</ul>
+						</div>
+					{% endif %}
+
+					<form method="POST" action="creerCompte.php">
+						<div id="form-spacing" class="mb-3">
+							<label id="text-title" for="compte_identifiant" class="form-label">Identifiant</label>
+							<input type="text" class="form-control" id="compte_identifiant" name="compte_identifiant" placeholder="Entrez votre identifiant" value="{{ oldData.compte_identifiant|default('') }}" required>
+						</div>
+
+						<div id="form-spacing" class="mb-3">
+							<label id="text-title" for="compte_mdp" class="form-label">Mot de passe</label>
+							<input type="password" class="form-control" id="compte_mdp" name="compte_mdp" placeholder="Entrez votre mot de passe" required>
+						</div>
+
+						<div id="form-spacing" class="mb-3">
+							<label id="text-title" for="compte_mdp_confirm" class="form-label">Confirmer le mot de passe</label>
+							<input type="password" class="form-control" id="compte_mdp_confirm" name="compte_mdp_confirm" placeholder="Entrez à nouveau votre mot de passe" required>
+						</div>
+
+						<div id="form-spacing" class="mb-3">
+							<div class="form-check d-flex justify-content-center align-items-center gap-2">
+								<input class="form-check-input" type="checkbox" id="compte_admin" name="compte_admin" value="1" {% if oldData.compte_admin|default(false) %}checked{% endif %}>
+								<label class="form-check-label" for="compte_admin">Admin</label>
+							</div>
+						</div>
+
+						<hr id="divider">
+
+						<button id="btn-action" class="btn btn-login w-100" type="submit">Créer le compte</button>
+					</form>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>

@@ -1,0 +1,348 @@
+/*------------------------*/
+/* Fonctions              */
+/*------------------------*/
+function getSelectedCodes()
+{
+	const codes  = [];
+	const cbTous = sessionStorage.getItem('cbTous') === 'selectionner';
+
+	if ( cbTous ) { codes.push('*'); }
+
+	for (let cpt = 0; cpt < sessionStorage.length; cpt++)
+	{
+		const cle = sessionStorage.key(cpt);
+		if (cle === 'cbTous') { continue; }
+
+		const etat = sessionStorage.getItem(cle);
+		if      (etat === 'selectionner'   || cbTous) { codes.push(      cle); }
+		else if (etat === 'désélectionner' && cbTous) { codes.push('!' + cle); }
+	}
+
+	return codes;
+}
+
+function initCreationGroupe()
+{
+	const btnCreerGroupe = document.getElementById('btnCreerGroupe');
+	if (btnCreerGroupe)
+	{
+		btnCreerGroupe.addEventListener('click', () =>
+		{
+			const codes = getSelectedCodes();
+			const info  = document.getElementById('createGroupSelectionInfo');
+			if (info)
+			{
+				const modeTous   = codes.includes('*');
+				const exclus     = codes.filter(c => typeof c === 'string' && c.startsWith('!'));
+				const nbExclus   = exclus.length;
+				const nbTotal    = codes.length - (modeTous ? 1 : 0) - nbExclus;
+
+				if (codes.length === 0)
+				{
+					info.textContent = 'Aucun dossier sélectionné.';
+				}
+				else if (modeTous && nbExclus === 0)
+				{
+					info.textContent = 'Tous les dossiers sont sélectionnés.';
+				}
+				else if (modeTous && nbExclus > 0)
+				{
+					const deselectionnes = exclus.map(c => c.substring(1));
+					info.textContent = 'Tous les dossiers sont sélectionnés sauf : ' + deselectionnes.join(', ') + '.';
+				}
+				else
+				{
+					info.textContent = 'Il y a ' + nbTotal + ' dossier(s) sélectionné(s).';
+				}
+			}
+
+			const modalEl = document.getElementById('createGroupModal');
+			if (!modalEl || typeof bootstrap === 'undefined') { return; }
+			const modal = new bootstrap.Modal(modalEl);
+			modal.show();
+		});
+	}
+
+	const formulaireCreationGroupe = document.getElementById('createGroupForm');
+	if (formulaireCreationGroupe)
+	{
+		formulaireCreationGroupe.addEventListener('submit', async (evenement) =>
+		{
+			evenement.preventDefault();
+
+			const errorDiv = document.getElementById('createGroupError');
+			if (errorDiv)
+			{
+				errorDiv.classList.add('d-none');
+				errorDiv.textContent = '';
+			}
+
+			const boutonCreerGroupe = document.querySelector('#createGroupModal .modal-footer button[type="submit"]');
+			const definirEtatSoumission = (enCours) =>
+			{
+				if (!boutonCreerGroupe) { return; }
+				boutonCreerGroupe.disabled = enCours;
+			};
+
+			const champNom     = document.getElementById('createGroupNom'    );
+			const champCouleur = document.getElementById('createGroupCouleur');
+			const champNote    = document.getElementById('createGroupNote'   );
+
+			const nomGroupe = champNom ? champNom.value.trim() : '';
+			const couleur   = champCouleur && champCouleur.value ? champCouleur.value : '#FF8800';
+			const texteNote = champNote ? champNote.value : '';
+			const note      = texteNote !== '' ? parseFloat(texteNote) : null;
+			const codes     = getSelectedCodes();
+			const filtres   = (typeof filtresCourant !== 'undefined' && Object.keys(filtresCourant).length)
+				? filtresCourant
+				: (typeof serialiserFiltres === 'function' ? serialiserFiltres() : {});
+
+			if (!nomGroupe)
+			{
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'Le nom du groupe est obligatoire.';
+					errorDiv.classList.remove('d-none');
+				}
+				return;
+			}
+
+			if (note !== null && (note < 0 || note > 20))
+			{
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'La note doit être comprise entre 0 et 20.';
+					errorDiv.classList.remove('d-none');
+				}
+				return;
+			}
+
+			if (!codes.length)
+			{
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'Aucun dossier sélectionné. Sélectionnez au moins un dossier pour créer un groupe.';
+					errorDiv.classList.remove('d-none');
+				}
+				return;
+			}
+			definirEtatSoumission(true);
+
+			try
+			{
+				const resultat = await creerGroupe(nomGroupe, couleur, note, codes, filtres);
+				const donnees  = resultat.donnees;
+				if (!resultat.ok || !donnees || !donnees.success)
+				{
+					if (errorDiv)
+					{
+						errorDiv.textContent = (donnees && donnees.message) ? donnees.message : 'Erreur lors de la création du groupe.';
+						errorDiv.classList.remove('d-none');
+					}
+					definirEtatSoumission(false);
+					return;
+				}
+
+				window.location.reload();
+
+				const modalEl = document.getElementById('createGroupModal');
+				if (modalEl && typeof bootstrap !== 'undefined')
+				{
+					const instance = bootstrap.Modal.getInstance(modalEl);
+					if (instance) { instance.hide(); }
+				}
+			}
+			catch (erreur)
+			{
+				console.error('Erreur lors de la création du groupe :', erreur);
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'Erreur inattendue lors de la création du groupe.';
+					errorDiv.classList.remove('d-none');
+				}
+				definirEtatSoumission(false);
+			}
+		});
+	}
+}
+
+function initSuppressionGroupe()
+{
+	const btnSupr = document.getElementById('btnSupr');
+	if (!btnSupr) { return; }
+
+	btnSupr.addEventListener('click', async () =>
+	{
+		const groupesId = getSelectedCodes();
+
+		if (groupesId.length === 0) { alert('Aucun élément sélectionné.'); return; }
+
+		if (!confirm('Voulez-vous vraiment supprimer les éléments sélectionnés ?')) { return; }
+
+		try
+		{
+			await supprimerGroupes(groupesId);
+			window.location.reload();
+		}
+		catch (e) { console.error('Erreur lors de la suppression :', e); }
+	});
+}
+
+function initEditionGroupe()
+{
+	const btnSave    = document.getElementById('btnEditGroupSave');
+	const btnCancel  = document.getElementById('btnEditGroupCancel');
+	const nameInput  = document.getElementById('editGroupNom');
+	const colorInput = document.getElementById('editGroupCouleur');
+	const noteInput  = document.getElementById('editGroupNote');
+	const errorDiv   = document.getElementById('editGroupError');
+
+	if (!btnSave || !btnCancel || !nameInput || !colorInput || !noteInput) { return; }
+
+	if (btnCancel)
+	{
+		btnCancel.addEventListener('click', () => { window.location.href = 'groupes.php'; });
+	}
+
+	if (btnSave)
+	{
+		btnSave.addEventListener('click', async () =>
+		{
+			if (errorDiv)
+			{
+				errorDiv.classList.add('d-none');
+				errorDiv.textContent = '';
+			}
+
+			const nom     = nameInput  ? nameInput.value.trim() : '';
+			const couleur = colorInput && colorInput.value ? colorInput.value : '#FF8800';
+			const noteStr = noteInput  ? noteInput.value : '';
+			const note    = noteStr !== '' ? parseFloat(noteStr) : null;
+			const codes   = getSelectedCodes();
+			const filters = (typeof filtresCourant !== 'undefined' && Object.keys(filtresCourant).length)
+				? filtresCourant
+				: (typeof serialiserFiltres === 'function' ? serialiserFiltres() : {});
+			const hiddenIdEl = document.getElementById('editGroupId');
+			const groupeId   = hiddenIdEl && hiddenIdEl.value ? Number(hiddenIdEl.value) : (typeof window.editGroupId !== 'undefined' ? Number(window.editGroupId) : 0);
+
+			if (!nom)
+			{
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'Le nom du groupe est obligatoire.';
+					errorDiv.classList.remove('d-none');
+				}
+				return;
+			}
+
+			if (note !== null && (note < 0 || note > 20))
+			{
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'La note doit être comprise entre 0 et 20.';
+					errorDiv.classList.remove('d-none');
+				}
+				return;
+			}
+
+			try
+			{
+					const resultatMaj = await modifierGroupe(groupeId, nom, couleur, note, codes, filters);
+					const data        = resultatMaj.donnees;
+				if (!resultatMaj.ok || !data || !data.success)
+				{
+					if (errorDiv)
+					{
+						errorDiv.textContent = (data && data.message) ? data.message : 'Erreur lors de la mise à jour du groupe.';
+						errorDiv.classList.remove('d-none');
+					}
+					return;
+				}
+
+				window.location.href = 'groupes.php';
+			}
+			catch (e)
+			{
+				console.error('Erreur lors de la mise à jour du groupe :', e);
+				if (errorDiv)
+				{
+					errorDiv.textContent = 'Erreur inattendue lors de la mise à jour du groupe.';
+					errorDiv.classList.remove('d-none');
+				}
+			}
+		});
+	}
+}
+
+/*------------------------*/
+/* Fetch                  */
+/*------------------------*/
+function creerGroupe(nom, couleur, note, codes, filtres)
+{
+	return fetch('./creerGroupe.php',
+	{
+		method : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body   : JSON.stringify({ nom: nom, couleur: couleur, note_dossier: note, codes: codes, filters: filtres })
+	})
+	.then(function(reponse)
+	{
+		return reponse.json().then(function(donnees)
+		{
+			return { ok: reponse.ok, donnees: donnees };
+		});
+	});
+}
+
+function modifierGroupe(groupeId, nom, couleur, note, codes, filtres)
+{
+	return fetch('./modifierGroupe.php',
+	{
+		method : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body   : JSON.stringify({
+			groupe_id   : groupeId,
+			nom         : nom,
+			couleur     : couleur,
+			note_dossier: note,
+			codes       : codes,
+			filters     : filtres
+		})
+	})
+	.then(function(reponse)
+	{
+		return reponse.json().then(function(donnees)
+		{
+			return { ok: reponse.ok, donnees: donnees };
+		});
+	});
+}
+
+function supprimerGroupes(groupesId)
+{
+	return fetch('./supprimerGroupe.php',
+	{
+		method : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body   : JSON.stringify({ groupesId: groupesId })
+	})
+	.then(function(reponse)
+	{
+		return reponse.json().catch(function() { return null; });
+	});
+}
+
+
+/*------------------------*/
+/* Event                  */
+/*------------------------*/
+window.addEventListener( 'load' , () =>
+{
+	if (typeof isDossiersPage !== 'undefined' && isDossiersPage)
+	{
+		initCreationGroupe();
+		initEditionGroupe();
+	}
+	if (typeof isGroupePage   !== 'undefined' && isGroupePage  ) { initSuppressionGroupe(); }
+});
+

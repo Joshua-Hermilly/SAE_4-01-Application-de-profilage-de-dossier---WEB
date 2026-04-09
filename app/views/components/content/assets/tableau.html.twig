@@ -1,0 +1,30 @@
+{# Erreur lors du fetch #}
+<div id="erreur" class="card mb-5 alert alert-danger" style="display: none"></div>
+
+{# Tableau #}
+<div id="tableau" class="card"  style="display:none">
+	<div class="card table-responsive h-100">
+		<table  class="table" >
+			<thead class="table-dark" id="tHead">
+			<tr class="trHead" id="trHead"> </tr>
+			</thead>
+
+			<tbody class="table-group-divider" id="tBody">
+			</tbody>
+		</table>
+	</div>
+
+	<div id="card-footer" class="card-footer d-flex justify-content-between align-items-center bg-white">
+		<span class="text-muted small" id="pagination-info"></span>
+		<nav>
+			<div class="d-flex align-items-center pagination pagination-sm mb-0">
+				<button id="btnDeb"  class=" text-dark border rounded-start" disabled>Début</button>
+				<button id="btnPrc"  class=" text-dark border              " disabled>Précédent</button>
+				<div    id="pageAct" class="p-2 text-black"                          ></div>
+				<button id="btnSvt"  class=" text-dark border              " disabled>Suivant</button>
+				<button id="btnFin"  class=" text-dark border rounded-end  " disabled>Fin</button>
+			</div>
+		</nav>
+	</div>
+
+</div>

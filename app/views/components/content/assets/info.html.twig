@@ -1,0 +1,17 @@
+<div id="info" class="d-flex align-items-center justify-content-between bg-dark rounded-pill px-3 py-2 gap-3 h-100 align-self-stretch">
+	<div class="info-left d-flex flex-column justify-content-center gap-1 h-100">
+		<p class="mb-0 text-primary fw-semibold flex-shrink-0">Année(s) sélectionnée(s) :</p>
+		<p id="AnneesSelect" class="info-dates mb-0 text-light w-100">
+			{% if date is iterable %}
+				{{ date|join("-")|default('Aucune') }}
+			{% else %}
+				{{ date|default('Aucune') }}
+			{% endif %}
+		</p>
+	</div>
+
+	<div class="info-right d-flex flex-column justify-content-center gap-1 h-100 text-center">
+		<p class="mb-0 text-primary fw-semibold">Nombre de dossier(s) :</p>
+		<p id="nbEtu" class="mb-0 text-light">{{ nbEtu|default(0) }}</p>
+	</div>
+</div>

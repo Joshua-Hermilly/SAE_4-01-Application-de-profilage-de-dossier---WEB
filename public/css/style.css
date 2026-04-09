@@ -1,0 +1,191 @@
+:root {
+	--gris-fond-assets: #242423;
+	--gris-select-assets: #343533;
+	--noir-text-fond-claire: #000000;
+	--gris-text-fond-foncé: #CBD5F5;
+	--gris-fond-info-tab: #DEDEDE;
+	--bleu-icon: #699EFF;
+	--bleu-fond-faide: #2158BD;
+	--blanc: #FFFFFF;
+
+	/* Filtres */
+	--filter-bg: var(--gris-fond-assets);
+	--filter-border: var(--gris-select-assets);
+	--filter-text: var(--gris-text-fond-foncé);
+	--filter-button-bg: var(--gris-fond-assets);
+	--filter-button-hover: var(--gris-select-assets);
+}
+
+body,
+html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	font-family: 'IBM Plex Sans', sans-serif;
+	width: 100%;
+}
+
+#background {
+	background: linear-gradient(to bottom, var(--bleu-fond-faide) 0%, var(--gris-fond-assets) 93%);
+	display: flex;
+	flex-direction: column;
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+.main-header {
+	display: flex;
+	align-items: center;
+}
+
+#header-left {
+	display: flex;
+	align-items: center;
+	background-color: var(--gris-fond-assets);
+	border: 1px solid var(--gris-select-assets);
+	border-radius: 35px;
+	flex: 1;
+	min-height: 70px;
+}
+
+#bar-menu-text {
+	color: var(--gris-text-fond-foncé);
+	font-weight: bold;
+	font-size: 18px;
+}
+
+#header-right {
+	display: flex;
+	gap: 12px;
+	flex: 1;
+}
+
+#header-right button {
+	background: var(--gris-fond-assets);
+	color: var(--gris-text-fond-foncé);
+	border: 1px solid var(--gris-select-assets);
+	border-radius: 35px;
+	font-size: 16px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 70px;
+	width: 120px;
+}
+
+#header-right button:hover {
+	color: var(--gris-text-fond-foncé);
+	background: var(--gris-select-assets);
+}
+
+#header-right button.active {
+	color: var(--blanc);
+	font-weight: bold;
+	background: var(--gris-select-assets);
+	border: 2px solid var(--blanc);
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+
+#footer {
+	background-color: var(--gris-fond-assets);
+	color: var(--blanc);
+	font-size: 14px;
+	left: 0;
+	right: 0;
+}
+
+/* ============================================================
+   SCROLLBAR CUSTOMIZATION
+============================================================ */
+
+#filter-scroll {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	box-sizing: border-box;
+}
+
+#filter-scroll-inner {
+	height: calc(100% - 30px);
+	overflow-y: auto;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	padding-right: 8px;
+}
+
+#filter-scroll-inner::-webkit-scrollbar {
+	width: 10px;
+}
+
+#filter-scroll-inner::-webkit-scrollbar-track {
+	background: var(--gris-fond-assets);
+	border-radius: 6px;
+}
+
+#filter-scroll-inner::-webkit-scrollbar-thumb {
+	background: var(--gris-select-assets);
+	border-radius: 6px;
+	border: 2px solid transparent;
+	background-clip: content-box;
+}
+
+#filter-scroll-inner::-webkit-scrollbar-thumb:hover {
+	background: var(--gris-text-fond-foncé);
+}
+
+.filter-scroll::-webkit-scrollbar-thumb:hover {
+	background: var(--gris-text-fond-foncé);
+}
+
+/* ============================================================
+   Général
+============================================================ */
+
+#card-block {
+	background-color: var(--gris-fond-assets);
+	color: var(--blanc);
+	border: 1px solid var(--gris-select-assets);
+	border-radius: 15px;
+	text-align: center;
+	padding: 0 20px;
+	min-height: 70px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#text-title:hover {
+	color: var(--bleu-icon);
+	text-decoration: underline;
+}
+
+#text-title {
+	color: var(--blanc);
+}
+
+#section-title {
+	color: var(--bleu-icon);
+	text-align: center;
+	display: block;
+}
+
+#filter-title {
+	color: var(--gris-text-fond-foncé);
+	text-align: left;
+	display: block;
+}
+
+#filter_sidebar,
+#map_sidebar {
+	padding: 30px;
+}
+
+#filter_sidebar #card-block,
+#map_sidebar    #card-block {
+	min-height: 100%;
+}

@@ -1,0 +1,35 @@
+<div class="container mt-5 d-flex align-items-center justify-content-center">
+	<div class="row justify-content-center w-100">
+
+		<div  class="col-md-6" >
+
+			<div id="card-block" class="card">
+				<div class="card-body body p-4">
+					<h2 id="text-title" class="card-title">Exporter des données</h2>
+
+					{% if errors|default(false) %}
+						<div class="alert alert-danger text-start">
+							<ul>
+								{% for error in errors %}
+									<li>{{ error }}</li>
+								{% endfor %}
+							</ul>
+						</div>
+					{% endif %}
+
+					<form method="POST" action="export.php" enctype="multipart/form-data">
+						<div id="form-spacing" class="mb-3">
+							<label id="text-title" for="annee_promotion" class="form-label">Année de promotion :</label>
+								<input type="text" class="form-control" id="annee_promotion" name="annee_promotion" placeholder="Entrez l'année de promotion" required>
+						</div>
+
+						<hr id="divider">
+
+						<button id="btn-action" type="submit" class="btn btn-login w-100"> Exporter</button>
+					</form>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>

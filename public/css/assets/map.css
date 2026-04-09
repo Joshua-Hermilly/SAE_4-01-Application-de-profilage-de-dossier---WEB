@@ -1,0 +1,62 @@
+.map-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	background-color: #242423;
+	border: 1px solid #343533;
+	border-radius: 22px;
+	padding: 10px 20px;
+	margin-bottom: 15px;
+	width: fit-content;
+}
+
+.map-toolbar i {
+	font-size: 1.2rem;
+	color: #699EFF;
+}
+
+.map-toolbar button {
+	background: none;
+	border: none;
+	color: #699EFF;
+	cursor: pointer;
+	padding: 4px;
+	transition: all 0.2s ease;
+}
+
+.map-toolbar button:hover {
+	color: #FFFFFF;
+}
+
+/* MAP - Hauteur gérée par Bootstrap h-100 */
+#map {
+	width: 100%;
+	height: 100%;
+	border-radius: 8px;
+	overflow: hidden;
+	display: block;
+	background-color: #f0f0f0;
+}
+
+.leaflet-popup-content {
+	font-size: 0.9rem;
+	padding: 8px;
+}
+
+.leaflet-popup-content strong {
+	color: #333;
+	display: block;
+	margin-bottom: 4px;
+}
+
+#map_sidebar {
+	transition: width 0.3s ease, opacity 0.3s ease;
+}
+
+#map_sidebar.d-none {
+	width: 0 !important;
+}
+
+#map_close_bar {
+	flex: 0 0 auto;
+}
