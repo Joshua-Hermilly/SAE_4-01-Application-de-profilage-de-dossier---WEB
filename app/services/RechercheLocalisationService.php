@@ -100,9 +100,7 @@ class RechercheLocalisationService
 
 		$csvGeocode = curl_exec($ch);
 
-		if (curl_errno($ch)) {
-			return false;
-		}
+		if (curl_errno($ch)) { return false; }
 		return $csvGeocode;
 	}
 
@@ -123,13 +121,12 @@ class RechercheLocalisationService
 		curl_setopt($ch, CURLOPT_USERAGENT, 'SAE 401 Groupe 5');
 
 		$reponse = curl_exec($ch);
-		if (curl_errno($ch)) {
-			return false;
-		}
+		if (curl_errno($ch)) { return false; }
 
 		$resultats = json_decode($reponse, true);
 
-		if (!empty($resultats['features'])) {
+		if (!empty($resultats['features']))
+		{
 			return
 				[
 					'longitude' => $resultats['features'][0]['geometry']['coordinates'][0],
@@ -145,9 +142,7 @@ class RechercheLocalisationService
 	/*-------------------------------*/
 	public function parcoursTableau($csvBrut)
 	{
-		if (!$csvBrut) {
-			return;
-		}
+		if (!$csvBrut) { return; }
 
 		$fluxMemoire = fopen('php://temp', 'r+');
 		fwrite($fluxMemoire, $csvBrut);
@@ -157,25 +152,26 @@ class RechercheLocalisationService
 		$entetes        = fgetcsv($fluxMemoire, 0, $delimiteur, '"', "\\");
 		$colonnesCibles = ['Etablissement', 'Commune', 'Code Postale', 'Departement', 'Pays', 'longitude', 'latitude', 'result_status'];
 
-		while (($ligne = fgetcsv($fluxMemoire, 0, $delimiteur, '"', "\\")) !== false) {
-			if (count($entetes) === count($ligne)) {
+		while (($ligne = fgetcsv($fluxMemoire, 0, $delimiteur, '"', "\\")) !== false)
+		{
+			if (count($entetes) === count($ligne))
+			{
 				$etablissementActuel = array_combine($entetes, $ligne);
 				$attTableau          = [];
 
-				foreach ($colonnesCibles as $colonne) {
-					$attTableau[$colonne] = $etablissementActuel[$colonne] ?? null;
-				}
+				foreach ($colonnesCibles as $colonne) { $attTableau[$colonne] = $etablissementActuel[$colonne] ?? null; }
 
-				if ($attTableau['result_status'] === 'not-found' || empty($attTableau['latitude']) || $attTableau['Pays'] !== 'France') {
+				if ($attTableau['result_status'] === 'not-found' || empty($attTableau['latitude']) || $attTableau['Pays'] !== 'France')
+				{
 					$coordonnees = $this->appelerPhoton($attTableau['Commune'], $attTableau['Code Postale'], $attTableau['Pays']);
 
 					usleep(1000000);
-					if ($coordonnees) {
+					if ($coordonnees)
+					{
 						$attTableau['latitude'] = $coordonnees['latitude'];
 						$attTableau['longitude'] = $coordonnees['longitude'];
-					} else {
-						continue;
 					}
+					else { continue; }
 				}
 
 				$latitude  = (float) $attTableau['latitude'];
@@ -222,5 +218,4 @@ class RechercheLocalisationService
 
 		return round($R * $c, 2);
 	}
-
 }

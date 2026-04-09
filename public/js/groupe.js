@@ -1,20 +1,22 @@
 /*------------------------*/
-/* Gestion des groupes    */
+/* Fonctions              */
 /*------------------------*/
-
 function getSelectedCodes()
 {
 	const codes  = [];
-	const inputs = document.querySelectorAll('input.cb');
+	const cbTous = sessionStorage.getItem('cbTous') === 'selectionner';
 
-	inputs.forEach((input) =>
+	if ( cbTous ) { codes.push('*'); }
+
+	for (let cpt = 0; cpt < sessionStorage.length; cpt++)
 	{
-		if (input.id === 'cbTous' || input.disabled) { return; }
-		if (!input.checked) { return; }
+		const cle = sessionStorage.key(cpt);
+		if (cle === 'cbTous') { continue; }
 
-		const code = input.id.replace(/^cb/, '');
-		if (code) { codes.push(code); }
-	});
+		const etat = sessionStorage.getItem(cle);
+		if      (etat === 'selectionner'   || cbTous) { codes.push(      cle); }
+		else if (etat === 'désélectionner' && cbTous) { codes.push('!' + cle); }
+	}
 
 	return codes;
 }
@@ -30,9 +32,28 @@ function initCreationGroupe()
 			const info  = document.getElementById('createGroupSelectionInfo');
 			if (info)
 			{
-				info.textContent = codes.length === 0
-					? "Aucun dossier sélectionné. Sélectionnez au moins un dossier."
-					: codes.length + " dossier(s) sélectionné(s).";
+				const modeTous   = codes.includes('*');
+				const exclus     = codes.filter(c => typeof c === 'string' && c.startsWith('!'));
+				const nbExclus   = exclus.length;
+				const nbTotal    = codes.length - (modeTous ? 1 : 0) - nbExclus;
+
+				if (codes.length === 0)
+				{
+					info.textContent = 'Aucun dossier sélectionné.';
+				}
+				else if (modeTous && nbExclus === 0)
+				{
+					info.textContent = 'Tous les dossiers sont sélectionnés.';
+				}
+				else if (modeTous && nbExclus > 0)
+				{
+					const deselectionnes = exclus.map(c => c.substring(1));
+					info.textContent = 'Tous les dossiers sont sélectionnés sauf : ' + deselectionnes.join(', ') + '.';
+				}
+				else
+				{
+					info.textContent = 'Il y a ' + nbTotal + ' dossier(s) sélectionné(s).';
+				}
 			}
 
 			const modalEl = document.getElementById('createGroupModal');
@@ -63,9 +84,9 @@ function initCreationGroupe()
 				boutonCreerGroupe.disabled = enCours;
 			};
 
-			const champNom     = document.getElementById('createGroupNom');
+			const champNom     = document.getElementById('createGroupNom'    );
 			const champCouleur = document.getElementById('createGroupCouleur');
-			const champNote    = document.getElementById('createGroupNote');
+			const champNote    = document.getElementById('createGroupNote'   );
 
 			const nomGroupe = champNom ? champNom.value.trim() : '';
 			const couleur   = champCouleur && champCouleur.value ? champCouleur.value : '#FF8800';
@@ -109,19 +130,13 @@ function initCreationGroupe()
 
 			try
 			{
-				const reponse = await fetch('./creerGroupe.php',
-				{
-					method : 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body   : JSON.stringify({ nom: nomGroupe, couleur, note_dossier: note, codes, filters: filtres })
-				});
-
-				const donnees = await reponse.json();
-				if (!reponse.ok || !donnees.success)
+				const resultat = await creerGroupe(nomGroupe, couleur, note, codes, filtres);
+				const donnees  = resultat.donnees;
+				if (!resultat.ok || !donnees || !donnees.success)
 				{
 					if (errorDiv)
 					{
-						errorDiv.textContent = donnees.message || 'Erreur lors de la création du groupe.';
+						errorDiv.textContent = (donnees && donnees.message) ? donnees.message : 'Erreur lors de la création du groupe.';
 						errorDiv.classList.remove('d-none');
 					}
 					definirEtatSoumission(false);
@@ -166,16 +181,10 @@ function initSuppressionGroupe()
 
 		try
 		{
-			await fetch('./supprimerGroupe.php',
-			{
-				method : 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ groupesId })
-			});
-
+			await supprimerGroupes(groupesId);
 			window.location.reload();
 		}
-		catch (error) { console.error('Erreur lors de la suppression :', error); }
+		catch (e) { console.error('Erreur lors de la suppression :', e); }
 	});
 }
 
@@ -188,7 +197,6 @@ function initEditionGroupe()
 	const noteInput  = document.getElementById('editGroupNote');
 	const errorDiv   = document.getElementById('editGroupError');
 
-	// Si les éléments d'édition ne sont pas présents, on ne fait rien
 	if (!btnSave || !btnCancel || !nameInput || !colorInput || !noteInput) { return; }
 
 	if (btnCancel)
@@ -239,26 +247,13 @@ function initEditionGroupe()
 
 			try
 			{
-				const response = await fetch('./modifierGroupe.php',
-				{
-					method : 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body   : JSON.stringify({
-						groupe_id   : groupeId,
-						nom         : nom,
-						couleur     : couleur,
-						note_dossier: note,
-						codes       : codes,
-						filters     : filters
-					})
-				});
-
-				const data = await response.json();
-				if (!response.ok || !data.success)
+					const resultatMaj = await modifierGroupe(groupeId, nom, couleur, note, codes, filters);
+					const data        = resultatMaj.donnees;
+				if (!resultatMaj.ok || !data || !data.success)
 				{
 					if (errorDiv)
 					{
-						errorDiv.textContent = data.message || 'Erreur lors de la mise à jour du groupe.';
+						errorDiv.textContent = (data && data.message) ? data.message : 'Erreur lors de la mise à jour du groupe.';
 						errorDiv.classList.remove('d-none');
 					}
 					return;
@@ -279,7 +274,69 @@ function initEditionGroupe()
 	}
 }
 
-document.addEventListener('DOMContentLoaded', () =>
+/*------------------------*/
+/* Fetch                  */
+/*------------------------*/
+function creerGroupe(nom, couleur, note, codes, filtres)
+{
+	return fetch('./creerGroupe.php',
+	{
+		method : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body   : JSON.stringify({ nom: nom, couleur: couleur, note_dossier: note, codes: codes, filters: filtres })
+	})
+	.then(function(reponse)
+	{
+		return reponse.json().then(function(donnees)
+		{
+			return { ok: reponse.ok, donnees: donnees };
+		});
+	});
+}
+
+function modifierGroupe(groupeId, nom, couleur, note, codes, filtres)
+{
+	return fetch('./modifierGroupe.php',
+	{
+		method : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body   : JSON.stringify({
+			groupe_id   : groupeId,
+			nom         : nom,
+			couleur     : couleur,
+			note_dossier: note,
+			codes       : codes,
+			filters     : filtres
+		})
+	})
+	.then(function(reponse)
+	{
+		return reponse.json().then(function(donnees)
+		{
+			return { ok: reponse.ok, donnees: donnees };
+		});
+	});
+}
+
+function supprimerGroupes(groupesId)
+{
+	return fetch('./supprimerGroupe.php',
+	{
+		method : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body   : JSON.stringify({ groupesId: groupesId })
+	})
+	.then(function(reponse)
+	{
+		return reponse.json().catch(function() { return null; });
+	});
+}
+
+
+/*------------------------*/
+/* Event                  */
+/*------------------------*/
+window.addEventListener( 'load' , () =>
 {
 	if (typeof isDossiersPage !== 'undefined' && isDossiersPage)
 	{

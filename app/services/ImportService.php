@@ -116,7 +116,7 @@ class ImportService
 		$data  = $sheet->toArray(null, true, true);
 		array_shift($data); 
 
-		$candidatRelations   = [];
+		$candidatRelations = [];
 
 		foreach ($data as $ligne)
 		{
@@ -194,7 +194,7 @@ class ImportService
 		foreach ($this->etablissements as $etab)
 		{
 			if ( $etablissement->getEtablissementNom        () === $etab->getEtablissementNom        () &&
-				 $etablissement->getEtablissementPays       () === $etab->getEtablissementPays       () &&
+			     $etablissement->getEtablissementPays       () === $etab->getEtablissementPays       () &&
 			     $etablissement->getEtablissementCommune    () === $etab->getEtablissementCommune    () &&
 			     $etablissement->getEtablissementCodePostal () === $etab->getEtablissementCodePostal () &&
 			     $etablissement->getEtablissementDepartement() === $etab->getEtablissementDepartement()    )
@@ -264,7 +264,7 @@ class ImportService
 		}
 
 		$this->nouveauxFormationsSup[] = $formationSup;
-		$this->formationsSup[] = $formationSup;
+		$this->formationsSup[]         = $formationSup;
 		return $formationSup;
 	}
 
@@ -291,11 +291,11 @@ class ImportService
 		foreach ($this->specialites as $spe)
 		{
 			if ($spe->getSpecialiteOpt1  () === $specialite->getSpecialiteOpt1  () &&
-				$spe->getSpecialiteOpt2  () === $specialite->getSpecialiteOpt2  () &&
-				$spe->getSpecialiteSpe1  () === $specialite->getSpecialiteSpe1  () &&
-				$spe->getSpecialiteSpe2  () === $specialite->getSpecialiteSpe2  () &&
-				$spe->getSpecialiteSpe3  () === $specialite->getSpecialiteSpe3  () &&
-				$spe->getSpecialiteSpeAbd() === $specialite->getSpecialiteSpeAbd()   )
+			    $spe->getSpecialiteOpt2  () === $specialite->getSpecialiteOpt2  () &&
+			    $spe->getSpecialiteSpe1  () === $specialite->getSpecialiteSpe1  () &&
+			    $spe->getSpecialiteSpe2  () === $specialite->getSpecialiteSpe2  () &&
+			    $spe->getSpecialiteSpe3  () === $specialite->getSpecialiteSpe3  () &&
+			    $spe->getSpecialiteSpeAbd() === $specialite->getSpecialiteSpeAbd()   )
 			{
 				return $spe;
 			}
