@@ -1,41 +1,35 @@
 <?php
-// Charger les variables du fichier .env manuellement
-function loadEnv($filePath)
+function loadEnv($cheminFichier)
 {
-	if (!file_exists($filePath)) {
-		return;
-	}
+	if (!file_exists($cheminFichier)) { return; }
 
-	$lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	$lignes = file($cheminFichier, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-	foreach ($lines as $line) {
-		// Ignorer les commentaires
-		if (strpos(trim($line), '#') === 0) {
-			continue;
-		}
+	foreach ($lignes as $ligne)
+	{
+		if (strpos(trim($ligne), '#') === 0) { continue; }
 
-		// Parser KEY=VALUE
-		if (strpos($line, '=') !== false) {
-			list($key, $value) = explode('=', $line, 2);
-			$key = trim($key);
-			$value = trim($value);
+		if (strpos($ligne, '=') !== false)
+		{
+			list($cle, $valeur) = explode('=', $ligne, 2);
 
-			// Enlever les guillemets si présents
-			if ((strpos($value, '"') === 0 && strrpos($value, '"') === strlen($value) - 1) ||
-				(strpos($value, "'") === 0 && strrpos($value, "'") === strlen($value) - 1)
-			) {
-				$value = substr($value, 1, -1);
-			}
+			$cle    = trim($cle   );
+			$valeur = trim($valeur);
 
-			$_ENV[$key] = $value;
+			if ((strpos($valeur, '"') === 0 && strrpos($valeur, '"') === strlen($valeur) - 1) ||
+				(strpos($valeur, "'") === 0 && strrpos($valeur, "'") === strlen($valeur) - 1)
+			)
+			{ $valeur = substr($valeur, 1, -1); }
+
+			$_ENV[$cle] = $valeur;
 		}
 	}
 }
 
-// Charger .env au démarrage
+// charger .env au démarrage
 loadEnv(__DIR__ . '/../.env');
 
-// Constantes de BD
+// constantes de BD
 define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
 define('DB_NAME', $_ENV['DB_NAME'] ?? '');
 define('DB_USER', $_ENV['DB_USER'] ?? '');

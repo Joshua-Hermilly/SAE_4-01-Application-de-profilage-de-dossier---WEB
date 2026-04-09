@@ -82,7 +82,6 @@ function creerTableau( headers, dossiers, isAdmin )
 		const ligneGroupeId     = dossiers[cptD]['groupe_id'] ?? null;
 		const isEditGroupMode   = !!window.editGroupMode;
 		const currentEditGroup  = typeof window.editGroupId !== 'undefined' ? window.editGroupId : null;
-		const hasAnyGroupColor  = couleurBrute !== '' && couleurBrute !== '#dedede';
 		const dansGroupeCourant = isDossiersPage && ligneGroupeId !== null && String(ligneGroupeId) === String(currentEditGroup);
 
 		for ( let cptH = 0; cptH < headers.length-1; cptH++ )
@@ -165,7 +164,6 @@ function creerTableau( headers, dossiers, isAdmin )
 			thEye.appendChild(container);
 			tr.appendChild(thEye);
 		}
-
 		tBody.appendChild( tr );
 	}
 }
@@ -198,7 +196,7 @@ function serialiserFiltres()
 	if (!filterForm) { return {}; }
 
 	const formData = new FormData(filterForm);
-	const filters = {};
+	const filters  = {};
 
 	for (const [key, value] of formData.entries())
 	{
@@ -266,10 +264,10 @@ function selectionFaite(event)
 /*------------------------*/
 async function getData( indexPage, lien, filters = filtresCourant )
 {
+	//console.log(sessionStorage)
 	const distance = sessionStorage.getItem('distance');
 	if (distance)
 	{
-		// Filtre de distance : de 0 jusqu'à la valeur du slider
 		filters.distance_min = 0;
 		filters.distance_max = Number(distance);
 	}
@@ -301,18 +299,12 @@ async function getData( indexPage, lien, filters = filtresCourant )
 		if (isDossiersPage && donnees.nbEtu !== undefined)
 		{
 			const infoRightNbEtu = document.getElementById('nbEtu');
-			if (infoRightNbEtu)
-			{
-				infoRightNbEtu.textContent = donnees.nbEtu;
-			}
+			if (infoRightNbEtu) { infoRightNbEtu.textContent = donnees.nbEtu; }
 		}
 		if (isDossiersPage && donnees.annees !== undefined)
 		{
 			const infoDates = document.getElementById('AnneesSelect');
-			if (infoDates)
-			{
-				infoDates.textContent = donnees.annees.length > 0 ? donnees.annees.join("-") : 'Aucune';
-			}
+			if (infoDates) { infoDates.textContent = donnees.annees.length > 0 ? donnees.annees.join("-") : 'Aucune'; }
 		}
 
 	}
@@ -338,7 +330,6 @@ function chargerPage(indexPage, filters = filtresCourant)
 
 function initialiserTableau()
 {
-	// on enlève le filtre de distance pour éviter de fausser l'affichage total avec ceux qui n'ont pas de distance
 	if (typeof isDossiersPage !== 'undefined' && isDossiersPage) { sessionStorage.removeItem('distance'); }
 
 	const preset = (typeof window.defaultFilters !== 'undefined' && window.defaultFilters) ? window.defaultFilters : null;
@@ -399,7 +390,7 @@ function attacherPagination()
 
 	btnPrc.addEventListener( "click", () => chargerPage(+pageAct.value - 1) );
 	btnSvt.addEventListener( "click", () => chargerPage(+pageAct.value + 1) );
-	btnDeb.addEventListener( "click", () => chargerPage(1                 ) );
+	btnDeb.addEventListener( "click", () => chargerPage(                 1) );
 	btnFin.addEventListener( "click", () => chargerPage(+btnFin.value     ) );
 }
 attacherPagination();
@@ -412,11 +403,11 @@ tableau.addEventListener("click", (event) =>
 	const target = event.target;
 	if (target instanceof HTMLElement && target.dataset && target.dataset.action)
 	{
-		const action        = target.dataset.action;
-		const groupeId      = target.dataset.groupeId     || null;
-		const groupeNom     = target.dataset.groupeNom    || '';
-		const groupeCouleur = target.dataset.groupeCouleur || '';
-		const groupeNote    = target.dataset.groupeNote   || '';
+		const action        = target.dataset.action               ;
+		const groupeId      = target.dataset.groupeId      || null;
+		const groupeNom     = target.dataset.groupeNom     || ''  ;
+		const groupeCouleur = target.dataset.groupeCouleur || ''  ;
+		const groupeNote    = target.dataset.groupeNote    || ''  ;
 
 		if (action === 'voir-groupe' && groupeNom)
 		{

@@ -35,6 +35,9 @@ class GroupeGetController extends Controller
 		$filters       = $this->extractFilters($data);
 		$isAdmin       = false;
 
+		if (session_status() === PHP_SESSION_NONE) { session_start(); }
+		$_SESSION['groupes_filtres'] = $filters;
+
 		if ($isJson && !$this->validerToken())
 		{
 			$this->json(['erreur' => 'Token invalide'], 401);
@@ -52,8 +55,7 @@ class GroupeGetController extends Controller
 		}
 
 		// Il est admin ?
-		if (session_status() === PHP_SESSION_NONE)  session_start();
-		if ( isset($_SESSION['compte']) && $_SESSION['compte']->getCompteIsAdmin()) { $isAdmin = true; }
+		if (isset($_SESSION['compte']) && $_SESSION['compte']->getCompteIsAdmin()) { $isAdmin = true; }
 
 		$this->json
 		([
