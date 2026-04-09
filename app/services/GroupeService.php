@@ -8,6 +8,9 @@ require_once '../app/repositories/GroupeRepository.php';
 require_once '../app/repositories/CritereRepository.php';
 require_once '../app/repositories/FiltreRepository.php';
 require_once '../app/repositories/CandidatRepository.php';
+require_once '../app/repositories/DossierCandidatRepository.php';
+require_once '../app/services/DossierFiltreService.php';
+require_once '../app/services/CodeService.php';
 
 class GroupeService
 {
@@ -15,6 +18,7 @@ class GroupeService
 	/* Repository                    */
 	/*-------------------------------*/
 	private $GroupeRepository;
+	private ?array $definitionsFiltres = null;
 
 	/*-------------------------------*/
 	/* Constructeur                  */
@@ -24,9 +28,6 @@ class GroupeService
 		$this->GroupeRepository = new GroupeRepository();
 	}
 
-	/**
-	 * Retourne un groupe par son id (ou null s'il n'existe pas).
-	 */
 	public function findById(int $id): ?Groupe
 	{
 		return $this->GroupeRepository->findById($id);
@@ -58,17 +59,14 @@ class GroupeService
 		try
 		{
 			// Forcer la note éventuelle dans l'intervalle [0,20]
-			if ($noteDossier !== null)
-			{
-				$noteDossier = max(0.0, min(20.0, $noteDossier));
-			}
+			if ($noteDossier !== null) { $noteDossier = max(0.0, min(20.0, $noteDossier)); }
 
 			$groupe = new Groupe(0, $nom, $couleur, $noteDossier, [], []);
 			$this->GroupeRepository->create($groupe);
 
-			$critereRepo = new CritereRepository();
-			$filtreRepo  = new FiltreRepository();
-			$candidatRepo= new CandidatRepository();
+			$critereRepo  = new CritereRepository();
+			$filtreRepo   = new FiltreRepository();
+			$candidatRepo = new CandidatRepository();
 
 			$criteres = $this->buildCriteresFromFilters($filters);
 			foreach ($criteres as $critere)
@@ -77,7 +75,9 @@ class GroupeService
 				$filtreRepo->linkGroupToCritere($groupe->getGroupeId(), $critere->getCritereId());
 			}
 
-			if (!empty($codes)) { $candidatRepo->assignGroupToCodes($groupe->getGroupeId(), $codes); }
+			$codeService   = new CodeService();
+			$codesEffectifs = $codeService->resoudreCodesCandidats($codes, $filters);
+			if (!empty($codesEffectifs)) { $candidatRepo->assignGroupToCodes($groupe->getGroupeId(), $codesEffectifs); }
 
 			$pdo->commit();
 			return $this->GroupeRepository->findById($groupe->getGroupeId()) ?? $groupe;
@@ -97,20 +97,13 @@ class GroupeService
 		try
 		{
 			$groupe = $this->GroupeRepository->findById($groupeId);
-			if (!$groupe)
-			{
-				throw new RuntimeException('Groupe introuvable');
-			}
+			if (!$groupe) { throw new RuntimeException('Groupe introuvable'); }
 
-			// Si aucun nouveau nom n'est fourni, on conserve le nom actuel
 			$finalNom = ($nom !== '') ? $nom : $groupe->getGroupeNom();
 			// Forcer la note éventuelle dans l'intervalle [0,20]
-			if ($noteDossier !== null)
-			{
-				$noteDossier = max(0.0, min(20.0, $noteDossier));
-			}
-			$groupe->setGroupeNom($finalNom);
-			$groupe->setGroupeCouleur($couleur);
+			if ($noteDossier !== null) { $noteDossier = max(0.0, min(20.0, $noteDossier)); }
+			$groupe->setGroupeNom        ($finalNom   );
+			$groupe->setGroupeCouleur    ($couleur    );
 			$groupe->setGroupeNoteDossier($noteDossier);
 			$this->GroupeRepository->update($groupe);
 
@@ -118,7 +111,7 @@ class GroupeService
 			$filtreRepo   = new FiltreRepository();
 			$candidatRepo = new CandidatRepository();
 
-			// Réinitialiser les critères liés au groupe puis les reconstruire à partir des filtres actuels
+			// Réinitialiser critères
 			$filtreRepo->deleteByGroupeId($groupeId);
 			$criteres = $this->buildCriteresFromFilters($filters);
 			foreach ($criteres as $critere)
@@ -127,9 +120,10 @@ class GroupeService
 				$filtreRepo->linkGroupToCritere($groupeId, $critere->getCritereId());
 			}
 
-			// Synchroniser les candidats du groupe
-			$candidatRepo->removeGroupAssignmentsExcept($groupeId, $codes);
-			if (!empty($codes)) { $candidatRepo->assignGroupToCodes($groupeId, $codes); }
+			$codeService   = new CodeService();
+			$codesEffectifs = $codeService->resoudreCodesCandidats($codes, $filters);
+			$candidatRepo->removeGroupAssignmentsExcept($groupeId, $codesEffectifs);
+			if (!empty($codesEffectifs)) { $candidatRepo->assignGroupToCodes($groupeId, $codesEffectifs); }
 
 			$pdo->commit();
 			return $this->GroupeRepository->findById($groupeId) ?? $groupe;
@@ -141,14 +135,16 @@ class GroupeService
 		}
 	}
 
-	public function supprimerGroupes($groupesId): bool
+	public function supprimerGroupes($groupesId, array $filtres = []): bool
 	{
 		$pdo = Repository::getInstance()->getPDO();
 		$pdo->beginTransaction();
 
 		try
 		{
-			foreach ($groupesId as $GroupeId) { $this->GroupeRepository->supprimer($GroupeId); }
+			$codeService = new CodeService();
+			$idsEffectifs = $codeService->resoudreCodesGroupes($groupesId, $filtres);
+			foreach ($idsEffectifs as $GroupeId) { $this->GroupeRepository->supprimer($GroupeId); }
 			$pdo->commit();
 			return true;
 		}
@@ -161,64 +157,63 @@ class GroupeService
 
 	private function buildCriteresFromFilters(array $filters): array
 	{
-		$criteres = [];
+		$criteres    = [];
+		$definitions = $this->getDefinitionsFiltres();
 
-		$discreteKeys = ['civilite', 'boursier', 'type_bac', 'serie_bac', 'specialite_spe', 'specialite_opt'];
-		foreach ($discreteKeys as $key)
+		foreach ($definitions as $nom => $meta)
 		{
-			if (!isset($filters[$key]) || $filters[$key] === '' || $filters[$key] === null) { continue; }
-			$values = is_array($filters[$key]) ? $filters[$key] : [$filters[$key]];
-			foreach ($values as $value)
+			// On ne stocke pas le nom du groupe lui-même comme critère
+			if ($nom === 'nom_groupe') { continue; }
+
+			$estNote     = ($meta['estNote'    ] ?? false);
+			$estMultiple = ($meta['estMultiple'] ?? false);
+
+			if ($estNote)
 			{
-				if ($value === '' || $value === null) { continue; }
-				$criteres[] = new Critere(0, $key, (string) $value, 0.0, 0.0);
+				$cleMin = $nom . '_min';
+				$cleMax = $nom . '_max';
+				$aMin   = isset($filters[$cleMin]) && $filters[$cleMin] !== '' && $filters[$cleMin] !== null;
+				$aMax   = isset($filters[$cleMax]) && $filters[$cleMax] !== '' && $filters[$cleMax] !== null;
+				if (!$aMin && !$aMax) { continue; }
+
+				$min = $aMin ? (float) $filters[$cleMin] : 0.0;
+				$max = $aMax ? (float) $filters[$cleMax] : 20.0;
+				$criteres[] = new Critere(0, $nom, $nom, $min, $max);
+				continue;
+			}
+
+			if (!isset($filters[$nom]) || $filters[$nom] === '' || $filters[$nom] === null) { continue; }
+			$valeurs = is_array($filters[$nom]) ? $filters[$nom] : [$filters[$nom]];
+			foreach ($valeurs as $valeur)
+			{
+				if ($valeur === '' || $valeur === null) { continue; }
+				$criteres[] = new Critere(0, $nom, (string) $valeur, 0.0, 0.0);
 			}
 		}
-
-		$noteKeys = ['note_lycee', 'note_fiche', 'note_globale'];
-		foreach ($noteKeys as $base)
-		{
-			$minKey  = $base . '_min';
-			$maxKey  = $base . '_max';
-			$hasMin  = isset($filters[$minKey]) && $filters[$minKey] !== '' && $filters[$minKey] !== null;
-			$hasMax  = isset($filters[$maxKey]) && $filters[$maxKey] !== '' && $filters[$maxKey] !== null;
-			if (!$hasMin && !$hasMax) { continue; }
-
-			$min = $hasMin ? (float) $filters[$minKey] : 0.0;
-			$max = $hasMax ? (float) $filters[$maxKey] : 20.0;
-			$criteres[] = new Critere(0, $base, $base, $min, $max);
-		}
-
 		return $criteres;
 	}
 
 	public function buildFilterValuesFromGroupe(Groupe $groupe): array
 	{
-		$filters = [];
-
-		$discreteKeysSingle = ['civilite', 'boursier', 'type_bac', 'serie_bac'];
-		$discreteKeysMulti  = ['specialite_spe', 'specialite_opt'];
-		$noteKeys           = ['note_lycee', 'note_fiche', 'note_globale'];
+		$filters     = [];
+		$definitions = $this->getDefinitionsFiltres();
 
 		foreach ($groupe->getCriteres() as $critere)
 		{
 			if (!$critere instanceof Critere) { continue; }
 
 			$label = $critere->getCritereLibelle();
-			$value = $critere->getCritereFiltre();
-			$min   = $critere->getCritereMin();
-			$max   = $critere->getCritereMax();
+			if (!isset($definitions[$label])) { continue; }
 
-			if (in_array($label, $discreteKeysSingle, true)) { $filters[$label] = $value; continue; }
+			$meta        = $definitions[$label];
+			$estNote     = ($meta['estNote'    ] ?? false);
+			$estMultiple = ($meta['estMultiple'] ?? false);
 
-			if (in_array($label, $discreteKeysMulti, true))
-			{
-				if (!isset($filters[$label]) || !is_array($filters[$label])) { $filters[$label] = []; }
-				$filters[$label][] = $value;
-				continue;
-			}
+			$valeur = $critere->getCritereFiltre();
+			$min    = $critere->getCritereMin();
+			$max    = $critere->getCritereMax();
 
-			if (in_array($label, $noteKeys, true))
+			if ($estNote)
 			{
 				$minKey = $label . '_min';
 				$maxKey = $label . '_max';
@@ -226,9 +221,47 @@ class GroupeService
 				$filters[$maxKey] = $max;
 				continue;
 			}
+
+			if ($estMultiple)
+			{
+				if (!isset($filters[$label]) || !is_array($filters[$label])) { $filters[$label] = []; }
+				$filters[$label][] = $valeur;
+				continue;
+			}
+			$filters[$label] = $valeur;
+		}
+		return $filters;
+	}
+
+	private function getDefinitionsFiltres(): array
+	{
+		if ($this->definitionsFiltres !== null) { return $this->definitionsFiltres; }
+
+		$service = new DossierFiltreService();
+		$config  = $service->buildFilterConfig();
+		$defs    = [];
+
+		if (isset($config['sections']) && is_array($config['sections']))
+		{
+			foreach ($config['sections'] as $section)
+			{
+				if (!isset($section['filters']) || !is_array($section['filters'])) { continue; }
+				foreach ($section['filters'] as $filter)
+				{
+					if (!isset($filter['name'])) { continue; }
+					$nom  = $filter['name'];
+					$type = $filter['type'] ?? 'select';
+					$defs[$nom] = [
+						'type'        => $type,
+						'estNote'     => ($type === 'number'),
+						'estMultiple' => ($type === 'multiselect'),
+					];
+				}
+			}
 		}
 
-		return $filters;
+		$this->definitionsFiltres = $defs;
+		return $defs;
 	}
 
 }

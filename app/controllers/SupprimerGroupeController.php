@@ -25,9 +25,9 @@ class SupprimerGroupeController extends Controller
 		$json = file_get_contents('php://input');
 		$data = json_decode($json, true);
 
-		$groupesId = isset($data['groupesId']) && is_array($data['groupesId']) ? $data['groupesId'] : [];
+		$groupesCodes = isset($data['groupesId']) && is_array($data['groupesId']) ? $data['groupesId'] : [];
 
-		if (empty($groupesId))
+		if (empty($groupesCodes))
 		{
 			$this->json(['success' => false, 'message' => 'Aucun groupe sélectionné.'], 422);
 			return;
@@ -36,7 +36,12 @@ class SupprimerGroupeController extends Controller
 		try
 		{
 			$service = new GroupeService();
-			$reussi  = $service->supprimerGroupes($groupesId);
+			$filtres = [];
+			if (isset($_SESSION['groupes_filtres']) && is_array($_SESSION['groupes_filtres']))
+			{
+				$filtres = $_SESSION['groupes_filtres'];
+			}
+			$reussi  = $service->supprimerGroupes($groupesCodes, $filtres);
 
 			if ($reussi)
 			{
