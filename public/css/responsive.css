@@ -1,0 +1,98 @@
+
+#dossiers-layout {
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+#main-content {
+	flex: 1 1 auto;
+}
+
+/* ============================================================
+   RESPONSIVE : empiler filtre / tableau / carte sur petit écran
+============================================================ */
+
+/* Small screens (< lg = < 992px) : stacked layout */
+@media (max-width: 991.98px) {
+	html, body {
+		height: auto !important;
+		min-height: 100% !important;
+		overflow-y: auto !important;
+	}
+
+	#background {
+		height: auto !important;
+		min-height: 100vh !important;
+		overflow-y: auto !important;
+	}
+
+	#dossiers-layout {
+		flex-direction: column !important;
+		overflow: visible !important;
+		height: auto !important;
+		min-height: 0 !important;
+	}
+
+	#filter_sidebar {
+		height: auto !important;
+		max-height: none !important;
+		width: 100% !important;
+		padding: 15px !important;
+	}
+
+	#filter_sidebar #card-block {
+		min-height: auto !important;
+	}
+
+	#main-content {
+		min-height: 400px;
+		height: auto !important;
+		overflow: visible !important;
+		width: 100% !important;
+		min-width: 0 !important;
+		max-width: 100% !important;
+	}
+
+	/* Toolbar : wrap les éléments sur petit écran */
+	#main-content > .d-flex:first-child {
+		flex-wrap: wrap !important;
+		overflow: hidden !important;
+	}
+
+	/* Barre filtre fermée et carte fermée : pleine largeur sur petit écran */
+	#filter_close_bar,
+	#map_close_bar {
+		width: 100% !important;
+		max-width: 100% !important;
+		flex: 0 0 100% !important;
+	}
+
+	/* Barre de recherche : pleine largeur */
+	#main-content .rounded-pill {
+		max-width: 100% !important;
+		width: 100% !important;
+		flex: 1 1 100% !important;
+	}
+
+	#map_sidebar {
+		height: auto !important;
+		min-height: 350px;
+		width: 100% !important;
+		padding: 15px !important;
+	}
+
+	#map_sidebar #card-block {
+		min-height: 300px !important;
+	}
+
+	#map {
+		min-height: 300px;
+	}
+}
+
+/* Large screens (>= 992px) : horizontal layout */
+@media (min-width: 992px) {
+	#dossiers-layout {
+		overflow: hidden !important;
+	}
+}

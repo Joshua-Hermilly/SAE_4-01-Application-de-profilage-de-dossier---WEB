@@ -1,0 +1,33 @@
+<header class="main-header py-3 w-100 m-0">
+	<div class="row g-0 w-100 m-0 align-items-center">
+
+		<!-- LEFT (responsif) -->
+		<div class="col-12 col-lg-8 p-0">
+			<div id="header-left" class="d-flex align-items-center justify-content-between py-2 px-3">
+				<div class="d-flex align-items-center gap-2">
+					<button id="btn-deconnexion" type="button" class="btn btn-sm btn-outline-light">
+						<i class="bi bi-box-arrow-left"></i>
+					</button>
+					<span id="bar-menu-text" class="ms-3">Profilage Parcoursup</span>
+				</div>
+				{% if isAdmin %}
+				<div class="d-flex align-items-center gap-2">
+					<span id="bar-menu-text" class="ms-3">Creer Compte</span>
+					<button id="btn-creerCompte" type="button" class="btn btn-sm btn-outline-light">
+						<i class="bi bi-plus"></i>
+					</button>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+
+		<!-- RIGHT (responsif) -->
+		<div class="col-12 col-lg-4 d-flex justify-content-end p-0">
+			<div id="header-right" class="d-flex align-items-center gap-2 w-100 py-2 px-3">
+				<button id="btnDossier"    class="menu-btn flex-grow-1  py-2 px-3 {{ pageActive == 'dossiers'   ? 'active' : '' }}">Dossiers</button>
+				<button id="btnGroupes"    class="menu-btn flex-grow-1  py-2 px-3 {{ pageActive == 'groupes'    ? 'active' : '' }}">Groupes</button>
+				<button id="btnFormations" class="menu-btn flex-grow-1  py-2 px-3 {{ pageActive == 'formations' ? 'active' : '' }}">Formations</button>
+			</div>
+		</div>
+	</div>
+</header>

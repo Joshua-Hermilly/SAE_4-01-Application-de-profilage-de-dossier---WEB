@@ -1,0 +1,8 @@
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{ title | default('MonProjet') }}</title>
+	{% for href in assets.css %}
+		<link href="{{ href }}" rel="stylesheet">
+	{% endfor %}
+</head>

@@ -1,12 +1,11 @@
 <?php
-// app/controllers/IndexController.php
 
 require_once '../app/core/Controller.php';
 require_once '../app/entities/Compte.php';
 
-class IndexController extends Controller
+class FormationController extends Controller
 {
-	public function index(): void
+	public function formation(): void
 	{
 		if (session_status() === PHP_SESSION_NONE)  session_start();
 
@@ -16,6 +15,6 @@ class IndexController extends Controller
 			return;
 		}
 
-		$this->redirectTo('dossiers.php');
+		$this->view('pages/formations', 'Formations' , ['isAdmin' => $_SESSION['compte']->getCompteIsAdmin()]);
 	}
 }

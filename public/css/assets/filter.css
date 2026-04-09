@@ -1,0 +1,104 @@
+/* ============================================================
+   FILTER ASSET - CSS
+============================================================ */
+
+#filter_sidebar {
+	padding: 30px;
+	overflow: hidden;
+}
+
+#filter_sidebar #card-block {
+	min-height: 100%;
+}
+
+#filter-scroll {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	box-sizing: border-box;
+}
+
+#filter-scroll-inner {
+	height: calc(100% - 30px);
+	overflow-y: auto;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	padding-right: 8px;
+}
+
+#filter-scroll-inner::-webkit-scrollbar {
+	width: 10px;
+}
+
+#filter-scroll-inner::-webkit-scrollbar-track {
+	background: var(--gris-fond-assets);
+	border-radius: 6px;
+}
+
+#filter-scroll-inner::-webkit-scrollbar-thumb {
+	background: var(--gris-select-assets);
+	border-radius: 6px;
+	border: 2px solid transparent;
+	background-clip: content-box;
+}
+
+#filter-scroll-inner::-webkit-scrollbar-thumb:hover {
+	background: var(--gris-text-fond-foncé);
+}
+
+#filter-title {
+	color: var(--gris-text-fond-foncé);
+	text-align: left;
+	display: block;
+}
+
+#section-title {
+	color: var(--bleu-icon);
+	text-align: center;
+	display: block;
+}
+
+#checkbox-item {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.5rem;
+	width: 100%;
+	min-width: 0;
+	white-space: normal;
+	padding-top: 0.35rem;
+	padding-bottom: 0.35rem;
+}
+
+#checkbox-item input[type="checkbox"],
+.form-check input[type="checkbox"] {
+	flex: 0 0 auto;
+	min-width: 20px;
+	min-height: 20px;
+	width: auto !important;
+	height: auto !important;
+}
+
+#checkbox-item span,
+#checkbox-item p {
+	flex: 1 1 auto;
+	min-width: 0;
+	word-break: break-word;
+}
+
+#specialite-checkboxes-specialite_spe,
+#specialite-checkboxes-specialite_opt {
+	max-height: 220px;
+	overflow-y: auto;
+	padding-right: 0.25rem;
+	border-radius: 5px;
+}
+
+#form-spacing {
+	margin: 20px 0;
+}
+
+#divider {
+	border: none;
+	border-top: 1px solid var(--gris-text-fond-foncé);
+	margin: 20px 0;
+}

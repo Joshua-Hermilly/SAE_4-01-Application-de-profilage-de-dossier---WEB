@@ -1,0 +1,35 @@
+<div class="container mt-5 d-flex align-items-center justify-content-center">
+	<div class="row justify-content-center w-100">
+		<div class="col-md-6">
+
+			<div id="block-login" class="card">
+				<div class="card-body body p-4">
+					<h2 id="text-title" class="card-title">Connexion</h2>
+
+					{% if withFailed|default(false) %}
+						<div class="alert alert-danger">
+							Identifiant ou mot de passe incorrect.
+						</div>
+					{% endif %}
+
+					<form method="POST" action="login.php">
+						<div id="form-spacing" class="mb-3">
+							<label id="text-title" for="identifier" class="form-label">Identifiant</label>
+							<input type="text" class="form-control" id="identifier" name="compte_identifiant" placeholder="Entrez votre identifiant" required>
+						</div>
+
+						<div id="form-spacing" class="mb-3">
+							<label id="text-title" for="password" class="form-label">Mot de passe</label>
+							<input type="password" class="form-control" id="password" name="compte_mdp" placeholder="Entrez votre mot de passe" required>
+						</div>
+
+						<hr id="divider">
+
+						<button id="btn-action" class="btn btn-login w-100" type="submit">Se connecter</button>
+					</form>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
