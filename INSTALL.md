@@ -37,3 +37,11 @@ php composer.phar install
 ```bash
 php -r "require 'vendor/autoload.php'; echo (class_exists('Twig\Environment') ? 'Twig OK' : 'Twig manquant') . PHP_EOL;"
 ```
+
+# Lancer l'application 
+```bash
+php -S localhost:8000 -t public
+```
+
+# Insérer des données 
+Vous pouvez utiliser le Total.xlsx du répo contenant des dossiers de teste. Le temps sera long, merci de patienter.
