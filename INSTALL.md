@@ -38,6 +38,17 @@ php composer.phar install
 php -r "require 'vendor/autoload.php'; echo (class_exists('Twig\Environment') ? 'Twig OK' : 'Twig manquant') . PHP_EOL;"
 ```
 
+# Congiguer le .env
+Créer un fichier .env à la racine avec ces divers paramètres. 
+```
+DB_HOST=postgresql-sae401web.alwaysdata.net
+DB_NAME=
+DB_USER=
+DB_PASS=
+DB_PORT=
+```
+Le script de bd est dans /bd.
+
 # Lancer l'application 
 ```bash
 php -S localhost:8000 -t public
